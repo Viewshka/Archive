@@ -1,10 +1,7 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Home from '../views/Home.vue'
-import simpleLayout from "../layouts/single-card";
-import login from "../views/login-form";
-
-import defaultLayout from "../components/static/SideNavOuterToolbar";
+import login from "../views/Login";
 
 Vue.use(VueRouter)
 
@@ -12,19 +9,12 @@ const routes = [
   {
     path: '/',
     name: 'Home',
-    components: {
-      layout: defaultLayout,
-      content: Home
-    }
+    component: Home
   },
   {
     path: "/login",
     name: "login",
-    components: {
-      layout: simpleLayout,
-      content: login
-
-    },
+    component: login,
     props: {
       layout: {
         title: "Войти"

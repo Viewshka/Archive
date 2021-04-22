@@ -6,11 +6,11 @@
           location="before"
       >
         <DxButton
-            icon="home"
+            icon="menu"
             styling-mode="text"
-            text="Главная"
+            text="Справочники"
             slot-scope="_"
-            @click="()=> $router.push('/home')"
+            @click="()=> $router.push('/')"
         />
       </DxItem>
       <DxItem

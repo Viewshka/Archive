@@ -2,41 +2,41 @@
   <form class="login-form" @submit.prevent="onSubmit">
     <dx-form :form-data="formData" :disabled="loading">
       <dx-item
-        data-field="email"
-        editor-type="dxTextBox"
-        :editor-options="{ stylingMode: 'filled', placeholder: 'Логин', mode: 'text' }"
+          data-field="email"
+          editor-type="dxTextBox"
+          :editor-options="{ stylingMode: 'filled', placeholder: 'Логин', mode: 'text' }"
       >
-        <dx-required-rule message="Имя пользователя обязательно" />
-        <dx-label :visible="false" />
+        <dx-required-rule message="Имя пользователя обязательно"/>
+        <dx-label :visible="false"/>
       </dx-item>
       <dx-item
-        data-field='password'
-        editor-type='dxTextBox'
-        :editor-options="{ stylingMode: 'filled', placeholder: 'Пароль', mode: 'password' }"
+          data-field='password'
+          editor-type='dxTextBox'
+          :editor-options="{ stylingMode: 'filled', placeholder: 'Пароль', mode: 'password' }"
       >
-        <dx-required-rule message="Password is required" />
-        <dx-label :visible="false" />
+        <dx-required-rule message="Password is required"/>
+        <dx-label :visible="false"/>
       </dx-item>
       <dx-item
-        data-field="rememberMe"
-        editor-type="dxCheckBox"
-        :editor-options="{ text: 'Запомнить меня', elementAttr: { class: 'form-text' } }"
+          data-field="rememberMe"
+          editor-type="dxCheckBox"
+          :editor-options="{ text: 'Запомнить меня', elementAttr: { class: 'form-text' } }"
       >
-        <dx-label :visible="false" />
+        <dx-label :visible="false"/>
       </dx-item>
       <dx-button-item>
         <dx-button-options
-          width="100%"
-          type="default"
-          template="signInTemplate"
-          :use-submit-behavior="true"
+            width="100%"
+            type="default"
+            template="signInTemplate"
+            :use-submit-behavior="true"
         >
         </dx-button-options>
       </dx-button-item>
       <template #signInTemplate>
         <div>
           <span class="dx-button-text">
-            <dx-load-indicator v-if="loading" width="24px" height="24px" :visible="true" />
+            <dx-load-indicator v-if="loading" width="24px" height="24px" :visible="true"/>
             <span v-if="!loading">Войти</span>
           </span>
         </div>
@@ -67,8 +67,8 @@ export default {
     };
   },
   methods: {
-    onSubmit: async function() {
-      const { email, password } = this.formData;
+    onSubmit: async function () {
+      const {email, password} = this.formData;
       this.loading = true;
 
       const result = await auth.logIn(email, password);
@@ -96,7 +96,13 @@ export default {
 <style lang="scss">
 @import "../themes/generated/variables.base.scss";
 
+.dx-card {
+  border-radius: 25px !important;
+}
+
 .login-form {
+
+
   .link {
     text-align: center;
     font-size: 16px;

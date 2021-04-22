@@ -1,20 +1,75 @@
 <template>
-  <div>
-    <h2 class="content-block">Домашняя страница</h2>
-  </div>
+  <DxResponsiveBox id="app">
+    <DxRow :ratio="0"/>
+    <DxRow :ratio="0"/>
+    <DxRow :ratio="0"/>
+    <DxCol :ratio="0.7" screen="md lg"/>
+    <DxCol :ratio="2"/>
+
+    <DxItem>
+      <DxLocation screen="sm md lg" :row="0" :col="0" :colspan="3"/>
+      <DxLocation screen="xs " :row="0" :col="0"/>
+      <template #default>
+        <div>
+          <NavBar/>
+        </div>
+      </template>
+    </DxItem>
+
+    <DxItem>
+      <DxLocation screen="md lg" :row="1" :col="1"/>
+      <DxLocation screen="xs sm" :row="1" :col="0"/>
+      <template #default>
+        <div >
+            <DocumentGrid/>
+        </div>
+      </template>
+    </DxItem>
+
+    <DxItem>
+      <DxLocation screen="md lg" :row="1" :col="0"/>
+      <template #default>
+        <div class="left-side-bar"/>
+      </template>
+    </DxItem>
+
+    <DxItem>
+      <DxLocation screen="md lg" :row="2" :col="0" :colspan="3"/>
+      <DxLocation screen="xs sm" :row="2" :col="0"/>
+      <template #default>
+        <Footer/>
+      </template>
+    </DxItem>
+  </DxResponsiveBox>
 </template>
 
 <script>
-import DxDataGrid, {DxColumn} from 'devextreme-vue/data-grid'
+import {DxResponsiveBox, DxItem, DxLocation, DxCol, DxRow} from 'devextreme-vue/responsive-box';
+import DxScrollView from "devextreme-vue/scroll-view";
+
+import Footer from "../components/static/Footer"
+import NavBar from "../components/static/NavBar";
+import DocumentGrid from "./DocumentGrid";
 
 export default {
   name: 'Home',
   data() {
-    return {}
+    return {
+      screen(width) {
+        return (width < 900) ? 'sm' : 'lg';
+      },
+    }
   },
   components: {
-    DxDataGrid,
-    DxColumn
+    Footer,
+    NavBar,
+    DocumentGrid,
+    DxResponsiveBox,
+    DxItem,
+    DxLocation,
+    DxCol,
+    DxRow,
+    DxScrollView
   }
 }
 </script>
@@ -28,32 +83,36 @@ export default {
   }
 }
 
-.devextreme-logo {
-  width: 200px;
-  height: 34px;
-  margin-bottom: 17px;
+.demo-container, #page {
+  height: 100%;
+  min-height: 300px;
 }
 
-.vue-logo {
-  width: 180px;
-  height: 62px;
+.header {
+  background-color: rgba(243, 158, 108, 0.80);
+  text-align: center;
 }
 
-.plus {
-  margin: 20px 10px;
-  width: 22px;
-  height: 22px;
+.content {
+  background-color: rgba(245, 229, 166, 0.80);
 }
 
-.screen-x-small .logos-container {
-  svg {
-    width: 100%;
-    display: block;
+.left-side-bar {
+  background-color: rgba(148, 215, 199, 0.80);
+}
 
-    &.plus {
-      margin: 0;
-    }
-  }
+.footer {
+  background-color: rgba(123, 155, 207, 0.80);
+}
+
+.item {
+  height: 100%;
+}
+
+#page p {
+  font-size: 20px;
+  padding-top: 10px;
+  text-align: center;
 }
 </style>
 
