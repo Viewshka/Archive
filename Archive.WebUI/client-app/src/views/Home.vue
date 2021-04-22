@@ -20,8 +20,8 @@
       <DxLocation screen="md lg" :row="1" :col="1"/>
       <DxLocation screen="xs sm" :row="1" :col="0"/>
       <template #default>
-        <div >
-            <DocumentGrid/>
+        <div>
+          <DocumentGrid/>
         </div>
       </template>
     </DxItem>
@@ -29,7 +29,9 @@
     <DxItem>
       <DxLocation screen="md lg" :row="1" :col="0"/>
       <template #default>
-        <div class="left-side-bar"/>
+        <div>
+          <TreeViewNavigation/>
+        </div>
       </template>
     </DxItem>
 
@@ -50,6 +52,7 @@ import DxScrollView from "devextreme-vue/scroll-view";
 import Footer from "../components/static/Footer"
 import NavBar from "../components/static/NavBar";
 import DocumentGrid from "./DocumentGrid";
+import TreeViewNavigation from "../components/TreeViewNavigation";
 
 export default {
   name: 'Home',
@@ -64,6 +67,7 @@ export default {
     Footer,
     NavBar,
     DocumentGrid,
+    TreeViewNavigation,
     DxResponsiveBox,
     DxItem,
     DxLocation,
@@ -86,23 +90,6 @@ export default {
 .demo-container, #page {
   height: 100%;
   min-height: 300px;
-}
-
-.header {
-  background-color: rgba(243, 158, 108, 0.80);
-  text-align: center;
-}
-
-.content {
-  background-color: rgba(245, 229, 166, 0.80);
-}
-
-.left-side-bar {
-  background-color: rgba(148, 215, 199, 0.80);
-}
-
-.footer {
-  background-color: rgba(123, 155, 207, 0.80);
 }
 
 .item {

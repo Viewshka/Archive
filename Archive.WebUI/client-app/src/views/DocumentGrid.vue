@@ -1,5 +1,5 @@
 <template>
-  <div >
+  <div>
     <DxDataGrid
         style="height: 800px"
         :data-source="dataSource"
@@ -15,7 +15,7 @@
 </template>
 
 <script>
-import DxDataGrid, {DxColumn,DxScrolling} from 'devextreme-vue/data-grid'
+import DxDataGrid, {DxColumn, DxScrolling} from 'devextreme-vue/data-grid'
 
 export default {
   name: "DocumentGrid",
