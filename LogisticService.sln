@@ -1,12 +1,12 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LogisticService.WebUI", "LogisticService.WebUI\LogisticService.WebUI.csproj", "{B75C5F96-8096-482F-A178-E2C9CF001FCE}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Archive.WebUI", "Archive.WebUI\Archive.WebUI.csproj", "{B75C5F96-8096-482F-A178-E2C9CF001FCE}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{84AD96AE-372B-4595-ADD6-B8B6792A4792}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LogisticService.Core", "LogisticService.Core\LogisticService.Core.csproj", "{368F7C73-CF6F-45F4-9E0B-7B8C99A1126B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Archive.Core", "Archive.Core\Archive.Core.csproj", "{368F7C73-CF6F-45F4-9E0B-7B8C99A1126B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LogisticService.Application", "LogisticService.Application\LogisticService.Application.csproj", "{B6264B61-E626-4B22-9D6C-858CC9B9486C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Archive.Application", "Archive.Application\Archive.Application.csproj", "{B6264B61-E626-4B22-9D6C-858CC9B9486C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
