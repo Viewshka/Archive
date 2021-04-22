@@ -33,20 +33,6 @@
         >
         </dx-button-options>
       </dx-button-item>
-      <dx-item>
-        <template #default>
-          <div class="link">
-            <router-link to="/reset-password">Забыл пароль?</router-link>
-          </div>
-        </template>
-      </dx-item>
-      <dx-button-item>
-        <dx-button-options
-          text="Создать аккаунт"
-          width="100%"
-          :on-click="onCreateAccountClick"
-        />
-      </dx-button-item>
       <template #signInTemplate>
         <div>
           <span class="dx-button-text">
@@ -81,9 +67,6 @@ export default {
     };
   },
   methods: {
-    onCreateAccountClick() {
-      this.$router.push("/create-account");
-    },
     onSubmit: async function() {
       const { email, password } = this.formData;
       this.loading = true;
@@ -93,7 +76,7 @@ export default {
         this.loading = false;
         notify(result.message, "error", 2000);
       } else {
-        this.$router.push(this.$route.query.redirect || "/home");
+        await this.$router.push(this.$route.query.redirect || "/home");
       }
     }
   },

@@ -5,15 +5,6 @@ export default {
     loggedIn() {
         return !!this._user;
     },
-    hasManagerRole() {
-        return this._user!==null && this._user.roles.some(role => role.id === 1);
-    },
-    hasCourierRole() {
-        return this._user!==null && this._user.roles.some(role => role.id === 3);
-    },
-    hasUserRole() {
-        return this._user!==null && this._user.roles.some(role => role.id === 2);
-    },
 
     async logIn(email, password) {
         return fetch('api/account/login', {

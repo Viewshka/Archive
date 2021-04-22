@@ -13,119 +13,6 @@
             @click="()=> $router.push('/home')"
         />
       </DxItem>
-
-      <DxItem
-          locate-in-menu="auto"
-          location="before"
-      >
-        <DxButton
-            icon="find"
-            styling-mode="text"
-            text="Отследить заказ"
-            slot-scope="_"
-            @click="findOrder"
-        />
-      </DxItem>
-      <DxItem
-          locate-in-menu="auto"
-          location="before"
-      >
-        <DxButton
-            v-if="!hasManagerRole()"
-            icon="email"
-            styling-mode="text"
-            text="Обратная связь"
-            slot-scope="_"
-            @click="sendFeedBack"
-        />
-      </DxItem>
-      <DxItem
-          locate-in-menu="auto"
-          location="before"
-      >
-        <DxButton
-            v-if="user && hasManagerRole()"
-            icon="email"
-            styling-mode="text"
-            text="Обратная связь клиентов"
-            slot-scope="_"
-            @click="()=> $router.push('/feedback')"
-        />
-      </DxItem>
-      <DxItem
-          locate-in-menu="auto"
-          location="before"
-      >
-        <DxButton
-            v-if="user && hasManagerRole()"
-            styling-mode="text"
-            text="Виды услуг"
-            slot-scope="_"
-            @click="openServiceTypeForm"
-        />
-      </DxItem>
-      <DxItem
-          locate-in-menu="auto"
-          location="before"
-      >
-        <DxButton
-            v-if="user && hasManagerRole()"
-            styling-mode="text"
-            text="Единицы измерения"
-            slot-scope="_"
-            @click="openUnitForm"
-        />
-      </DxItem> 
-      <DxItem
-          locate-in-menu="auto"
-          location="before"
-      >
-        <DxButton
-            styling-mode="text"
-            text="Роли"
-            slot-scope="_"
-            @click="openUserRoleForm"
-        />
-      </DxItem>
-      <DxItem
-          locate-in-menu="auto"
-          location="after"
-      >
-        <DxButton
-            v-if="user && hasUserRole()"
-            icon="cart"
-            styling-mode="text"
-            text="Мои заказы"
-            slot-scope="_"
-            @click="()=> $router.push('/cart')"
-        />
-      </DxItem>
-      <DxItem
-          locate-in-menu="auto"
-          location="after"
-      >
-        <DxButton
-            v-if="user && hasCourierRole()"
-            icon="cart"
-            styling-mode="text"
-            text="Доступные заказы"
-            slot-scope="_"
-            @click="()=> $router.push('/cart')"
-        />
-      </DxItem>
-      <DxItem
-          locate-in-menu="auto"
-          location="after"
-      >
-        <DxButton
-            v-if="user && hasManagerRole()"
-            icon="cart"
-            styling-mode="text"
-            text="Все заказы"
-            slot-scope="_"
-            @click="()=> $router.push('/cart')"
-        />
-      </DxItem>
       <DxItem
           location="after"
           locate-in-menu="auto"
@@ -152,22 +39,6 @@
         />
       </DxItem>
     </DxToolbar>
-    <OrderFindForm
-        :visible.sync="orderFindFormVisible"
-    />
-    <FeedbackForm
-        :visible.sync="feedbackFormVisible"
-        @submit="feedBackSubmit"
-    />
-    <ServiceTypeForm
-        :visible.sync="serviceTypeFormVisible"
-    />
-    <UnitForm
-      :visible.sync="unitFormVisible"
-    />
-    <UserRoleForm
-      :visible.sync="userRoleVisible"
-    />
   </header>
 </template>
 
@@ -176,13 +47,8 @@ import DxButton from "devextreme-vue/button";
 import DxToolbar, {DxItem} from "devextreme-vue/toolbar";
 import DxScrollView from "devextreme-vue/scroll-view";
 import auth from "../../auth";
-import OrderFindForm from "../../components/order-find-form";
 import {mapState} from 'vuex';
-import FeedbackForm from "../feedback-form";
 import notify from "devextreme/ui/notify";
-import ServiceTypeForm from '../service-type-form'
-import UnitForm from '../unit-form'
-import UserRoleForm from "../../components/UserRoleForm";
 
 export default {
   name: "NavBar",
@@ -202,88 +68,32 @@ export default {
   },
   created() {
     // this.$store.dispatch('INIT_CURRENT_USER')
-    auth.getUser().then((e) => this.user = e.data);
+    // auth.getUser().then((e) => this.user = e.data);
   },
   methods: {
-    findOrder() {
-      this.orderFindFormVisible = true
-    },
-    sendFeedBack() {
-      this.feedbackFormVisible = true
-    },
-    openServiceTypeForm() {
-      this.serviceTypeFormVisible = true;
-    },
-    openUnitForm() {
-      this.unitFormVisible = true;
-    },
-    openUserRoleForm() {
-      this.userRoleVisible = true;
-    },
-    async feedBackSubmit(data) {
-      console.log(data)
-      let self = this;
-      return fetch('api/feedback/', {
-        method: "POST",
-        credentials: 'include',
-        headers: {
-          'Accept': 'application/json, text/plain, */*',
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(data)
-      })
-          .then((e) => {
-            if (e.ok) {
-              self.feedbackFormVisible = false;
-              notify('Спасибо за вашу обратную связь', "success", 2000);
-              return e.data;
-            }
-            notify('Ошибка отправки', "error", 2000);
-          }).catch(c => {
-            console.log(c)
-            return {
-              isOk: false,
-              message: "Ошибка"
-            };
-          });
-    },
     async logIn(e) {
       console.log('login click')
       await this.$router.push({
-        path: "/login-form",
+        path: "/login",
         query: {redirect: this.$route.path}
       });
     },
     async logOut(e) {
-      auth.logOut();
+      await auth.logOut();
       await this.$router.push({
-        path: "/login-form",
+        path: "/login",
         query: {redirect: this.$route.path}
       });
-    },
-    hasCourierRole() {
-      return auth.hasCourierRole()
-    },
-    hasManagerRole() {
-      return auth.hasManagerRole()
-    },
-    hasUserRole() {
-      return auth.hasUserRole()
     },
   },
   computed: {
     // ...mapState(['currentUser',]),
   },
   components: {
-    FeedbackForm,
     DxToolbar,
     DxItem,
     DxScrollView,
     DxButton,
-    OrderFindForm,
-    ServiceTypeForm,
-    UnitForm,
-    UserRoleForm
   }
 }
 </script>

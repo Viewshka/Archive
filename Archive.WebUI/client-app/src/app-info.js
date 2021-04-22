@@ -1,4 +1,4 @@
 export default {
-  title: "Логистика",
-  navTitle: "Логистика"
+  title: "Архив",
+  navTitle: "Архив"
 };

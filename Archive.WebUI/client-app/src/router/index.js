@@ -1,11 +1,8 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Home from '../views/Home.vue'
-import cart from '../views/cart.vue'
-import feedback from '../views/feedback.vue'
 import simpleLayout from "../layouts/single-card";
 import login from "../views/login-form";
-import register from "../views/create-account-form";
 
 import defaultLayout from "../components/static/SideNavOuterToolbar";
 
@@ -21,24 +18,8 @@ const routes = [
     }
   },
   {
-    path: '/cart',
-    name: 'cart',
-    components: {
-      layout: defaultLayout,
-      content: cart
-    }
-  },
-  {
-    path: '/feedback',
-    name: 'feedback',
-    components: {
-      layout: defaultLayout,
-      content: feedback
-    }
-  },
-  {
-    path: "/login-form",
-    name: "login-form",
+    path: "/login",
+    name: "login",
     components: {
       layout: simpleLayout,
       content: login
@@ -47,20 +28,6 @@ const routes = [
     props: {
       layout: {
         title: "Войти"
-      }
-    }
-  },
-  {
-    path: "/create-account",
-    name: "create-account",
-    meta: { requiresAuth: false },
-    components: {
-      layout: simpleLayout,
-      content: register
-    },
-    props: {
-      layout: {
-        title: "Регистрация"
       }
     }
   },

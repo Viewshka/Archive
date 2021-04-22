@@ -1,29 +1,6 @@
 <template>
   <div>
     <h2 class="content-block">Домашняя страница</h2>
-    <div class="content-block">
-      <div class="dx-card responsive-paddings">
-        <div class="logos-container">
-          <h2 class="content-block">Команда ELITE</h2>
-        </div>
-
-        <p>
-          Мы команда с Архаглельской обл.
-        </p>
-        <p>Наш состав:</p>
-        <ul>
-          <li>
-            <a href="https://vk.com/vypolzov0" target="_blank" rel="noopener noreferrer">Выползов Юрий</a> Программист
-          </li>
-          <li>
-            <a href="https://vk.com/solifax" target="_blank" rel="noopener noreferrer">Коржов Александр</a> Программист
-          </li>
-        </ul>
-
-        <p>Технологии: Vue.js, NetCore 3.1, EFCore, Hangfire</p>
-      </div>
-    </div>
-
   </div>
 </template>
 
