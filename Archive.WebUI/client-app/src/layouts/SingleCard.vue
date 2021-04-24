@@ -1,5 +1,5 @@
 <template>
-  <dx-scroll-view height="100%" width="100%" class="with-footer single-card">
+  <DxScrollView height="100%" width="100%" class="with-footer single-card">
      <div class="dx-card content">
       <div class="header">
         <div class="title">{{title}}</div>
@@ -7,7 +7,7 @@
       </div>
       <slot />
     </div>
-  </dx-scroll-view>
+  </DxScrollView>
 </template>
 
 <script>
@@ -51,7 +51,7 @@ export default {
       margin-bottom: 30px;
 
       .title {
-        color: $base-hover-color;
+        color: white;
         line-height: 28px;
         font-weight: 500;
         font-size: 24px;

@@ -4,9 +4,12 @@ import router from './router'
 import store from './store'
 import axios from 'axios';
 import appInfo from './app-info'
+import enums from './plugins/enums_plugin'
 
 import 'devextreme/dist/css/dx.common.css';
 import './themes/generated/theme.base.css';
+import './themes/generated/theme.additional.css';
+import './themes/generated/theme.additional.nav.css';
 
 import moment from 'moment';
 
@@ -35,6 +38,8 @@ config({
 });
 
 window.Vue = Vue;
+
+Vue.use(enums)
 
 new Vue({
     router,

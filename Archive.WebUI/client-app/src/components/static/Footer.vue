@@ -1,7 +1,7 @@
 <template>
   <div class="content-block">
     <footer class="footer">
-      Архив Copyright © {{new Date().getFullYear()}}
+      Copyright Архив © {{new Date().getFullYear()}}
     </footer>
   </div>
 </template>

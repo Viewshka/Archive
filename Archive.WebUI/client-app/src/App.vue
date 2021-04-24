@@ -1,10 +1,42 @@
 <template>
-  <div id="app">
-    <router-view/>
+  <div id="root" class="dx-swatch-arktika-scheme"
+       v-bind:class="{ 'dx-swatch-arktika-scheme-dark': isDark }">
+    <div :class="cssClasses">
+      <RouterView
+          name="layout"
+          :navTitle="navTitle"
+          :title="title"
+          :is-x-small="screen.isXSmall"
+          :is-large="screen.isLarge"
+      >
+        <div class="content">
+          <RouterView name="content"/>
+        </div>
+        <template #footer>
+          <Footer/>
+        </template>
+      </RouterView>
+    </div>
   </div>
 </template>
 
 <script>
+import Footer from "./components/static/Footer";
+import {sizes, subscribe, unsubscribe} from "./utils/media-query";
+
+function getScreenSizeInfo() {
+  const screenSizes = sizes();
+
+  return {
+    isXSmall: screenSizes["screen-x-small"],
+    isLarge: screenSizes["screen-large"],
+    cssClasses: Object.keys(screenSizes).filter(cl => screenSizes[cl])
+  };
+}
+
+function getFavoriteTheme() {
+  return window.localStorage.getItem('favorite-theme') === 'dark'
+}
 
 export default {
   name: 'app',
@@ -12,10 +44,30 @@ export default {
     return {
       title: this.$appInfo.title,
       navTitle: this.$appInfo.navTitle,
+      screen: getScreenSizeInfo(),
+      isDark: getFavoriteTheme()
     };
   },
-  computed: {},
-  methods: {},
+  components: {
+    Footer
+  },
+  mounted() {
+    subscribe(this.screenSizeChanged);
+  },
+
+  beforeDestroy() {
+    unsubscribe(this.screenSizeChanged);
+  },
+  computed: {
+    cssClasses() {
+      return ["app"].concat(this.screen.cssClasses);
+    }
+  },
+  methods: {
+    screenSizeChanged() {
+      this.screen = getScreenSizeInfo();
+    }
+  },
   created() {
   },
 }
@@ -29,6 +81,10 @@ body {
   height: 100%;
 }
 
+#root {
+  height: 100%;
+}
+
 * {
   box-sizing: border-box;
 }
@@ -39,5 +95,12 @@ body {
   display: flex;
   height: 100%;
   width: 100%;
+}
+
+.dx-swatch-arktika-scheme-dark {
+  .app {
+    @import "./themes/generated/variables.additional.scss";
+    background-color: lighten($base-bg, 5) !important;
+  }
 }
 </style>

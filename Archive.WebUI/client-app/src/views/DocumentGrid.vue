@@ -1,7 +1,7 @@
 <template>
-  <div>
+  <div class="document-grid">
+    <h2>Документы</h2>
     <DxDataGrid
-        style="height: 800px"
         :data-source="dataSource"
         :focused-row-enabled="true"
         key-expr="id"
@@ -64,6 +64,9 @@ export default {
 }
 </script>
 
-<style scoped>
-
+<style>
+.document-grid {
+  height: calc(100vh - 150px);
+  margin: 5px 5px 5px 5px;
+}
 </style>

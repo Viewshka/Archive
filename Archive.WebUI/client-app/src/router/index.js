@@ -1,7 +1,12 @@
-import Vue from 'vue'
-import VueRouter from 'vue-router'
-import Home from '../views/Home.vue'
+import Vue from 'vue';
+import VueRouter from 'vue-router';
+import Home from '../views/Home.vue';
 import login from "../views/Login";
+import simpleLayout from '../layouts/SingleCard';
+import defaultLayout from '../layouts/SideNavOuterToolbar';
+
+import NomenclatureGrid from "../views/NomenclatureGrid";
+import DocumentGrid from "../views/DocumentGrid";
 
 Vue.use(VueRouter)
 
@@ -9,12 +14,34 @@ const routes = [
   {
     path: '/',
     name: 'Home',
-    component: Home
+    components: {
+      layout: defaultLayout,
+      content: Home
+    }
+  },
+  {
+    path: '/nomenclatures',
+    name: 'nomenclatures',
+    components: {
+      layout: defaultLayout,
+      content: NomenclatureGrid
+    }
+  },
+  {
+    path: '/documents',
+    name: 'documents',
+    components: {
+      layout: defaultLayout,
+      content: DocumentGrid
+    }
   },
   {
     path: "/login",
     name: "login",
-    component: login,
+    components: {
+      layout: simpleLayout,
+      content: login
+    },
     props: {
       layout: {
         title: "Войти"

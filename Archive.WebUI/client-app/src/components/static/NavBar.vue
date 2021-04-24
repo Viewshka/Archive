@@ -2,41 +2,41 @@
   <header class="header-component">
     <DxToolbar class="header-toolbar">
       <DxItem
-          locate-in-menu="auto"
+          :visible="menuToggleEnabled"
           location="before"
+          css-class="menu-button"
       >
         <DxButton
             icon="menu"
             styling-mode="text"
-            text="Справочники"
+            @click="toggleMenuFunc"
             slot-scope="_"
-            @click="()=> $router.push('/')"
         />
       </DxItem>
+
+      <DxItem
+          v-if="title"
+          location="before"
+          css-class="header-title dx-toolbar-label"
+      >
+        <div slot-scope="_">{{ title }}</div>
+      </DxItem>
+
       <DxItem
           location="after"
           locate-in-menu="auto"
+          menu-item-template="menuUserItem"
       >
-        <DxButton
-            v-if="!user"
-            icon="user"
-            class="user-button authorization"
-            height="100%"
-            styling-mode="outlined"
-            text="Войти"
-            @click="logIn($event)"
-            slot-scope="_"
-        />
-        <DxButton
-            v-else
-            icon="user"
-            class="user-button authorization"
-            height="100%"
-            styling-mode="outlined"
-            :text="`Выйти ${user.userName}`"
-            @click="logOut($event)"
-            slot-scope="_"
-        />
+        <div slot-scope="_">
+          <DxButton
+              class="user-button authorization"
+              :width="210"
+              height="100%"
+              styling-mode="text"
+          >
+            <UserPanel :menu-items="userMenuItems" menu-mode="context"/>
+          </DxButton>
+        </div>
       </DxItem>
     </DxToolbar>
   </header>
@@ -47,49 +47,65 @@ import DxButton from "devextreme-vue/button";
 import DxToolbar, {DxItem} from "devextreme-vue/toolbar";
 import DxScrollView from "devextreme-vue/scroll-view";
 import auth from "../../auth";
-import {mapState} from 'vuex';
+import UserPanel from "./UserPanel";
+
 import notify from "devextreme/ui/notify";
 
 export default {
+  
   name: "NavBar",
   props: {
+    menuToggleEnabled: Boolean,
     title: String,
+    toggleMenuFunc: Function,
+    logOutFunc: Function
   },
 
   data() {
     return {
-      user: null,
-      orderFindFormVisible: false,
-      feedbackFormVisible: false,
-      serviceTypeFormVisible: false,
-      unitFormVisible: false,
-      userRoleVisible: false,
+      user: { },
+      userMenuItems: [
+        {
+          text: "Удалить настройки",
+          icon: "clearformat",
+          onClick: this.onClearStorage
+        },
+        {
+          text: "Выйти",
+          icon: "runner",
+          onClick: this.onLogoutClick
+        }
+      ]
+    };
+  },
+  methods: {
+    toggleMenuFuncS(){
+    },
+    onLogoutClick() {
+      auth.logOut();
+      this.$router.push({
+        path: "/login",
+        query: { redirect: this.$route.path }
+      });
+    },
+    onChangeTheme() {
+      if (window.localStorage.getItem("favorite-theme") === "dark")
+        window.localStorage.setItem("favorite-theme", "light");
+      else
+        window.localStorage.setItem("favorite-theme", "dark")
+      window.location.reload();
+    },
+    onClearStorage() {
+      window.localStorage.clear();
+      window.location.reload();
     }
   },
   created() {
-    // this.$store.dispatch('INIT_CURRENT_USER')
-    // auth.getUser().then((e) => this.user = e.data);
-  },
-  methods: {
-    async logIn(e) {
-      console.log('login click')
-      await this.$router.push({
-        path: "/login",
-        query: {redirect: this.$route.path}
-      });
-    },
-    async logOut(e) {
-      await auth.logOut();
-      await this.$router.push({
-        path: "/login",
-        query: {redirect: this.$route.path}
-      });
-    },
   },
   computed: {
-    // ...mapState(['currentUser',]),
   },
   components: {
+    UserPanel,
     DxToolbar,
     DxItem,
     DxScrollView,
