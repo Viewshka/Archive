@@ -14,4 +14,15 @@ export default [
         path: "/documents",
         icon: "file"
     },
+    {
+        text: "Справочники",
+        icon: "menu",
+        items:[
+            {
+                text: "Подразделения",
+                path: "/departments",
+                icon: ""
+            },
+        ]
+    }
 ];

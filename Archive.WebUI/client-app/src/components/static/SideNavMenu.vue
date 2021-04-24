@@ -113,8 +113,7 @@ export default {
 
       // ## Icon width customization
       .dx-treeview-item {
-        padding-left: 0;
-        padding-right: 0;
+        padding: 13px 0;
 
         .dx-icon {
           width: $side-panel-min-width !important;
