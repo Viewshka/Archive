@@ -6,7 +6,7 @@ import simpleLayout from '../layouts/SingleCard';
 import defaultLayout from '../layouts/SideNavOuterToolbar';
 
 import NomenclatureGrid from "../views/NomenclatureGrid";
-import DocumentGrid from "../views/DocumentGrid";
+import DocumentTreeList from "../views/DocumentTreeList";
 
 Vue.use(VueRouter)
 
@@ -32,7 +32,7 @@ const routes = [
     name: 'documents',
     components: {
       layout: defaultLayout,
-      content: DocumentGrid
+      content: DocumentTreeList
     }
   },
   {

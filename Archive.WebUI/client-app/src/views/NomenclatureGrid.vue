@@ -1,6 +1,6 @@
 ﻿<template>
   <div class="nomenclature-grid-height">
-    <h2>Номенклатура</h2>
+    <h2 style="margin-left: 5px">Номенклатура</h2>
     <DxDataGrid
         style="height: 700px"
         :data-source="dataSource"
@@ -9,12 +9,23 @@
     >
       <DxColumn data-field="name"/>
       <DxScrolling mode="virtual"/>
+      <DxColumnChooser :enabled="true" mode="select"/>
+      <DxSearchPanel :visible="true"/>
+      <DxFilterRow :visible="true"/>,
+      <DxHeaderFilter :visible="true"/>
     </DxDataGrid>
   </div>
 </template>
 
 <script>
-import DxDataGrid, {DxColumn, DxScrolling} from "devextreme-vue/data-grid";
+import DxDataGrid, {
+  DxColumn,
+  DxColumnChooser,
+  DxFilterRow,
+  DxHeaderFilter,
+  DxScrolling,
+  DxSearchPanel
+} from "devextreme-vue/data-grid";
 
 export default {
   name: "NomenclatureGrid",
@@ -40,6 +51,10 @@ export default {
     DxDataGrid,
     DxColumn,
     DxScrolling,
+    DxColumnChooser,
+    DxFilterRow,
+    DxSearchPanel,
+    DxHeaderFilter
   }
 }
 </script>
@@ -47,6 +62,5 @@ export default {
 <style>
 .nomenclature-grid-height{
   height: calc(100vh - 150px);
-  margin: 10px 10px 10px 5px;
 }
 </style>

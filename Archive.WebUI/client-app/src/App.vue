@@ -103,4 +103,8 @@ body {
     background-color: lighten($base-bg, 5) !important;
   }
 }
+
+.dx-toolbar-after{
+  margin-right: 10px;
+}
 </style>

@@ -1,7 +1,7 @@
 ﻿const documentTypes = Object.freeze({
     akt: 1,
-    construct: 2,
-    order: 3,
+    drawing: 2,
+    specification: 3,
     inventory: 4,
     witnessSheet: 5,
 });
