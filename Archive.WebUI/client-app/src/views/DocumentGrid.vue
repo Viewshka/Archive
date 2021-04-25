@@ -6,9 +6,8 @@
         :focused-row-enabled="true"
         key-expr="id"
     >
-      <DxColumn data-field="id"/>
       <DxColumn data-field="name"/>
-      <DxColumn data-field="age"/>
+      <DxColumn data-field="date"/>
       <DxScrolling mode="virtual"/>
     </DxDataGrid>
   </div>
@@ -26,7 +25,8 @@ export default {
         {
           id: 1,
           name: "Name 1",
-          age: 12
+          date: '',
+          type: 2
         },
         {
           id: 2,
