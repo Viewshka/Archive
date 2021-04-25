@@ -47,14 +47,37 @@
       <DxHeaderFilter :visible="true"/>
       <DxLoadPanel :enabled="true" :show-pane="true" :show-indicator="true"/>
       <DxPaging :enabled="true" :page-size="20"/>
+
+      <template #buttonAddDocumentTemplate>
+        <DxButton
+            text="Добавить"
+            type="normal"
+            icon="plus"
+            @click="buttonAddDocumentClick"
+        />
+      </template>
     </DxTreeList>
-    <PreviewForm :visible.sync="previewFormData.visible" :document-subject="previewFormData.documentSubject"/>
+    <PreviewForm
+        :visible.sync="previewFormData.visible"
+        :document-subject="previewFormData.documentSubject"
+    />
+    <ConstructDocumentEditForm
+        :visible.sync="documentEditFormData.visible"
+        :title="documentEditFormData.title"
+        :form-data="documentEditFormData.formData"
+    />
+    <DocumentTypeForm
+        :visible.sync="documentTypeFormVisible"
+        :documentType.sync="documentType"
+    />
   </div>
 </template>
 
 <script>
 
 import PreviewForm from "../components/forms/PreviewForm";
+import ConstructDocumentEditForm from "../components/forms/ConstructDocumentEditForm";
+import DocumentTypeForm from "../components/forms/DocumentTypeForm";
 
 import DxTreeList, {
   DxColumn,
@@ -67,9 +90,11 @@ import DxTreeList, {
   DxPaging,
   DxLookup
 }
-  from 'devextreme-vue/tree-list'
-
-import data from '../data'
+  from 'devextreme-vue/tree-list';
+import DxButton from "devextreme-vue/button";
+import notify from "devextreme/ui/notify";
+import data from '../data';
+import Vue from "vue";
 
 export default {
   name: "DocumentGrid",
@@ -82,10 +107,19 @@ export default {
         visible: false,
         documentSubject: ''
       },
+      documentEditFormData: {
+        visible: false,
+        title: '',
+        formData: {}
+      },
+      documentTypeFormVisible: false,
+      documentType: null,
     }
   },
   components: {
     PreviewForm,
+    ConstructDocumentEditForm,
+    DocumentTypeForm,
     DxTreeList,
     DxColumn,
     DxScrolling,
@@ -95,16 +129,48 @@ export default {
     DxHeaderFilter,
     DxLoadPanel,
     DxPaging,
-    DxLookup
+    DxButton,
+    DxLookup,
+  },
+  watch: {
+    documentType: async function (value) {
+      if (!!parseInt(this.documentType)) {
+        switch (value) {
+          case Vue.prototype.$enums.documentTypes.constructDoc: {
+            this.documentTypeFormVisible = false;
+            this.documentType = value;
+            this.documentEditFormData.visible = true;
+            break;
+          }
+          default: {
+            notify('В разработке', 'info', 3000);
+            break;
+          }
+        }
+      }
+    }
   },
   methods: {
     treeListRowDblClick(row) {
       console.log(row.data)
       this.previewFormData.documentSubject = row.data.subject;
       this.previewFormData.visible = true;
-    },
+    }
+    ,
+    buttonAddDocumentClick() {
+      this.documentEditFormData.formData = {};
+      this.documentEditFormData.title = 'Добавление документа';
+      this.documentEditFormData.visible = false;
+      this.documentTypeFormVisible = true;
+      this.documentType = null;
+    }
+    ,
     toolbarPreparing(e) {
       e.toolbarOptions.items.unshift(
+          {
+            location: 'after',
+            template: 'buttonAddDocumentTemplate'
+          },
           {
             location: 'after',
             widget: 'dxButton',
@@ -120,10 +186,12 @@ export default {
             }
           },
       )
-    },
+    }
+    ,
     async refreshTreeList() {
       this.$refs[this.treeListRefName].instance.refresh();
-    },
+    }
+    ,
   }
 }
 </script>

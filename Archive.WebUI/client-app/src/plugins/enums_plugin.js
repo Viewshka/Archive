@@ -4,6 +4,8 @@
     specification: 3,
     inventory: 4,
     witnessSheet: 5,
+    constructDoc: 6,
+    book: 7,
 });
 
 export default {
