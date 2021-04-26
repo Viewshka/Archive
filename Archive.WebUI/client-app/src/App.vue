@@ -107,4 +107,8 @@ body {
 .dx-toolbar-after{
   margin-right: 10px;
 }
+
+.dx-fileuploader-content > .dx-fileuploader-upload-button{
+  display: none;
+}
 </style>

@@ -1,6 +1,6 @@
 ﻿<template>
   <DxPopup
-      :height="800"
+      height="auto"
       :width="800"
       position="center"
       :title="title"
@@ -18,23 +18,72 @@
           :form-data="formData"
           :col-count="2"
       >
+        <template #noteTemplate="{data}">
+          <DxTextArea
+              :height="150"
+              :max-height="150"
+          >
+          </DxTextArea>
+        </template>
+        <template #nomenclatureTemplate="{data}">
+          <NomenclatureDropDownBox/>
+        </template>
+        <template #documentTemplate="{data}">
+          <DocumentDropDownBox/>
+        </template>
+        <template #fileUploaderTemplate="{data}">
+          <DxFileUploader
+              upload-mode="useButtons"
+          />
+        </template>
         <DxGroupItem
             :col-count="2"
             :col-span="2"
-            name="basicInfo"
         >
           <DxSimpleItem
               :col-span="2"
-              :label="{text: 'Сообщение'}"
-              editor-type="dxTextArea"
+              :label="{text:'Принадлежность'}"
+              data-field="parentId"
+              template="documentTemplate"
+          />
+          <DxSimpleItem
+              :col-span="1"
+              :label="{text:'Номер документа'}"
+              data-field="number"
+              editor-type="dxTextBox"
+          />
+          <DxSimpleItem
+              :col-span="1"
+              :label="{text: 'Наименование'}"
+              editor-type="dxTextBox"
+              data-field="subject"
           />
           <DxSimpleItem
               :col-span="2"
-              :label="{text: 'Email для связи'}"
-              editor-type="dxTextBox"
+              :label="{text: 'Примечание'}"
+              data-field="note"
+              template="noteTemplate"
+          />
+     
+          <DxSimpleItem
+              :col-span="2"
+              :label="{text: 'Номенклатура'}"
+              data-field="nomenclatureId"
+              template="nomenclatureTemplate"
+          />
+          <DxSimpleItem
+              :col-span="1"
+              :label="{text: 'Дата'}"
+              data-field="date"
+              editor-type="dxDateBox"
           />
         </DxGroupItem>
-
+        <DxGroupItem
+            :col-count="2"
+            :col-span="2"
+        >
+          <DxSimpleItem template="fileUploaderTemplate"/>
+        </DxGroupItem>
 
         <DxGroupItem
             :col-count="2"
@@ -60,6 +109,14 @@
 <script>
 import {DxPopup} from "devextreme-vue/popup";
 import {DxButtonItem, DxForm, DxGroupItem, DxSimpleItem} from "devextreme-vue/form";
+import DxTextArea from 'devextreme-vue/text-area'
+import DxFileUploader from 'devextreme-vue/file-uploader'
+import DxSelectBox from 'devextreme-vue/select-box'
+
+import NomenclatureDropDownBox from "../dropDowBoxes/NomenclatureDropDownBox";
+import DocumentDropDownBox from "../dropDowBoxes/DocumentDropDownBox";
+
+import data from '../../data'
 
 export default {
   name: "ConstructDocumentEditForm",
@@ -72,7 +129,7 @@ export default {
       type: String,
       required: true
     },
-    formData:{
+    formData: {
       type: Object,
       required: true
     }
@@ -80,14 +137,20 @@ export default {
   data() {
     return {
       formRefName: 'form',
+      dataSourceNomenclature: data.nomenclatures,
     }
   },
   components: {
+    NomenclatureDropDownBox,
+    DocumentDropDownBox,
     DxPopup,
     DxForm,
     DxSimpleItem,
     DxGroupItem,
     DxButtonItem,
+    DxTextArea,
+    DxFileUploader,
+    DxSelectBox
   },
   computed: {
     form: function () {

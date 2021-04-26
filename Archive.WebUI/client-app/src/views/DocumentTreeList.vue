@@ -1,5 +1,5 @@
 <template>
-  <div class="document-grid">
+  <div class="document-tree-list">
     <h2 style="margin-left: 5px">Документы</h2>
     <DxTreeList
         :ref="treeListRefName"
@@ -62,11 +62,13 @@
         :document-subject="previewFormData.documentSubject"
     />
     <ConstructDocumentEditForm
+        v-if="documentEditFormData.visible"
         :visible.sync="documentEditFormData.visible"
         :title="documentEditFormData.title"
         :form-data="documentEditFormData.formData"
     />
     <DocumentTypeForm
+        v-if="documentTypeFormVisible"
         :visible.sync="documentTypeFormVisible"
         :documentType.sync="documentType"
     />
@@ -155,16 +157,14 @@ export default {
       console.log(row.data)
       this.previewFormData.documentSubject = row.data.subject;
       this.previewFormData.visible = true;
-    }
-    ,
+    },
     buttonAddDocumentClick() {
       this.documentEditFormData.formData = {};
       this.documentEditFormData.title = 'Добавление документа';
       this.documentEditFormData.visible = false;
       this.documentTypeFormVisible = true;
       this.documentType = null;
-    }
-    ,
+    },
     toolbarPreparing(e) {
       e.toolbarOptions.items.unshift(
           {
@@ -186,18 +186,16 @@ export default {
             }
           },
       )
-    }
-    ,
+    },
     async refreshTreeList() {
       this.$refs[this.treeListRefName].instance.refresh();
-    }
-    ,
+    },
   }
 }
 </script>
 
 <style>
-.document-grid {
+.document-tree-list {
   height: calc(100vh - 150px);
 }
 </style>
