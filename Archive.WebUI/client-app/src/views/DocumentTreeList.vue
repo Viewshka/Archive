@@ -81,7 +81,7 @@
     <ConstructDocumentEditForm
         v-if="documentEditFormData.visible"
         :visible.sync="documentEditFormData.visible"
-        :title="`${documentEditFormData.title} - Чертеж`"
+        :title="documentEditFormData.title"
         :form-data="documentEditFormData.formData"
     />
     <DocumentTypeForm
