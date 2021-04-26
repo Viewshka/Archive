@@ -51,7 +51,6 @@ export default {
       margin-bottom: 30px;
 
       .title {
-        color: white;
         line-height: 28px;
         font-weight: 500;
         font-size: 24px;

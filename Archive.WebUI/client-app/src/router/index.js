@@ -44,7 +44,7 @@ const routes = [
     },
     props: {
       layout: {
-        title: "Войти"
+        title: "Авторизация"
       }
     }
   },

@@ -14,7 +14,7 @@
       @hidden="cancel"
   >
     <div style="height: 100%">
-      <iframe src="files/draw.pdf" height="100%" width="100%"></iframe>
+      <iframe src="files/draw2.pdf" height="100%" width="100%"></iframe>
     </div>
 
     <DxToolbarItem

@@ -39,6 +39,22 @@
           data-field="note"
           data-type="string"
       />
+      <DxColumn
+          caption="Управление"
+          type="buttons"
+          :hiding-priority="10"
+          cell-template="buttonControl"
+          alignment="center"
+      />
+      <template #buttonControl="{data}">
+        <div class="dx-command-edit dx-command-edit-with-icons">
+          <a href="#"
+             class="dx-link dx-icon-edit dx-link-icon"
+             title="Редактировать"
+             v-on:click="navigateToDocument(data.data)"
+          ></a>
+        </div>
+      </template>
 
       <DxScrolling mode="virtual"/>
       <DxColumnChooser :enabled="true" mode="select"/>
@@ -58,13 +74,14 @@
       </template>
     </DxTreeList>
     <PreviewForm
+        v-if="previewFormData.visible"
         :visible.sync="previewFormData.visible"
         :document-subject="previewFormData.documentSubject"
     />
     <ConstructDocumentEditForm
         v-if="documentEditFormData.visible"
         :visible.sync="documentEditFormData.visible"
-        :title="documentEditFormData.title"
+        :title="`${documentEditFormData.title} - Чертеж`"
         :form-data="documentEditFormData.formData"
     />
     <DocumentTypeForm
@@ -136,26 +153,33 @@ export default {
   },
   watch: {
     documentType: async function (value) {
-      if (!!parseInt(this.documentType)) {
-        switch (value) {
-          case Vue.prototype.$enums.documentTypes.constructDoc: {
-            this.documentTypeFormVisible = false;
-            this.documentType = value;
-            this.documentEditFormData.visible = true;
-            break;
-          }
-          default: {
-            notify('В разработке', 'info', 3000);
-            break;
-          }
-        }
-      }
+      if (!!parseInt(this.documentType))
+        this.openNeededForm(value);
     }
   },
   methods: {
+    openNeededForm(documentType) {
+      switch (documentType) {
+        case this.$enums.documentTypes.constructDoc: {
+          this.documentTypeFormVisible = false;
+          this.documentType = documentType;
+          this.documentEditFormData.visible = true;
+          break;
+        }
+        default: {
+          notify('В разработке', 'info', 3000);
+          break;
+        }
+      }
+    },
+    navigateToDocument(data) {
+      this.documentEditFormData.formData = {data};
+      this.documentEditFormData.title = 'Редактирование документа';
+      this.documentEditFormData.visible = false;
+      this.openNeededForm(data.type);
+    },
     treeListRowDblClick(row) {
-      console.log(row.data)
-      this.previewFormData.documentSubject = row.data.subject;
+      this.previewFormData.documentSubject = `${row.data.subject} - ${data.types.find(t => t.id === row.data.type).name}`;
       this.previewFormData.visible = true;
     },
     buttonAddDocumentClick() {

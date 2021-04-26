@@ -5,9 +5,9 @@
         path: '',
         nomenclatureId: 1,
         date: new Date(),
-        number: 'АБВГД 834378.432.43',
+        number: 'А.53.750.001.01',
         subject: 'Комплект конструкторской докуменации',
-        note: 'примечание к документу',
+        note: '',
         structure: [
             {
                 id: 2,
@@ -15,8 +15,8 @@
                 path: '',
                 nomenclatureId: 1,
                 date: new Date(),
-                number: 'АБВГД 834378.432.43',
-                subject: 'Чертеж чертеж',
+                number: 'А.53.750.001.01',
+                subject: 'Крышка',
             },
             {
                 id: 3,
@@ -24,18 +24,18 @@
                 path: '',
                 nomenclatureId: 1,
                 date: new Date(),
-                number: 'АБВГД 834378.432.43',
-                subject: 'Спецификация',
+                number: 'А.53.750.001.01',
+                subject: 'Крышка',
             }
         ],
     },
     {
         id: 4,
-        type: 7,
+        type: 2,
         path: '',
         date: new Date(),
-        number: '1',
-        subject: 'Книга учета поступления и выбытия дел, документов',
+        number: '058.003.030.001',
+        subject: 'Вал',
         note: '',
         structure: []
     }
