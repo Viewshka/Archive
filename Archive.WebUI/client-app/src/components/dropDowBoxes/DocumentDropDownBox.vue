@@ -3,10 +3,12 @@
       :ref="dropDownBoxRefName"
       :drop-down-options="dropDownOptions"
       :data-source="dataSourceDocuments"
-      :value.sync="currentValue"
+      :value="currentValue"
       display-expr="subject"
       value-expr="id"
       content-template="contentTemplate"
+      :show-clear-button="true"
+      :show-drop-down-button="true"
   >
     <template #contentTemplate="{}">
       <div>
@@ -20,8 +22,8 @@
             :focused-row-key="currentValue"
             :on-selection-changed="onSelectionChanged"
             :column-min-width="50"
-            items-expr="structure"
-            data-structure="tree"
+            parent-id-expr="parentId"
+            data-structure="plain"
             value-expr="id"
             key-expr="id"
         >

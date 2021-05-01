@@ -20,16 +20,23 @@
       >
         <template #noteTemplate="{data}">
           <DxTextArea
+              :value="formData[data.dataField]"
               :height="150"
               :max-height="150"
           >
           </DxTextArea>
         </template>
         <template #nomenclatureTemplate="{data}">
-          <NomenclatureDropDownBox/>
+          <NomenclatureDropDownBox
+              :value="formData[data.dataField]"
+              :on-value-changed="nomenclatureChanged"
+          />
         </template>
         <template #documentTemplate="{data}">
-          <DocumentDropDownBox/>
+          <DocumentDropDownBox
+              :value="parseInt(formData[data.dataField]) === 0 ? null : formData[data.dataField]"
+              :on-value-changed="parentIdChanged"
+          />
         </template>
         <template #fileUploaderTemplate="{data}">
           <DxFileUploader
@@ -64,7 +71,7 @@
               data-field="note"
               template="noteTemplate"
           />
-     
+
           <DxSimpleItem
               :col-span="2"
               :label="{text: 'Номенклатура'}"
@@ -157,12 +164,22 @@ export default {
       return this.$refs[this.formRefName].instance;
     },
   },
+  created() {
+    console.log(this.formData)
+  },
   methods: {
+    nomenclatureChanged(value) {
+      this.formData['nomenclatureId'] = value;
+    },
+    parentIdChanged(value) {
+      this.formData['parentId'] = value;
+    },
     cancel: function () {
       this.$emit('update:visible', false);
     },
     submit: function () {
       const validateResult = this.form.validate();
+      console.log(this.formData)
       // if (validateResult.isValid) {
       //   this.$emit('submit', this.formData);
       // }

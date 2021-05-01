@@ -18,7 +18,6 @@
 
     <ItemGroup>
       <Folder Include="client-app\src\components\ui" />
-      <Folder Include="client-app\src\files" />
       <Folder Include="client-app\src\themes\generated" />
       <Folder Include="Migrations" />
     </ItemGroup>

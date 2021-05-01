@@ -3,10 +3,12 @@
       :ref="dropDownBoxRefName"
       :drop-down-options="dropDownOptions"
       :data-source="dataSourceNomenclatures"
-      :value.sync="currentValue"
+      :value="currentValue"
       display-expr="fullName"
       value-expr="id"
       content-template="contentTemplate"
+      :show-clear-button="true"
+      :show-drop-down-button="true"
   >
     <template #contentTemplate="{}">
       <div>

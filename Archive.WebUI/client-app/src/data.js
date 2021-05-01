@@ -1,4 +1,4 @@
-﻿const documents = [
+﻿const documents = Object.freeze([
     {
         id: 1,
         type: 6,
@@ -7,27 +7,28 @@
         date: new Date(),
         number: 'А.53.750.001.01',
         subject: 'Комплект конструкторской докуменации',
-        note: '',
-        structure: [
-            {
-                id: 2,
-                type: 2,
-                path: '',
-                nomenclatureId: 1,
-                date: new Date(),
-                number: 'А.53.750.001.01',
-                subject: 'Крышка',
-            },
-            {
-                id: 3,
-                type: 3,
-                path: '',
-                nomenclatureId: 1,
-                date: new Date(),
-                number: 'А.53.750.001.01',
-                subject: 'Крышка',
-            }
-        ],
+        note: 'sss',
+        parentId: 0,
+    },
+    {
+        id: 2,
+        type: 2,
+        path: '',
+        nomenclatureId: 1,
+        date: new Date(),
+        number: 'А.53.750.001.01',
+        subject: 'Крышка',
+        parentId: 1
+    },
+    {
+        id: 3,
+        type: 3,
+        path: '',
+        nomenclatureId: 1,
+        date: new Date(),
+        number: 'А.53.750.001.01',
+        subject: 'Крышка',
+        parentId: 1
     },
     {
         id: 4,
@@ -37,10 +38,10 @@
         number: '058.003.030.001',
         subject: 'Вал',
         note: '',
-        structure: []
+        parentId: 0
     }
 
-];
+]);
 
 const types = [
     {

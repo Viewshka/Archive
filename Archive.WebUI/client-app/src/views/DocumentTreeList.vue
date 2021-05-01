@@ -7,8 +7,8 @@
         :allow-column-resizing="true"
         :focused-row-enabled="true"
         :render-async="true"
-        items-expr="structure"
-        data-structure="tree"
+        parent-id-expr="parentId"
+        data-structure="plain"
         key-expr="id"
         @row-dbl-click="treeListRowDblClick"
         @toolbar-preparing="toolbarPreparing($event)"
@@ -51,7 +51,7 @@
           <a href="#"
              class="dx-link dx-icon-edit dx-link-icon"
              title="Редактировать"
-             v-on:click="navigateToDocument(data.data)"
+             v-on:click="updateDocument(data.data)"
           ></a>
         </div>
       </template>
@@ -172,8 +172,8 @@ export default {
         }
       }
     },
-    navigateToDocument(data) {
-      this.documentEditFormData.formData = {data};
+    updateDocument(data) {
+      this.documentEditFormData.formData = data;
       this.documentEditFormData.title = 'Редактирование документа';
       this.documentEditFormData.visible = false;
       this.openNeededForm(data.type);
