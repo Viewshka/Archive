@@ -1,9 +1,11 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using Archive.WebUI.Models;
 using Archive.Core.Entities.Identity;
 using Archive.Core.Enums;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using MongoDB.Bson;
 
 namespace Archive.WebUI.Controllers
 {
@@ -13,27 +15,30 @@ namespace Archive.WebUI.Controllers
     {
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly RoleManager<ApplicationRole> _roleManager;
 
         public AccountController(
             SignInManager<ApplicationUser> signInManager,
-            UserManager<ApplicationUser> userManager)
+            UserManager<ApplicationUser> userManager,
+            RoleManager<ApplicationRole> roleManager)
         {
             _signInManager = signInManager;
             _userManager = userManager;
+            _roleManager = roleManager;
         }
 
         [HttpPost("login")]
         public async Task<IActionResult> Login(LoginModel loginModel)
         {
             var result = await _signInManager.PasswordSignInAsync(
-                loginModel.UserName, 
-                loginModel.Password, 
+                loginModel.UserName,
+                loginModel.Password,
                 loginModel.RememberMe,
-                false);
-            
+                true);
+
             if (result.Succeeded) return Ok();
-            
-            
+
+
             return BadRequest("Неверное имя пользователя или пароль");
         }
 
@@ -42,20 +47,22 @@ namespace Archive.WebUI.Controllers
         {
             var user = new ApplicationUser
             {
+                Id = ObjectId.GenerateNewId(),
+                Email = registerModel.UserName,
                 UserName = registerModel.UserName,
                 NormalizedUserName = registerModel.UserName.ToUpper(),
                 EmailConfirmed = true
             };
-            
+
             var result = await _userManager.CreateAsync(user, registerModel.Password);
-            
+
             if (result.Succeeded)
             {
-                await _userManager.AddToRoleAsync(user, RolesEnum.Client.ToString());
+                await _userManager.AddToRoleAsync(user, RolesEnum.Employee.ToString());
                 await _signInManager.SignInAsync(user, false);
                 return Ok("Регистрация прошла успешно!");
             }
-            
+
 
             return BadRequest(result.Errors);
         }

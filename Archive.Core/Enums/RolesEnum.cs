@@ -2,8 +2,7 @@
 {
     public enum RolesEnum
     {
-        Manager = 1,
-        Client = 2,
-        Courier = 3
+        Archivist = 1,
+        Employee = 2,
     }
 }

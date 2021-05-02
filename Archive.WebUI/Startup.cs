@@ -1,16 +1,20 @@
+using System;
 using System.IO;
 using Archive.WebUI.Services;
 using Archive.Application;
-using Archive.Application.Common.Access;
 using Archive.Application.Common.Interfaces;
+using Archive.Application.Common.Options;
 using Archive.Core.Entities.Identity;
+using AspNetCore.Identity.Mongo;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
+using MongoDB.Bson;
 
 namespace Archive.WebUI
 {
@@ -28,13 +32,30 @@ namespace Archive.WebUI
         {
             services.AddHttpContextAccessor();
             services.AddApplication();
-            services.AddInfrastructure(Configuration);
+            // services.AddInfrastructure(Configuration);
 
-            services.AddIdentity<ApplicationUser, IdentityRole<int>>(options =>
+            services.Configure<DbOptions>(Configuration.GetSection("ConnectionStrings"));
+            
+            services.AddIdentityMongoDbProvider<ApplicationUser, ApplicationRole>(identity =>
                 {
-                    options.SignIn.RequireConfirmedAccount = true;
-                })
-                .AddEntityFrameworkStores<ApplicationDbContext>();
+                    identity.Password.RequireDigit = true;
+                    identity.Password.RequireNonAlphanumeric = false;
+                    identity.Password.RequireLowercase = true;
+                    identity.Password.RequireUppercase = false;
+
+                    identity.Lockout.AllowedForNewUsers = true;
+                    identity.Lockout.MaxFailedAccessAttempts = 3;
+
+                    identity.User.RequireUniqueEmail = true;
+
+                    identity.SignIn.RequireConfirmedEmail = true;
+                },
+                mongo =>
+                {
+                    mongo.ConnectionString = "mongodb://localhost:27017/archive";
+                    mongo.UsersCollection = "users";
+                    mongo.RolesCollection = "roles";
+                });
 
             services.AddSingleton<ICurrentUserService, CurrentUserService>();
 
@@ -47,7 +68,6 @@ namespace Archive.WebUI
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
-                app.UseMigrationsEndPoint();
             }
             else
             {
