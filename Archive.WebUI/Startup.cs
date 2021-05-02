@@ -15,6 +15,7 @@ using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using MongoDB.Bson;
+using Newtonsoft.Json;
 
 namespace Archive.WebUI
 {
@@ -34,6 +35,9 @@ namespace Archive.WebUI
             services.AddApplication();
             // services.AddInfrastructure(Configuration);
 
+            services.AddControllers().AddNewtonsoftJson(options => 
+                options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore);
+            
             services.Configure<DbOptions>(Configuration.GetSection("ConnectionStrings"));
             
             services.AddIdentityMongoDbProvider<ApplicationUser, ApplicationRole>(identity =>
@@ -58,7 +62,6 @@ namespace Archive.WebUI
                 });
 
             services.AddSingleton<ICurrentUserService, CurrentUserService>();
-
             services.AddRazorPages();
         }
 
