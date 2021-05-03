@@ -4,6 +4,7 @@ using Archive.WebUI.Services;
 using Archive.Application;
 using Archive.Application.Common.Interfaces;
 using Archive.Application.Common.Options;
+using Archive.Application.Common.Options.MongoDb;
 using Archive.Core.Entities.Identity;
 using AspNetCore.Identity.Mongo;
 using Microsoft.AspNetCore.Authorization;
@@ -38,7 +39,9 @@ namespace Archive.WebUI
             services.AddControllers().AddNewtonsoftJson(options => 
                 options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore);
             
-            services.Configure<DbOptions>(Configuration.GetSection("ConnectionStrings"));
+            services.Configure<MongoDbOptions>(Configuration.GetSection("MongoDb"));
+            
+            
             
             services.AddIdentityMongoDbProvider<ApplicationUser, ApplicationRole>(identity =>
                 {
@@ -56,7 +59,7 @@ namespace Archive.WebUI
                 },
                 mongo =>
                 {
-                    mongo.ConnectionString = "mongodb://localhost:27017/archive";
+                    mongo.ConnectionString = Configuration.GetConnectionString("DefaultConnection");
                     mongo.UsersCollection = "users";
                     mongo.RolesCollection = "roles";
                 });
