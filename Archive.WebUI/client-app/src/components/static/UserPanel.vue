@@ -4,7 +4,7 @@
       <div class="image-container">
         <div class="user-image" />
       </div>
-      <div class="user-name">{{ currentUser.userName }}</div>
+      <div class="user-name">{{ currentUser.briefName }}</div>
     </div>
 
     <DxContextMenu

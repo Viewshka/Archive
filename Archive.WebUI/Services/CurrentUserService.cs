@@ -2,6 +2,7 @@
 using System.Security.Claims;
 using Archive.Application.Common.Interfaces;
 using Microsoft.AspNetCore.Http;
+using MongoDB.Bson;
 
 namespace Archive.WebUI.Services
 {
@@ -14,11 +15,8 @@ namespace Archive.WebUI.Services
             _httpContextAccessor = httpContextAccessor;
         }
 
-        public int UserId =>
-            Convert.ToInt32(_httpContextAccessor.HttpContext?.User?.FindFirstValue(ClaimTypes.NameIdentifier)) ;
+        public string UserId =>_httpContextAccessor.HttpContext?.User?.FindFirstValue(ClaimTypes.NameIdentifier);
 
-        public string UserName => _httpContextAccessor.HttpContext?.User?.FindFirstValue(ClaimTypes.Name) ?? "Гость";
-
-        public bool IsAuthenticated => _httpContextAccessor.HttpContext.User.Identity.IsAuthenticated;
+        public string UserName => _httpContextAccessor.HttpContext?.User?.FindFirstValue(ClaimTypes.Name);
     }
 }

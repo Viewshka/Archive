@@ -19,7 +19,7 @@ export default [
                 path: "/all-documents",
             },
             {
-                text: "Конструкторская\nдокументация",
+                text: "Конструкторская документация",
                 path: "",
                 items: [
                     {

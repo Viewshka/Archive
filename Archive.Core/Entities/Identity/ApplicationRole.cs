@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Identity;
 
 namespace Archive.Core.Entities.Identity
 {
-    public class ApplicationRole : MongoRole
+    public class ApplicationRole : MongoRole<string>
     {
         
     }

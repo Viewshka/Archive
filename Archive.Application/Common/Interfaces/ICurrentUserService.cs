@@ -1,10 +1,10 @@
-﻿namespace Archive.Application.Common.Interfaces
+﻿using MongoDB.Bson;
+
+namespace Archive.Application.Common.Interfaces
 {
     public interface ICurrentUserService
     {
-        int UserId { get; }
+        string UserId { get; }
         string UserName { get; }
-
-        bool IsAuthenticated { get; }
     }
 }

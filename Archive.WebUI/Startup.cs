@@ -43,7 +43,7 @@ namespace Archive.WebUI
             
             
             
-            services.AddIdentityMongoDbProvider<ApplicationUser, ApplicationRole>(identity =>
+            services.AddIdentityMongoDbProvider<ApplicationUser, ApplicationRole,string>(identity =>
                 {
                     identity.Password.RequireDigit = true;
                     identity.Password.RequireNonAlphanumeric = false;
