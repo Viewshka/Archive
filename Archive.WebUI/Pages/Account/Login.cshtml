@@ -1,0 +1,62 @@
+﻿@page
+@model Archive.WebUI.Pages.Account.Login
+
+@{
+    ViewData["Title"] = "Авторизация";
+}
+
+<!doctype html>
+<html lang="ru">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+    <title>Авторизация</title>
+</head>
+<body class="dx-viewport dx-device-desktop dx-device-generic dx-theme-material-typography dx-color-scheme-blue-dark" style="background: #f2f2f2">
+
+<div class="row">
+    <div class="col-12">
+        <div style="width: 330px; height:auto; background-color: white; border-radius: 25px; margin: 0 auto">
+            <div style="padding: 40px">
+                <h2>@ViewData["Title"]</h2>
+                <form id="account" method="post">
+                    <hr/>
+                    <div asp-validation-summary="All" class="text-danger"></div>
+                    <div class="form-group">
+                        <input asp-for="LoginModel.UserName" class="form-control" placeholder="Логин"/>
+                        <span asp-validation-for="LoginModel.UserName" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <input asp-for="LoginModel.Password" class="form-control" placeholder="Пароль">
+                        <span asp-validation-for="LoginModel.Password" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <div class="checkbox">
+                            <label asp-for="LoginModel.RememberMe" style="display: inline-flex">
+                                <input asp-for="LoginModel.RememberMe" style="width: 22px; height: 22px; border-radius: 2px;border: 1px solid #ddd;background-color: #fff;"/>
+                                <div style="padding-left: 10px">
+                                    @Html.DisplayNameFor(m => m.LoginModel.RememberMe)
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="form-group" style="margin: 0">
+                        <button type="submit" class="btn btn-primary" style="width: 246px; height: 35px; background-color: #337ab7;">Войти</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Optional JavaScript -->
+<!-- jQuery first, then Popper.js, then Bootstrap JS -->
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+</body>
+</html>

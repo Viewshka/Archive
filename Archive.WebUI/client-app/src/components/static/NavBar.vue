@@ -46,13 +46,14 @@
 import DxButton from "devextreme-vue/button";
 import DxToolbar, {DxItem} from "devextreme-vue/toolbar";
 import DxScrollView from "devextreme-vue/scroll-view";
-import auth from "../../auth";
 import UserPanel from "./UserPanel";
 
 import notify from "devextreme/ui/notify";
+import axios from "axios";
+import {mapState} from 'vuex';
 
 export default {
-  
+
   name: "NavBar",
   props: {
     menuToggleEnabled: Boolean,
@@ -63,7 +64,7 @@ export default {
 
   data() {
     return {
-      user: { },
+      user: {},
       userMenuItems: [
         {
           text: "Удалить настройки",
@@ -79,21 +80,18 @@ export default {
     };
   },
   methods: {
-    toggleMenuFuncS(){
+    toggleMenuFuncS() {
     },
     onLogoutClick() {
-      auth.logOut();
-      this.$router.push({
-        path: "/login",
-        query: { redirect: this.$route.path }
-      });
-    },
-    onChangeTheme() {
-      if (window.localStorage.getItem("favorite-theme") === "dark")
-        window.localStorage.setItem("favorite-theme", "light");
-      else
-        window.localStorage.setItem("favorite-theme", "dark")
-      window.location.reload();
+      axios.get('api/account/logout')
+          .then((response) => {
+            this.$store.dispatch('CLEAR_CURRENT_USER');
+            window.location.href = "http://localhost:1111/account/Login";
+          })
+          .catch(c => {
+            console.log(c)
+            notify("Возникла ошибка выхода из системы", "error", 3000);
+          });
     },
     onClearStorage() {
       window.localStorage.clear();
@@ -103,6 +101,7 @@ export default {
   created() {
   },
   computed: {
+    ...mapState(["currentUser"]),
   },
   components: {
     UserPanel,

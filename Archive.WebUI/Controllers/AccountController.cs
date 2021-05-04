@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Archive.WebUI.Models;
 using Archive.Core.Entities.Identity;
 using Archive.Core.Enums;
@@ -27,19 +26,11 @@ namespace Archive.WebUI.Controllers
             _roleManager = roleManager;
         }
 
-        [HttpPost("login")]
-        public async Task<IActionResult> Login(LoginModel loginModel)
+         [HttpGet("logout")]
+        public async Task<IActionResult> Logout()
         {
-            var result = await _signInManager.PasswordSignInAsync(
-                loginModel.UserName,
-                loginModel.Password,
-                loginModel.RememberMe,
-                true);
-
-            if (result.Succeeded) return Ok();
-
-
-            return BadRequest("Неверное имя пользователя или пароль");
+            await _signInManager.SignOutAsync();
+            return Ok();
         }
 
         [HttpPost("register")]
@@ -53,25 +44,18 @@ namespace Archive.WebUI.Controllers
                 NormalizedUserName = registerModel.UserName.ToUpper(),
                 EmailConfirmed = true
             };
-
+        
             var result = await _userManager.CreateAsync(user, registerModel.Password);
-
+        
             if (result.Succeeded)
             {
                 await _userManager.AddToRoleAsync(user, RolesEnum.Employee.ToString());
                 await _signInManager.SignInAsync(user, false);
                 return Ok("Регистрация прошла успешно!");
             }
-
-
+        
+        
             return BadRequest(result.Errors);
-        }
-
-        [HttpPost("logout")]
-        public async Task<IActionResult> Logout()
-        {
-            await _signInManager.SignOutAsync();
-            return Ok("Вы вышли из системы");
         }
     }
 }

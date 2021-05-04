@@ -1,5 +1,5 @@
 <template>
-  <div id="root" class="dx-swatch-arktika-scheme"
+  <div id="root" class="dx-swatch-arktika-scheme" v-if="currentUser"
        v-bind:class="{ 'dx-swatch-arktika-scheme-dark': isDark }">
     <div :class="cssClasses">
       <RouterView
@@ -23,6 +23,8 @@
 <script>
 import Footer from "./components/static/Footer";
 import {sizes, subscribe, unsubscribe} from "./utils/media-query";
+
+import {mapState} from 'vuex';
 
 function getScreenSizeInfo() {
   const screenSizes = sizes();
@@ -61,7 +63,8 @@ export default {
   computed: {
     cssClasses() {
       return ["app"].concat(this.screen.cssClasses);
-    }
+    },
+    ...mapState(["currentUser"]),
   },
   methods: {
     screenSizeChanged() {
@@ -69,6 +72,7 @@ export default {
     }
   },
   created() {
+    this.$store.dispatch('INIT_CURRENT_USER');
   },
 }
 </script>
@@ -104,11 +108,11 @@ body {
   }
 }
 
-.dx-toolbar-after{
+.dx-toolbar-after {
   margin-right: 10px;
 }
 
-.dx-fileuploader-content > .dx-fileuploader-upload-button{
+.dx-fileuploader-content > .dx-fileuploader-upload-button {
   display: none;
 }
 </style>

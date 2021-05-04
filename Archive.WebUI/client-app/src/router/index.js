@@ -1,7 +1,6 @@
 import Vue from 'vue';
 import VueRouter from 'vue-router';
 import Home from '../views/Home.vue';
-import login from "../views/Login";
 import simpleLayout from '../layouts/SingleCard';
 import defaultLayout from '../layouts/SideNavOuterToolbar';
 
@@ -28,7 +27,7 @@ const routes = [
     }
   },
   {
-    path: '/documents',
+    path: '/all-documents',
     name: 'documents',
     components: {
       layout: defaultLayout,
@@ -36,16 +35,35 @@ const routes = [
     }
   },
   {
-    path: "/login",
-    name: "login",
+    path: '/draws',
+    name: 'draws',
     components: {
-      layout: simpleLayout,
-      content: login
-    },
-    props: {
-      layout: {
-        title: "Авторизация"
-      }
+      layout: defaultLayout,
+      content: DocumentTreeList
+    }
+  },
+  {
+    path: '/specifications',
+    name: 'specifications',
+    components: {
+      layout: defaultLayout,
+      content: DocumentTreeList
+    }
+  },
+  {
+    path: '/akts',
+    name: 'akts',
+    components: {
+      layout: defaultLayout,
+      content: DocumentTreeList
+    }
+  },
+  {
+    path: '/inventory',
+    name: 'inventory',
+    components: {
+      layout: defaultLayout,
+      content: DocumentTreeList
     }
   },
   {

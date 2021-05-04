@@ -12,16 +12,43 @@ export default [
     {
         text: "Документы",
         path: "/documents",
-        icon: "file"
+        icon: "file",
+        items: [
+            {
+                text: "Все документы",
+                path: "/all-documents",
+            },
+            {
+                text: "Конструкторская\nдокументация",
+                path: "",
+                items: [
+                    {
+                        text: "Чертежи",
+                        path: "/draws",
+                    },
+                    {
+                        text: "Спецификации",
+                        path: "/specifications",
+                    },
+                ]
+            },
+            {
+                text: "Акты",
+                path: "/akts",
+            },
+            {
+                text: "Описи",
+                path: "/inventory",
+            },
+        ]
     },
     {
         text: "Справочники",
         icon: "menu",
-        items:[
+        items: [
             {
                 text: "Подразделения",
                 path: "/departments",
-                icon: ""
             },
         ]
     }
