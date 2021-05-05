@@ -83,7 +83,8 @@
         :visible.sync="documentEditFormData.visible"
         :title="documentEditFormData.title"
         :form-data="documentEditFormData.formData"
-        :data-source-nomenclature="dataSourceNomenclature"
+        :data-source-nomenclatures="dataSourceNomenclatures"
+        :data-source-departments="dataSourceDepartments"
     />
     <DocumentTypeForm
         v-if="documentTypeFormVisible"
@@ -124,7 +125,8 @@ export default {
       treeListRefName: 'treeList',
       dataSource: data.documents,
       dataSourceTypes: data.types,
-      dataSourceNomenclature: [],
+      dataSourceNomenclatures: [],
+      dataSourceDepartments: [],
       previewFormData: {
         visible: false,
         documentSubject: ''
@@ -160,16 +162,33 @@ export default {
         this.openNeededForm(value);
     }
   },
-  created() {
-    axios.get(`api/nomenclature`)
-        .then(response => {
-          this.dataSourceNomenclature = response.data;
-        })
-        .catch(response => {
-          console.log(response)
-        })
+  async created() {
+    await Promise.all(
+        [
+          await this.initNomenclatures(),
+          await this.initDepartments()
+        ]
+    )
   },
   methods: {
+    async initNomenclatures() {
+      await axios.get(`api/nomenclature`)
+          .then(response => {
+            this.dataSourceNomenclatures = response.data;
+          })
+          .catch(response => {
+            console.log(response)
+          })
+    },
+    async initDepartments() {
+      await axios.get(`api/department`)
+          .then(response => {
+            this.dataSourceDepartments = response.data;
+          })
+          .catch(response => {
+            console.log(response)
+          })
+    },
     openNeededForm(documentType) {
       switch (documentType) {
         case this.$enums.documentTypes.constructDoc: {

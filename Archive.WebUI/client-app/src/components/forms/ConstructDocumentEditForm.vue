@@ -30,7 +30,8 @@
           <NomenclatureDropDownBox
               :value="formData[data.dataField]"
               :on-value-changed="nomenclatureChanged"
-              :data-source="dataSourceNomenclature"
+              :data-source="dataSourceNomenclatures"
+              :data-source-departments="dataSourceDepartments"
           />
         </template>
         <template #documentTemplate="{data}">
@@ -139,7 +140,11 @@ export default {
       type: Object,
       required: true
     },
-    dataSourceNomenclature:{
+    dataSourceNomenclatures:{
+      type: Array,
+      required: true
+    },
+    dataSourceDepartments:{
       type: Array,
       required: true
     }

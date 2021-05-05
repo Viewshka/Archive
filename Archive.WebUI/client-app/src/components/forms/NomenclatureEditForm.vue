@@ -34,12 +34,11 @@
               editor-type="dxTextBox"
               data-field="name"
           />
-          <!--TODO: Сделать DropDownBox-->
           <DxSimpleItem
               :col-span="2"
               :label="{text: 'Подразделение'}"
-              editor-type="dxSelectBox"
               data-field="departmentId"
+              template="departmentTemplate"
           />
           <DxSimpleItem
               :col-span="2"
@@ -65,6 +64,13 @@
               horizontal-alignment="left"
           />
         </DxGroupItem>
+        
+        <template #departmentTemplate="{data}">
+          <DepartmentDropDownBox
+            :value="formData[data.dataField]"
+            :data-source="dataSourceDepartment"
+          />
+        </template>
       </DxForm>
     </div>
   </DxPopup>
@@ -76,6 +82,7 @@ import {DxButtonItem, DxForm, DxGroupItem, DxSimpleItem} from "devextreme-vue/fo
 
 import NomenclatureDropDownBox from "../dropDowBoxes/NomenclatureDropDownBox";
 import DocumentDropDownBox from "../dropDowBoxes/DocumentDropDownBox";
+import DepartmentDropDownBox from "../dropDowBoxes/DepartmentDropDownBox";
 
 import data from '../../data'
 
@@ -93,6 +100,10 @@ export default {
     formData: {
       type: Object,
       required: true
+    },
+    dataSourceDepartment:{
+      type: Array,
+      required: true
     }
   },
   data() {
@@ -104,6 +115,7 @@ export default {
   components: {
     NomenclatureDropDownBox,
     DocumentDropDownBox,
+    DepartmentDropDownBox,
     DxPopup,
     DxForm,
     DxSimpleItem,
@@ -116,7 +128,6 @@ export default {
     },
   },
   methods: {
-
     cancel: function () {
       this.$emit('update:visible', false);
     },

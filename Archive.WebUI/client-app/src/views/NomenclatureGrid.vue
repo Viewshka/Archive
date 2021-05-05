@@ -23,7 +23,9 @@
           caption="Подразделение"
           data-field="departmentId"
           data-type="string"
-      />
+      >
+        <DxLookup :data-source="dataSourceDepartments" value-expr="id" display-expr="shortName"/>
+      </DxColumn>
       <DxColumn
           caption="Управление"
           type="buttons"
@@ -69,6 +71,7 @@
         :title="nomenclatureEditForm.title"
         :visible.sync="nomenclatureEditForm.visible"
         :form-data="nomenclatureEditForm.formData"
+        :data-source-department="dataSourceDepartments"
         @submit="nomenclatureSubmit"
     />
   </div>
@@ -108,6 +111,7 @@ export default {
     return {
       dataSource,
       gridRefName: "dataGrid",
+      dataSourceDepartments: [],
       nomenclatureEditForm: {
         visible: false,
         formData: {},
@@ -129,7 +133,19 @@ export default {
     DxPaging,
     DxButton
   },
+  async created() {
+    await this.initDepartments();
+  },
   methods: {
+    async initDepartments() {
+      await axios.get(`api/department`)
+          .then(response => {
+            this.dataSourceDepartments = response.data;
+          })
+          .catch(response => {
+            console.log(response)
+          })
+    },
     nomenclatureSubmit() {
       if (this.nomenclatureEditForm.formData.id) {
         axios.put(`api/nomenclature/${this.nomenclatureEditForm.formData.id}`, this.nomenclatureEditForm.formData)

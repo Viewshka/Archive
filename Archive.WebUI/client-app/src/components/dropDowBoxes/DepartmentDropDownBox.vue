@@ -4,7 +4,7 @@
       :drop-down-options="dropDownOptions"
       :data-source="dataSource"
       :value="currentValue"
-      :display-expr="displayExpr"
+      display-expr="shortName"
       value-expr="id"
       content-template="contentTemplate"
       :show-clear-button="true"
@@ -32,11 +32,8 @@
             value-expr="id"
             key-expr="id"
         >
-          <DxColumn data-field="departmentId" caption="Подразделение">
-            <DxLookup :data-source="dataSourceDepartments" value-expr="id" display-expr="shortName"/>
-          </DxColumn>
-          <DxColumn data-field="index" caption="Номенклатурное дело" :calculate-display-value="calculateDisplayValue"/>
-          
+          <DxColumn data-field="shortName" caption="Подразделение" :calculate-display-value="calculateDisplayValue"/>
+
           <DxSearchPanel :visible="true" :width="450"/>
           <DxPaging :enabled="true" :page-size="20"/>
           <DxScrolling mode="virtual" row-rendering-mode="virtual" column-rendering-mode="virtual"/>
@@ -48,6 +45,7 @@
 </template>
 
 <script>
+
 import DxDropDownBox from 'devextreme-vue/drop-down-box'
 import DxDataGrid, {
   DxColumn,
@@ -61,7 +59,7 @@ import DxDataGrid, {
 
 const dropDownBoxRefName = 'dropDownBoxRef';
 export default {
-  name: "NomenclatureDropDownBox",
+  name: "DepartmentDropDownBox",
   props: {
     value: {
       type: String,
@@ -72,11 +70,7 @@ export default {
       default: () => function () {
       }
     },
-    dataSource:{
-      type: Array,
-      required: true
-    },
-    dataSourceDepartments:{
+    dataSource: {
       type: Array,
       required: true
     }
@@ -99,11 +93,8 @@ export default {
     DxLookup,
   },
   methods: {
-    displayExpr(data){
-      return `${data.index} - ${data.name}`
-    },
     calculateDisplayValue(item){
-      return item && `${item.index} - ${item.name}`;
+      return item && `${item.fullName} (${item.shortName})`;
     },
     onSelectionChanged(selectionChangedArgs) {
       this.currentValue = selectionChangedArgs.selectedRowKeys[0];
