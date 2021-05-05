@@ -18,7 +18,6 @@
 
     <ItemGroup>
       <Folder Include="Feature\Document\Commands" />
-      <Folder Include="Feature\Nomenclature\Commands" />
     </ItemGroup>
 
 </Project>
