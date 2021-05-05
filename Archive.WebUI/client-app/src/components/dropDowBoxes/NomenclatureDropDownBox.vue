@@ -2,9 +2,9 @@
   <DxDropDownBox
       :ref="dropDownBoxRefName"
       :drop-down-options="dropDownOptions"
-      :data-source="dataSourceNomenclatures"
+      :data-source="dataSource"
       :value="currentValue"
-      display-expr="fullName"
+      :display-expr="displayExpr"
       value-expr="id"
       content-template="contentTemplate"
       :show-clear-button="true"
@@ -14,7 +14,7 @@
       <div>
         <DxDataGrid
             id="typeDropBox"
-            :data-source="dataSourceNomenclatures"
+            :data-source="dataSource"
             :height="400"
             :render-async="true"
             :remote-operations="true"
@@ -33,9 +33,8 @@
             key-expr="id"
         >
           <DxColumn data-field="departmentId" caption="Подразделение">
-            <DxLookup :data-source="dataSourceDepartments" value-expr="id" display-expr="shortName"/>
           </DxColumn>
-          <DxColumn data-field="fullName" caption="Номенклатурное дело"/>
+          <DxColumn data-field="index" caption="Номенклатурное дело" :calculate-display-value="calculateDisplayValue"/>
           
           <DxSearchPanel :visible="true" :width="450"/>
           <DxPaging :enabled="true" :page-size="20"/>
@@ -58,14 +57,13 @@ import DxDataGrid, {
   DxLookup
 } from 'devextreme-vue/data-grid'
 
-import data from '../../data';
 
 const dropDownBoxRefName = 'dropDownBoxRef';
 export default {
   name: "NomenclatureDropDownBox",
   props: {
     value: {
-      type: Number,
+      type: String,
       default: null
     },
     onValueChanged: {
@@ -73,14 +71,16 @@ export default {
       default: () => function () {
       }
     },
+    dataSource:{
+      type: Array,
+      required: true
+    }
   },
   data() {
     return {
       dropDownBoxRefName,
       currentValue: this.value,
       dropDownOptions: {width: 500},
-      dataSourceNomenclatures: data.nomenclatures,
-      dataSourceDepartments: data.departments,
     }
   },
   components: {
@@ -94,6 +94,12 @@ export default {
     DxLookup,
   },
   methods: {
+    displayExpr(data){
+      return `${data.index} - ${data.name}`
+    },
+    calculateDisplayValue(item){
+      return item && `${item.index} - ${item.name}`;
+    },
     onSelectionChanged(selectionChangedArgs) {
       this.currentValue = selectionChangedArgs.selectedRowKeys[0];
       if (selectionChangedArgs.selectedRowKeys.length > 0) {

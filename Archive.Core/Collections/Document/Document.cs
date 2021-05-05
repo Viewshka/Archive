@@ -1,15 +1,11 @@
 ﻿using System;
+using Archive.Core.Collections.Common;
 using Archive.Core.Enums;
-using MongoDB.Bson.Serialization.Attributes;
-using MongoDB.Bson.Serialization.IdGenerators;
 
 namespace Archive.Core.Collections.Document
 {
-    public class Document
+    public class Document : Entity
     {
-        [BsonId(IdGenerator = typeof(StringObjectIdGenerator))]
-        public string Id { get; set; }
-
         /// <summary>
         /// Наименовнаие документа
         /// </summary>

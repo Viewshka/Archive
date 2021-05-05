@@ -1,13 +1,9 @@
-﻿using MongoDB.Bson.Serialization.Attributes;
-using MongoDB.Bson.Serialization.IdGenerators;
+﻿using Archive.Core.Collections.Common;
 
 namespace Archive.Core.Collections
 {
-    public class Department
+    public class Department : Entity
     {
-        [BsonId(IdGenerator = typeof(StringObjectIdGenerator))]
-        public string Id { get; set; }
-
         public string ShortName { get; set; }
         public string FullName { get; set; }
         public int ParentId { get; set; }

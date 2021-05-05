@@ -30,6 +30,7 @@
           <NomenclatureDropDownBox
               :value="formData[data.dataField]"
               :on-value-changed="nomenclatureChanged"
+              :data-source="dataSourceNomenclature"
           />
         </template>
         <template #documentTemplate="{data}">
@@ -123,8 +124,6 @@ import DxSelectBox from 'devextreme-vue/select-box'
 import NomenclatureDropDownBox from "../dropDowBoxes/NomenclatureDropDownBox";
 import DocumentDropDownBox from "../dropDowBoxes/DocumentDropDownBox";
 
-import data from '../../data'
-
 export default {
   name: "ConstructDocumentEditForm",
   props: {
@@ -139,12 +138,15 @@ export default {
     formData: {
       type: Object,
       required: true
+    },
+    dataSourceNomenclature:{
+      type: Array,
+      required: true
     }
   },
   data() {
     return {
       formRefName: 'form',
-      dataSourceNomenclature: data.nomenclatures,
     }
   },
   components: {

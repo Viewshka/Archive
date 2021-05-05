@@ -83,6 +83,7 @@
         :visible.sync="documentEditFormData.visible"
         :title="documentEditFormData.title"
         :form-data="documentEditFormData.formData"
+        :data-source-nomenclature="dataSourceNomenclature"
     />
     <DocumentTypeForm
         v-if="documentTypeFormVisible"
@@ -114,6 +115,7 @@ import DxButton from "devextreme-vue/button";
 import notify from "devextreme/ui/notify";
 import data from '../data';
 import Vue from "vue";
+import axios from "axios";
 
 export default {
   name: "DocumentGrid",
@@ -122,6 +124,7 @@ export default {
       treeListRefName: 'treeList',
       dataSource: data.documents,
       dataSourceTypes: data.types,
+      dataSourceNomenclature: [],
       previewFormData: {
         visible: false,
         documentSubject: ''
@@ -156,6 +159,15 @@ export default {
       if (!!parseInt(this.documentType))
         this.openNeededForm(value);
     }
+  },
+  created() {
+    axios.get(`api/nomenclature`)
+        .then(response => {
+          this.dataSourceNomenclature = response.data;
+        })
+        .catch(response => {
+          console.log(response)
+        })
   },
   methods: {
     openNeededForm(documentType) {
