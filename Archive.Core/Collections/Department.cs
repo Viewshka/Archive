@@ -6,6 +6,6 @@ namespace Archive.Core.Collections
     {
         public string ShortName { get; set; }
         public string FullName { get; set; }
-        public int ParentId { get; set; }
+        public string ParentId { get; set; }
     }
 }

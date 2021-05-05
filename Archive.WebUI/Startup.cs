@@ -1,4 +1,6 @@
+using System;
 using System.IO;
+using System.Reflection;
 using Archive.WebUI.Services;
 using Archive.Application;
 using Archive.Application.Common.Interfaces;
@@ -35,9 +37,7 @@ namespace Archive.WebUI
                 options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore);
             
             services.Configure<MongoDbOptions>(Configuration.GetSection("MongoDb"));
-            
-            
-            
+
             services.AddIdentityMongoDbProvider<ApplicationUser, ApplicationRole,string>(identity =>
                 {
                     identity.Password.RequireDigit = true;
@@ -58,8 +58,15 @@ namespace Archive.WebUI
                     mongo.UsersCollection = "users";
                     mongo.RolesCollection = "roles";
                 });
-
+            
             services.AddSingleton<ICurrentUserService, CurrentUserService>();
+
+            services.AddSwaggerGen(c =>
+            {
+                var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+                var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+                c.IncludeXmlComments(xmlPath);
+            });
             services.AddRazorPages();
         }
 
@@ -69,6 +76,11 @@ namespace Archive.WebUI
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+                app.UseSwagger();
+                app.UseSwaggerUI(c =>
+                {
+                    c.SwaggerEndpoint("/swagger/v1/swagger.json", "archive API");
+                });
             }
             else
             {
