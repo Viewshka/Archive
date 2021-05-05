@@ -1,11 +1,9 @@
 import Vue from 'vue';
 import VueRouter from 'vue-router';
 import Home from '../views/Home.vue';
-import simpleLayout from '../layouts/SingleCard';
 import defaultLayout from '../layouts/SideNavOuterToolbar';
-
 import NomenclatureGrid from "../views/NomenclatureGrid";
-import DocumentTreeList from "../views/DocumentTreeList";
+import DocumentGrid from "../views/DocumentGrid";
 
 Vue.use(VueRouter)
 
@@ -31,7 +29,7 @@ const routes = [
     name: 'documents',
     components: {
       layout: defaultLayout,
-      content: DocumentTreeList
+      content: DocumentGrid
     }
   },
   {
@@ -39,7 +37,7 @@ const routes = [
     name: 'draws',
     components: {
       layout: defaultLayout,
-      content: DocumentTreeList
+      content: DocumentGrid
     }
   },
   {
@@ -47,7 +45,7 @@ const routes = [
     name: 'specifications',
     components: {
       layout: defaultLayout,
-      content: DocumentTreeList
+      content: DocumentGrid
     }
   },
   {
@@ -55,7 +53,7 @@ const routes = [
     name: 'akts',
     components: {
       layout: defaultLayout,
-      content: DocumentTreeList
+      content: DocumentGrid
     }
   },
   {
@@ -63,7 +61,7 @@ const routes = [
     name: 'inventory',
     components: {
       layout: defaultLayout,
-      content: DocumentTreeList
+      content: DocumentGrid
     }
   },
   {

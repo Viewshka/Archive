@@ -16,8 +16,4 @@
       <ProjectReference Include="..\Archive.Core\Archive.Core.csproj" />
     </ItemGroup>
 
-    <ItemGroup>
-      <Folder Include="Feature\Document\Commands" />
-    </ItemGroup>
-
 </Project>

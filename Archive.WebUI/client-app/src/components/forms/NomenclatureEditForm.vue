@@ -81,10 +81,7 @@ import {DxPopup} from "devextreme-vue/popup";
 import {DxButtonItem, DxForm, DxGroupItem, DxSimpleItem} from "devextreme-vue/form";
 
 import NomenclatureDropDownBox from "../dropDowBoxes/NomenclatureDropDownBox";
-import DocumentDropDownBox from "../dropDowBoxes/DocumentDropDownBox";
 import DepartmentDropDownBox from "../dropDowBoxes/DepartmentDropDownBox";
-
-import data from '../../data'
 
 export default {
   name: "NomenclatureEditForm",
@@ -109,12 +106,10 @@ export default {
   data() {
     return {
       formRefName: 'form',
-      dataSourceNomenclature: data.nomenclatures,
     }
   },
   components: {
     NomenclatureDropDownBox,
-    DocumentDropDownBox,
     DepartmentDropDownBox,
     DxPopup,
     DxForm,

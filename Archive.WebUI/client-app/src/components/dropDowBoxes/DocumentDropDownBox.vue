@@ -2,9 +2,9 @@
   <DxDropDownBox
       :ref="dropDownBoxRefName"
       :drop-down-options="dropDownOptions"
-      :data-source="dataSourceDocuments"
+      :data-source="dataSource"
       :value="currentValue"
-      display-expr="subject"
+      display-expr="name"
       value-expr="id"
       content-template="contentTemplate"
       :show-clear-button="true"
@@ -12,8 +12,8 @@
   >
     <template #contentTemplate="{}">
       <div>
-        <DxTreeList
-            :data-source="dataSourceDocuments"
+        <DxDataGrid
+            :data-source="dataSource"
             :allow-column-resizing="true"
             :focused-row-enabled="true"
             :render-async="true"
@@ -22,34 +22,31 @@
             :focused-row-key="currentValue"
             :on-selection-changed="onSelectionChanged"
             :column-min-width="50"
-            parent-id-expr="parentId"
-            data-structure="plain"
             value-expr="id"
             key-expr="id"
         >
-          <DxColumn data-field="subject" caption="Документ"/>
+          <DxColumn data-field="name" caption="Документ"/>
 
           <DxSearchPanel :visible="true" :width="450"/>
           <DxPaging :enabled="true" :page-size="20"/>
           <DxScrolling mode="virtual" row-rendering-mode="virtual" column-rendering-mode="virtual"/>
           <DxSelection mode="single"/>
-        </DxTreeList>
+        </DxDataGrid>
       </div>
     </template>
   </DxDropDownBox>
 </template>
 
 <script>
-import data from "../../data";
 import DxDropDownBox from "devextreme-vue/drop-down-box";
-import DxTreeList, {
+import DxDataGrid, {
   DxColumn,
   DxLookup,
   DxPaging,
   DxScrolling,
   DxSearchPanel,
   DxSelection
-} from "devextreme-vue/tree-list";
+} from "devextreme-vue/data-grid";
 
 const dropDownBoxRefName = 'dropDownBoxRef';
 export default {
@@ -64,18 +61,21 @@ export default {
       default: () => function () {
       }
     },
+    dataSource:{
+      type: Array,
+      required: true
+    }
   },
   data() {
     return {
       dropDownBoxRefName,
       currentValue: this.value,
       dropDownOptions: {width: 500},
-      dataSourceDocuments: data.documents,
     }
   },
   components: {
     DxDropDownBox,
-    DxTreeList,
+    DxDataGrid,
     DxColumn,
     DxSearchPanel,
     DxPaging,

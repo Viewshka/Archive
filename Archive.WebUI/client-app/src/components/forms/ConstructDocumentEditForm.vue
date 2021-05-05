@@ -38,6 +38,7 @@
           <DocumentDropDownBox
               :value="parseInt(formData[data.dataField]) === 0 ? null : formData[data.dataField]"
               :on-value-changed="parentIdChanged"
+              :data-source="dataSourceDocuments"
           />
         </template>
         <template #fileUploaderTemplate="{data}">
@@ -140,11 +141,15 @@ export default {
       type: Object,
       required: true
     },
-    dataSourceNomenclatures:{
+    dataSourceNomenclatures: {
       type: Array,
       required: true
     },
-    dataSourceDepartments:{
+    dataSourceDepartments: {
+      type: Array,
+      required: true
+    },
+    dataSourceDocuments: {
       type: Array,
       required: true
     }
@@ -172,7 +177,6 @@ export default {
     },
   },
   created() {
-    console.log(this.formData)
   },
   methods: {
     nomenclatureChanged(value) {

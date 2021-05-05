@@ -2,7 +2,7 @@
   <div class="document-tree-list">
     <h2 style="margin-left: 5px">Документы</h2>
     <DxTreeList
-        :ref="treeListRefName"
+        :ref="gridRefName"
         :data-source="dataSource"
         :allow-column-resizing="true"
         :focused-row-enabled="true"
@@ -32,7 +32,7 @@
           caption="Тип документа"
           data-field="type"
       >
-        <DxLookup :data-source="dataSourceTypes" value-expr="id" display-expr="name"/>
+        <DxLookup :data-source="dataSourceDocumentTypes" value-expr="id" display-expr="name"/>
       </DxColumn>
       <DxColumn
           caption="Примечание"
@@ -85,6 +85,7 @@
         :form-data="documentEditFormData.formData"
         :data-source-nomenclatures="dataSourceNomenclatures"
         :data-source-departments="dataSourceDepartments"
+        :data-source-documents="dataSourceDocuments"
     />
     <DocumentTypeForm
         v-if="documentTypeFormVisible"
@@ -114,19 +115,27 @@ import DxTreeList, {
   from 'devextreme-vue/tree-list';
 import DxButton from "devextreme-vue/button";
 import notify from "devextreme/ui/notify";
-import data from '../data';
-import Vue from "vue";
 import axios from "axios";
+import * as AspNetData from "devextreme-aspnet-data-nojquery";
+import data from '../data';
+const dataSource = AspNetData.createStore({
+  key: 'id',
+  loadUrl: `/api/document`,
+  onBeforeSend: (method, ajaxOptions) => {
+    ajaxOptions.xhrFields = {withCredentials: true};
+  },
+});
 
 export default {
   name: "DocumentGrid",
   data() {
     return {
-      treeListRefName: 'treeList',
-      dataSource: data.documents,
-      dataSourceTypes: data.types,
+      gridRefName: 'dataGrid',
+      dataSource,
+      dataSourceDocumentTypes: data.documentTypes,
       dataSourceNomenclatures: [],
       dataSourceDepartments: [],
+      dataSourceDocuments: [],
       previewFormData: {
         visible: false,
         documentSubject: ''
@@ -166,7 +175,8 @@ export default {
     await Promise.all(
         [
           await this.initNomenclatures(),
-          await this.initDepartments()
+          await this.initDepartments(),
+          await this.initDocuments()
         ]
     )
   },
@@ -189,18 +199,23 @@ export default {
             console.log(response)
           })
     },
+    async initDocuments() {
+      await axios.get(`api/document`)
+          .then(response => {
+            this.dataSourceDocuments = response.data;
+          })
+          .catch(response => {
+            console.log(response)
+          })
+    },
     openNeededForm(documentType) {
-      switch (documentType) {
-        case this.$enums.documentTypes.constructDoc: {
-          this.documentTypeFormVisible = false;
-          this.documentType = documentType;
-          this.documentEditFormData.visible = true;
-          break;
-        }
-        default: {
-          notify('В разработке', 'info', 3000);
-          break;
-        }
+      if (documentType === this.$enums.documentTypes.drawing ||
+          documentType === this.$enums.documentTypes.specification) {
+        this.documentTypeFormVisible = false;
+        this.documentType = documentType;
+        this.documentEditFormData.visible = true;
+      } else {
+        notify('В разработке', 'info', 3000);
       }
     },
     updateDocument(data) {
@@ -237,13 +252,13 @@ export default {
               icon: 'refresh',
               type: 'normal',
               stylingMode: 'contained',
-              onClick: this.refreshTreeList.bind(this)
+              onClick: this.refreshDataGrid.bind(this)
             }
           },
       )
     },
-    async refreshTreeList() {
-      this.$refs[this.treeListRefName].instance.refresh();
+    async refreshDataGrid() {
+      this.$refs[this.gridRefName].instance.refresh();
     },
   }
 }

@@ -30,5 +30,10 @@ namespace Archive.Core.Collections.Document
         /// Тип документа
         /// </summary>
         public DocumentTypeEnum Type { get; set; }
+
+        /// <summary>
+        /// Путь к файлу документа
+        /// </summary>
+        public string Path { get; set; }
     }
 }

@@ -27,9 +27,7 @@
 <script>
 import {DxPopup} from "devextreme-vue/popup";
 import DxList from "devextreme-vue/list";
-import data from '../../data'
-import Vue from "vue";
-import notify from "devextreme/ui/notify";
+import data from '../../data';
 
 export default {
   name: "DocumentTypeForm",
@@ -44,7 +42,7 @@ export default {
   },
   data() {
     return {
-      dataSource: data.types,
+      dataSource: data.documentTypes,
     }
   },
   components: {
