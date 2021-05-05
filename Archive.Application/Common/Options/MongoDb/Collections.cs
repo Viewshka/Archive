@@ -5,5 +5,6 @@
         public string Users { get; set; }
 
         public string Roles { get; set; }
+        public string Documents { get; set; }
     }
 }

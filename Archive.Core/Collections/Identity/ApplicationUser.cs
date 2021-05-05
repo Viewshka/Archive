@@ -1,6 +1,6 @@
 ﻿using AspNetCore.Identity.Mongo.Model;
 
-namespace Archive.Core.Entities.Identity
+namespace Archive.Core.Collections.Identity
 {
     public class ApplicationUser : MongoUser<string>
     {
