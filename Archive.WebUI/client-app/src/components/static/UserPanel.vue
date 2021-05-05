@@ -1,21 +1,18 @@
 <template>
   <div class="user-panel">
     <div class="user-info">
-      <div class="image-container">
-        <div class="user-image" />
-      </div>
       <div class="user-name">{{ currentUser.briefName }}</div>
     </div>
 
     <DxContextMenu
-      v-if="menuMode === 'context'"
-      target=".user-button"
-      :items="menuItems"
-      :width="210"
-      show-event="dxclick"
-      css-class="user-menu"
+        v-if="menuMode === 'context'"
+        target=".user-button"
+        :items="menuItems"
+        :width="210"
+        show-event="dxclick"
+        css-class="user-menu"
     >
-      <DxPosition my="top center" at="bottom center" />
+      <DxPosition my="top center" at="bottom center"/>
     </DxContextMenu>
 
     <DxList
@@ -27,7 +24,7 @@
 </template>
 
 <script>
-import DxContextMenu, { DxPosition } from "devextreme-vue/context-menu";
+import DxContextMenu, {DxPosition} from "devextreme-vue/context-menu";
 import DxList from "devextreme-vue/list";
 import {mapState} from 'vuex';
 

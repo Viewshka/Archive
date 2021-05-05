@@ -30,7 +30,7 @@
         <div slot-scope="_">
           <DxButton
               class="user-button authorization"
-              :width="210"
+              width="100%"
               height="100%"
               styling-mode="text"
           >

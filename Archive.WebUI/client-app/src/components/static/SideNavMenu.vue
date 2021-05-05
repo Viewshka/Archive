@@ -130,6 +130,7 @@ export default {
       .dx-treeview-toggle-item-visibility {
         right: 10px;
         left: auto;
+        padding-top: 50px;
       }
 
       .dx-rtl .dx-treeview-toggle-item-visibility {

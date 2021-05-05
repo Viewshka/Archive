@@ -1,21 +1,16 @@
-using System;
 using System.IO;
 using Archive.WebUI.Services;
 using Archive.Application;
 using Archive.Application.Common.Interfaces;
-using Archive.Application.Common.Options;
 using Archive.Application.Common.Options.MongoDb;
-using Archive.Core.Entities.Identity;
+using Archive.Core.Collections.Identity;
 using AspNetCore.Identity.Mongo;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Options;
-using MongoDB.Bson;
 using Newtonsoft.Json;
 
 namespace Archive.WebUI

@@ -1,5 +1,5 @@
 ﻿using System.Threading.Tasks;
-using Archive.Core.Entities.Identity;
+using Archive.Core.Collections.Identity;
 using Archive.WebUI.Models;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
