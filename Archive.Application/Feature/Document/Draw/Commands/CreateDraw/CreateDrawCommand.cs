@@ -16,6 +16,9 @@ namespace Archive.Application.Feature.Document.Draw.Commands.CreateDraw
         public string Note { get; set; }
         public DateTime DocumentDate { get; set; }
         public DocumentTypeEnum Type { get; set; }
+        public DateTime? IncomingDate { get; set; }
+        public string NomenclatureId { get; set; }
+        public string ParentId { get; set; }
     }
 
     public class CreateDrawCommandHandler : IRequestHandler<CreateDrawCommand>
@@ -39,7 +42,10 @@ namespace Archive.Application.Feature.Document.Draw.Commands.CreateDraw
                 Designation = request.Designation,
                 Note = request.Note,
                 Type = request.Type,
-                DocumentDate = request.DocumentDate
+                DocumentDate = request.DocumentDate,
+                IncomingDate = request.IncomingDate ?? DateTime.Now,
+                NomenclatureId = request.NomenclatureId,
+                ParentId = request.ParentId
             };
 
             await documentsCollection.InsertOneAsync(entity, cancellationToken: cancellationToken);

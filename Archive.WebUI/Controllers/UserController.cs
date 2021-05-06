@@ -1,5 +1,5 @@
 ﻿using System.Threading.Tasks;
-using Archive.Application.Feature.User.Quries.GetCurrentUser;
+using Archive.Application.Feature.User.Queries.GetCurrentUser;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 

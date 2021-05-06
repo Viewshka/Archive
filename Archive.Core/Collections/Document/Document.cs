@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Archive.Core.Collections.Common;
 using Archive.Core.Enums;
 
@@ -35,5 +36,30 @@ namespace Archive.Core.Collections.Document
         /// Путь к файлу документа
         /// </summary>
         public string Path { get; set; }
+
+        /// <summary>
+        /// Дата поступления в архив
+        /// </summary>
+        public DateTime IncomingDate { get; set; }
+
+        /// <summary>
+        /// Дата выбытия из архива
+        /// </summary>
+        public DateTime? OutgoingDate { get; set; }
+
+        /// <summary>
+        /// Id номенклатурного дела
+        /// </summary>
+        public string NomenclatureId { get; set; }
+
+        /// <summary>
+        /// Принадлежность к другому документу
+        /// </summary>
+        public string ParentId { get; set; }
+
+        /// <summary>
+        /// Истори использования документа
+        /// </summary>
+        public IList<History> History { get; set; }
     }
 }
