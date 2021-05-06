@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using MongoDB.Bson.Serialization.Attributes;
 
-namespace Archive.Application.Feature.User.Quries.GetCurrentUser
+namespace Archive.Application.Feature.User.Queries.GetCurrentUser
 {
     [BsonIgnoreExtraElements]
     public class CurrentUserDto

@@ -1,5 +1,5 @@
 ﻿using System.Linq;
-using Archive.Application.Feature.User.Quries.GetCurrentUser;
+using Archive.Application.Feature.User.Queries.GetCurrentUser;
 
 namespace Archive.Application.Extensions
 {

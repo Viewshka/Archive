@@ -7,7 +7,7 @@ using MediatR;
 using Microsoft.Extensions.Options;
 using MongoDB.Driver;
 
-namespace Archive.Application.Feature.User.Quries.GetCurrentUser
+namespace Archive.Application.Feature.User.Queries.GetCurrentUser
 {
     public class GetCurrentUserQuery : IRequest<CurrentUserDto>
     {
