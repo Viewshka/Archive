@@ -58,7 +58,7 @@ namespace Archive.Core.Collections.Document
         public string ParentId { get; set; }
 
         /// <summary>
-        /// Истори использования документа
+        /// История использования документа
         /// </summary>
         public IList<History> History { get; set; }
     }

@@ -25,40 +25,8 @@ const routes = [
     }
   },
   {
-    path: '/all-documents',
+    path: '/documents',
     name: 'documents',
-    components: {
-      layout: defaultLayout,
-      content: DocumentGrid
-    }
-  },
-  {
-    path: '/draws',
-    name: 'draws',
-    components: {
-      layout: defaultLayout,
-      content: DocumentGrid
-    }
-  },
-  {
-    path: '/specifications',
-    name: 'specifications',
-    components: {
-      layout: defaultLayout,
-      content: DocumentGrid
-    }
-  },
-  {
-    path: '/akts',
-    name: 'akts',
-    components: {
-      layout: defaultLayout,
-      content: DocumentGrid
-    }
-  },
-  {
-    path: '/inventory',
-    name: 'inventory',
     components: {
       layout: defaultLayout,
       content: DocumentGrid

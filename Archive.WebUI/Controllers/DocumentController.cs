@@ -2,10 +2,12 @@
 using Archive.Application.Feature.Document.Draw.Commands.CreateDraw;
 using Archive.Application.Feature.Document.Draw.Commands.UpdateDraw;
 using Archive.Application.Feature.Document.Queries.GetAllDocuments;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Archive.WebUI.Controllers
 {
+    
     public class DocumentController : ApiController
     {
         /// <summary>
@@ -23,8 +25,9 @@ namespace Archive.WebUI.Controllers
         /// </summary>
         /// <param name="command"></param>
         /// <returns></returns>
-        [HttpPost]
-        public async Task<IActionResult> CreateDraw(CreateDrawCommand command)
+        [Authorize(Roles = "Архивариус")]
+        [HttpPost("create-drawing")]
+        public async Task<IActionResult> CreateDraw(CreateDrawingCommand command)
         {
             return Ok(await Mediator.Send(command));
         }
@@ -35,7 +38,8 @@ namespace Archive.WebUI.Controllers
         /// <param name="command">Объект</param>
         /// <param name="id">Id подразделения</param>
         /// <returns></returns>
-        [HttpPut("{id}")]
+        [Authorize(Roles = "Архивариус")]
+        [HttpPut("update-drawing/{id}")]
         public async Task<IActionResult> UpdateDraw(UpdateDrawCommand command, string id)
         {
             if (id != command.Id)

@@ -1,6 +1,6 @@
 ﻿<template>
   <DxPopup
-      :height="800"
+      :max-height="600"
       :width="360"
       position="center"
       title="Выберите тип документа"

@@ -7,6 +7,7 @@
       display-expr="name"
       value-expr="id"
       content-template="contentTemplate"
+      placeholder="Выберите документ (необязательно)"
       :show-clear-button="true"
       :show-drop-down-button="true"
   >
@@ -17,7 +18,7 @@
             :allow-column-resizing="true"
             :focused-row-enabled="true"
             :render-async="true"
-            :auto-expand-all="true"
+            :remote-operations="false"
             :selected-row-keys="[currentValue]"
             :focused-row-key="currentValue"
             :on-selection-changed="onSelectionChanged"

@@ -1,31 +1,33 @@
 <template>
   <div class="document-tree-list">
-    <h2 style="margin-left: 5px">Документы</h2>
-    <DxTreeList
+    <h2 style="margin-left: 5px">Все документы</h2>
+    <DxDataGrid
         :ref="gridRefName"
         :data-source="dataSource"
+
         :allow-column-resizing="true"
         :focused-row-enabled="true"
         :render-async="true"
-        parent-id-expr="parentId"
-        data-structure="plain"
-        key-expr="id"
-        @row-dbl-click="treeListRowDblClick"
+        :hover-state-enabled="true"
+        :show-row-lines="true"
+        :allow-column-reordering="true"
+        
+        @row-dbl-click="dataGridRowDblClick"
         @toolbar-preparing="toolbarPreparing($event)"
     >
       <DxColumn
-          caption="Номер документа"
-          data-field="number"
+          caption="Обозначение"
+          data-field="designation"
           data-type="string"
       />
       <DxColumn
           caption="Наименование"
-          data-field="subject"
+          data-field="name"
           data-type="string"
       />
       <DxColumn
-          caption="Дата"
-          data-field="date"
+          caption="Дата документа"
+          data-field="documentDate"
           data-type="date"
       />
       <DxColumn
@@ -33,6 +35,12 @@
           data-field="type"
       >
         <DxLookup :data-source="dataSourceDocumentTypes" value-expr="id" display-expr="name"/>
+      </DxColumn>
+      <DxColumn
+          caption="Номенклатура"
+          data-field="nomenclatureId"
+      >
+        <DxLookup :data-source="dataSourceNomenclatures" value-expr="id" :display-expr="nomenclatureDisplayExpr"/>
       </DxColumn>
       <DxColumn
           caption="Примечание"
@@ -46,15 +54,6 @@
           cell-template="buttonControl"
           alignment="center"
       />
-      <template #buttonControl="{data}">
-        <div class="dx-command-edit dx-command-edit-with-icons">
-          <a href="#"
-             class="dx-link dx-icon-edit dx-link-icon"
-             title="Редактировать"
-             v-on:click="updateDocument(data.data)"
-          ></a>
-        </div>
-      </template>
 
       <DxScrolling mode="virtual"/>
       <DxColumnChooser :enabled="true" mode="select"/>
@@ -64,15 +63,16 @@
       <DxLoadPanel :enabled="true" :show-pane="true" :show-indicator="true"/>
       <DxPaging :enabled="true" :page-size="20"/>
 
-      <template #buttonAddDocumentTemplate>
-        <DxButton
-            text="Добавить"
-            type="normal"
-            icon="plus"
-            @click="buttonAddDocumentClick"
-        />
+      <template #buttonControl="{data}">
+        <div class="dx-command-edit dx-command-edit-with-icons">
+          <a href="#"
+             class="dx-link dx-icon-edit dx-link-icon"
+             title="Редактировать"
+             v-on:click="updateDocument(data.data)"
+          ></a>
+        </div>
       </template>
-    </DxTreeList>
+    </DxDataGrid>
     <PreviewForm
         v-if="previewFormData.visible"
         :visible.sync="previewFormData.visible"
@@ -86,6 +86,7 @@
         :data-source-nomenclatures="dataSourceNomenclatures"
         :data-source-departments="dataSourceDepartments"
         :data-source-documents="dataSourceDocuments"
+        @submit="constructDocumentSubmit"
     />
     <DocumentTypeForm
         v-if="documentTypeFormVisible"
@@ -101,7 +102,7 @@ import PreviewForm from "../components/forms/PreviewForm";
 import ConstructDocumentEditForm from "../components/forms/ConstructDocumentEditForm";
 import DocumentTypeForm from "../components/forms/DocumentTypeForm";
 
-import DxTreeList, {
+import DxDataGrid, {
   DxColumn,
   DxScrolling,
   DxColumnChooser,
@@ -112,15 +113,19 @@ import DxTreeList, {
   DxPaging,
   DxLookup
 }
-  from 'devextreme-vue/tree-list';
+  from 'devextreme-vue/data-grid';
 import DxButton from "devextreme-vue/button";
+import DxSelectBox from "devextreme-vue/select-box";
+
 import notify from "devextreme/ui/notify";
 import axios from "axios";
 import * as AspNetData from "devextreme-aspnet-data-nojquery";
 import data from '../data';
+
 const dataSource = AspNetData.createStore({
   key: 'id',
   loadUrl: `/api/document`,
+  filter: null,
   onBeforeSend: (method, ajaxOptions) => {
     ajaxOptions.xhrFields = {withCredentials: true};
   },
@@ -153,7 +158,7 @@ export default {
     PreviewForm,
     ConstructDocumentEditForm,
     DocumentTypeForm,
-    DxTreeList,
+    DxDataGrid,
     DxColumn,
     DxScrolling,
     DxColumnChooser,
@@ -164,6 +169,7 @@ export default {
     DxPaging,
     DxButton,
     DxLookup,
+    DxSelectBox
   },
   watch: {
     documentType: async function (value) {
@@ -174,9 +180,9 @@ export default {
   async created() {
     await Promise.all(
         [
-          await this.initNomenclatures(),
-          await this.initDepartments(),
-          await this.initDocuments()
+          this.initNomenclatures(),
+          this.initDepartments(),
+          this.initDocuments()
         ]
     )
   },
@@ -213,6 +219,8 @@ export default {
           documentType === this.$enums.documentTypes.specification) {
         this.documentTypeFormVisible = false;
         this.documentType = documentType;
+        this.documentEditFormData.title += ` - ${data.documentTypes.find(t => t.id === documentType).name}`;
+        this.documentEditFormData.formData['type'] = documentType;
         this.documentEditFormData.visible = true;
       } else {
         notify('В разработке', 'info', 3000);
@@ -224,22 +232,60 @@ export default {
       this.documentEditFormData.visible = false;
       this.openNeededForm(data.type);
     },
-    treeListRowDblClick(row) {
-      this.previewFormData.documentSubject = `${row.data.subject} - ${data.types.find(t => t.id === row.data.type).name}`;
+    dataGridRowDblClick(row) {
+      this.previewFormData.documentSubject = `${row.data.subject} - ${data.documentTypes.find(t => t.id === row.data.type).name}`;
       this.previewFormData.visible = true;
     },
     buttonAddDocumentClick() {
-      this.documentEditFormData.formData = {};
-      this.documentEditFormData.title = 'Добавление документа';
+      this.documentEditFormData.title = `Регистрация документа`;
       this.documentEditFormData.visible = false;
+      this.documentEditFormData.formData = {};
       this.documentTypeFormVisible = true;
       this.documentType = null;
     },
+    nomenclatureDisplayExpr(data) {
+      return `${data.index} - ${data.name}`;
+    },
+    constructDocumentSubmit() {
+      if (this.documentEditFormData.formData.id) {
+        axios.put(`api/document/update-drawing/${this.documentEditFormData.formData.id}`,
+            this.documentEditFormData.formData)
+            .then(response => {
+              this.documentEditFormData.visible = false;
+              this.refreshDataGrid();
+              notify('Документ успешно обновлен', 'success', 3000);
+            })
+            .catch(response => {
+              notify('Во время обработки запроса произошла ошибка', 'error', 3000);
+            })
+      } else {
+        axios.post(`api/document/create-drawing`, this.documentEditFormData.formData)
+            .then(response => {
+              this.documentEditFormData.visible = false;
+              this.refreshDataGrid();
+              notify('Документ успешно зарегистрирован', 'success', 3000);
+            })
+            .catch(response => {
+              notify('Во время обработки запроса произошла ошибка', 'error', 3000);
+            })
+      }
+    },
+
     toolbarPreparing(e) {
       e.toolbarOptions.items.unshift(
           {
             location: 'after',
-            template: 'buttonAddDocumentTemplate'
+            widget: 'dxButton',
+            locateInMenu: 'auto',
+            showText: 'inMenu',
+            options: {
+              text: 'Добавить',
+              hint: 'Добавить',
+              icon: 'plus',
+              type: 'normal',
+              stylingMode: 'contained',
+              onClick: () => this.buttonAddDocumentClick()
+            }
           },
           {
             location: 'after',
@@ -264,7 +310,7 @@ export default {
 }
 </script>
 
-<style>
+<style lang="scss" т>
 .document-tree-list {
   height: calc(100vh - 150px);
 }

@@ -5,7 +5,7 @@
       position="center"
       :title="title"
       :show-title="true"
-      :resize-enabled="true"
+      :resize-enabled="false"
       :visible="visible"
       :close-on-outside-click="true"
       :hover-state-enabled="true"
@@ -18,34 +18,6 @@
           :form-data="formData"
           :col-count="2"
       >
-        <template #noteTemplate="{data}">
-          <DxTextArea
-              :value="formData[data.dataField]"
-              :height="150"
-              :max-height="150"
-          >
-          </DxTextArea>
-        </template>
-        <template #nomenclatureTemplate="{data}">
-          <NomenclatureDropDownBox
-              :value="formData[data.dataField]"
-              :on-value-changed="nomenclatureChanged"
-              :data-source="dataSourceNomenclatures"
-              :data-source-departments="dataSourceDepartments"
-          />
-        </template>
-        <template #documentTemplate="{data}">
-          <DocumentDropDownBox
-              :value="parseInt(formData[data.dataField]) === 0 ? null : formData[data.dataField]"
-              :on-value-changed="parentIdChanged"
-              :data-source="dataSourceDocuments"
-          />
-        </template>
-        <template #fileUploaderTemplate="{data}">
-          <DxFileUploader
-              upload-mode="useButtons"
-          />
-        </template>
         <DxGroupItem
             :col-count="2"
             :col-span="2"
@@ -57,16 +29,16 @@
               template="documentTemplate"
           />
           <DxSimpleItem
-              :col-span="1"
-              :label="{text:'Номер документа'}"
-              data-field="number"
+              :col-span="2"
+              :label="{text:'Обозначение'}"
+              data-field="designation"
               editor-type="dxTextBox"
           />
           <DxSimpleItem
-              :col-span="1"
+              :col-span="2"
               :label="{text: 'Наименование'}"
               editor-type="dxTextBox"
-              data-field="subject"
+              data-field="name"
           />
           <DxSimpleItem
               :col-span="2"
@@ -83,9 +55,15 @@
           />
           <DxSimpleItem
               :col-span="1"
-              :label="{text: 'Дата'}"
-              data-field="date"
+              :label="{text: 'Дата документа'}"
+              data-field="documentDate"
               editor-type="dxDateBox"
+          />
+          <DxSimpleItem
+              :col-span="1"
+              :label="{text: 'Дата поступления'}"
+              data-field="incomingDate"
+              template="incomingDateTemplate"
           />
         </DxGroupItem>
         <DxGroupItem
@@ -111,6 +89,41 @@
               horizontal-alignment="left"
           />
         </DxGroupItem>
+
+        <template #incomingDateTemplate="data">
+          <DxDateBox
+              v-model:value="formData[data.dataField]"
+              placeholder="Необязательно"
+          />
+        </template>
+        <template #noteTemplate="{data}">
+          <DxTextArea
+              v-model:value="formData[data.dataField]"
+              :height="150"
+              :max-height="150"
+          >
+          </DxTextArea>
+        </template>
+        <template #nomenclatureTemplate="{data}">
+          <NomenclatureDropDownBox
+              :value="formData[data.dataField]"
+              :on-value-changed="nomenclatureChanged"
+              :data-source="dataSourceNomenclatures"
+              :data-source-departments="dataSourceDepartments"
+          />
+        </template>
+        <template #documentTemplate="{data}">
+          <DocumentDropDownBox
+              :value="parseInt(formData[data.dataField]) === 0 ? null : formData[data.dataField]"
+              :on-value-changed="parentIdChanged"
+              :data-source="dataSourceDocuments"
+          />
+        </template>
+        <template #fileUploaderTemplate="{data}">
+          <DxFileUploader
+              upload-mode="useButtons"
+          />
+        </template>
       </DxForm>
     </div>
   </DxPopup>
@@ -119,9 +132,10 @@
 <script>
 import {DxPopup} from "devextreme-vue/popup";
 import {DxButtonItem, DxForm, DxGroupItem, DxSimpleItem} from "devextreme-vue/form";
-import DxTextArea from 'devextreme-vue/text-area'
-import DxFileUploader from 'devextreme-vue/file-uploader'
-import DxSelectBox from 'devextreme-vue/select-box'
+import DxTextArea from 'devextreme-vue/text-area';
+import DxDateBox from 'devextreme-vue/date-box';
+import DxFileUploader from 'devextreme-vue/file-uploader';
+import DxSelectBox from 'devextreme-vue/select-box';
 
 import NomenclatureDropDownBox from "../dropDowBoxes/NomenclatureDropDownBox";
 import DocumentDropDownBox from "../dropDowBoxes/DocumentDropDownBox";
@@ -169,7 +183,8 @@ export default {
     DxButtonItem,
     DxTextArea,
     DxFileUploader,
-    DxSelectBox
+    DxSelectBox,
+    DxDateBox
   },
   computed: {
     form: function () {
@@ -177,6 +192,7 @@ export default {
     },
   },
   created() {
+    console.log(this.formData)
   },
   methods: {
     nomenclatureChanged(value) {
@@ -191,14 +207,14 @@ export default {
     submit: function () {
       const validateResult = this.form.validate();
       console.log(this.formData)
-      // if (validateResult.isValid) {
-      //   this.$emit('submit', this.formData);
-      // }
+      if (validateResult.isValid) {
+        this.$emit('submit', this.formData);
+      }
     },
   }
 }
 </script>
 
-<style scoped>
+<style>
 
 </style>

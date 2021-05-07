@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Archive.Application.Common.Options.MongoDb;
+using Archive.Core.Collections.Common;
 using Archive.Core.Enums;
 using MediatR;
 using Microsoft.Extensions.Options;
@@ -9,7 +11,7 @@ using MongoDB.Driver;
 
 namespace Archive.Application.Feature.Document.Draw.Commands.CreateDraw
 {
-    public class CreateDrawCommand : IRequest
+    public class CreateDrawingCommand : IRequest
     {
         public string Name { get; set; }
         public string Designation { get; set; }
@@ -21,16 +23,16 @@ namespace Archive.Application.Feature.Document.Draw.Commands.CreateDraw
         public string ParentId { get; set; }
     }
 
-    public class CreateDrawCommandHandler : IRequestHandler<CreateDrawCommand>
+    public class CreateDrawingCommandHandler : IRequestHandler<CreateDrawingCommand>
     {
         private readonly MongoDbOptions _mongoDbOptions;
 
-        public CreateDrawCommandHandler(IOptions<MongoDbOptions> mongoDbOptions)
+        public CreateDrawingCommandHandler(IOptions<MongoDbOptions> mongoDbOptions)
         {
             _mongoDbOptions = mongoDbOptions.Value;
         }
 
-        public async Task<Unit> Handle(CreateDrawCommand request, CancellationToken cancellationToken)
+        public async Task<Unit> Handle(CreateDrawingCommand request, CancellationToken cancellationToken)
         {
             var client = new MongoClient(_mongoDbOptions.ConnectionString);
             var database = client.GetDatabase(_mongoDbOptions.DatabaseName);
@@ -45,7 +47,8 @@ namespace Archive.Application.Feature.Document.Draw.Commands.CreateDraw
                 DocumentDate = request.DocumentDate,
                 IncomingDate = request.IncomingDate ?? DateTime.Now,
                 NomenclatureId = request.NomenclatureId,
-                ParentId = request.ParentId
+                ParentId = request.ParentId,
+                History = new List<History>()
             };
 
             await documentsCollection.InsertOneAsync(entity, cancellationToken: cancellationToken);

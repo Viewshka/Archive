@@ -7,6 +7,7 @@
       :display-expr="displayExpr"
       value-expr="id"
       content-template="contentTemplate"
+      placeholder="Выберите номенклатурное дело"
       :show-clear-button="true"
       :show-drop-down-button="true"
   >
@@ -17,7 +18,7 @@
             :data-source="dataSource"
             :height="400"
             :render-async="true"
-            :remote-operations="true"
+            :remote-operations="false"
             :selected-row-keys="[currentValue]"
             :hover-state-enabled="true"
             :show-row-lines="true"

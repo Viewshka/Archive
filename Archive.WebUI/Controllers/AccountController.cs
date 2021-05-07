@@ -38,7 +38,6 @@ namespace Archive.WebUI.Controllers
             var user = new ApplicationUser
             {
                 Id = Guid.NewGuid().ToString(),
-                Email = registerModel.UserName,
                 UserName = registerModel.UserName,
                 NormalizedUserName = registerModel.UserName.ToUpper(),
                 EmailConfirmed = true,

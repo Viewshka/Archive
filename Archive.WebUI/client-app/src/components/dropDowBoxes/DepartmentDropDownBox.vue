@@ -17,7 +17,7 @@
             :data-source="dataSource"
             :height="400"
             :render-async="true"
-            :remote-operations="true"
+            :remote-operations="false"
             :selected-row-keys="[currentValue]"
             :hover-state-enabled="true"
             :show-row-lines="true"

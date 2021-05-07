@@ -1,8 +1,10 @@
 ﻿using System;
 using Archive.Core.Enums;
+using MongoDB.Bson.Serialization.Attributes;
 
 namespace Archive.Application.Feature.Document.Queries.GetAllDocuments
 {
+    [BsonIgnoreExtraElements]
     public class DocumentDto
     {
         public string Id { get; set; }

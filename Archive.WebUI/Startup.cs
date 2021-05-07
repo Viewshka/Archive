@@ -48,9 +48,7 @@ namespace Archive.WebUI
                     identity.Lockout.AllowedForNewUsers = true;
                     identity.Lockout.MaxFailedAccessAttempts = 3;
 
-                    identity.User.RequireUniqueEmail = true;
-
-                    identity.SignIn.RequireConfirmedEmail = true;
+                    identity.SignIn.RequireConfirmedAccount = true;
                 },
                 mongo =>
                 {
