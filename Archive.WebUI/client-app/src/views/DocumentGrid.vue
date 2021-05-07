@@ -79,19 +79,27 @@
         :document-subject="previewFormData.documentSubject"
     />
     <ConstructDocumentEditForm
-        v-if="documentEditFormData.visible"
-        :visible.sync="documentEditFormData.visible"
+        v-if="documentEditFormVisible"
+        :visible.sync="documentEditFormVisible"
         :title="documentEditFormData.title"
         :form-data="documentEditFormData.formData"
         :data-source-nomenclatures="dataSourceNomenclatures"
         :data-source-departments="dataSourceDepartments"
-        :data-source-documents="dataSourceDocuments"
         @submit="constructDocumentSubmit"
+    />
+    <KitConstructDocumentEditForm
+        v-if="kitDocumentsEditFormVisible"
+        :visible.sync="kitDocumentsEditFormVisible"
+        :title="documentEditFormData.title"
+        :form-data="documentEditFormData.formData"
+        :data-source-nomenclatures="dataSourceNomenclatures"
+        :data-source-departments="dataSourceDepartments"
+        @submit="kitConstructDocumentsSubmit"
     />
     <DocumentTypeForm
         v-if="documentTypeFormVisible"
         :visible.sync="documentTypeFormVisible"
-        :documentType.sync="documentType"
+        :document-type.sync="documentType"
     />
   </div>
 </template>
@@ -99,6 +107,7 @@
 <script>
 
 import PreviewForm from "../components/forms/PreviewForm";
+import KitConstructDocumentEditForm from "../components/forms/KitConstructDocumentEditForm";
 import ConstructDocumentEditForm from "../components/forms/ConstructDocumentEditForm";
 import DocumentTypeForm from "../components/forms/DocumentTypeForm";
 
@@ -125,7 +134,6 @@ import data from '../data';
 const dataSource = AspNetData.createStore({
   key: 'id',
   loadUrl: `/api/document`,
-  filter: null,
   onBeforeSend: (method, ajaxOptions) => {
     ajaxOptions.xhrFields = {withCredentials: true};
   },
@@ -140,16 +148,16 @@ export default {
       dataSourceDocumentTypes: data.documentTypes,
       dataSourceNomenclatures: [],
       dataSourceDepartments: [],
-      dataSourceDocuments: [],
       previewFormData: {
         visible: false,
         documentSubject: ''
       },
       documentEditFormData: {
-        visible: false,
         title: '',
         formData: {}
       },
+      documentEditFormVisible: false,
+      kitDocumentsEditFormVisible: false,
       documentTypeFormVisible: false,
       documentType: null,
     }
@@ -158,6 +166,7 @@ export default {
     PreviewForm,
     ConstructDocumentEditForm,
     DocumentTypeForm,
+    KitConstructDocumentEditForm,
     DxDataGrid,
     DxColumn,
     DxScrolling,
@@ -172,9 +181,16 @@ export default {
     DxSelectBox
   },
   watch: {
-    documentType: async function (value) {
-      if (!!parseInt(this.documentType))
-        this.openNeededForm(value);
+    documentType: function (value) {
+      if (!!parseInt(value))
+        this.documentEditFormData.title += ` - ${data.documentTypes.find(t => t.id === value).name}`
+      this.openNeededForm(value);
+    },
+    isLoaded: function (value) {
+      if (this.isLoaded) {
+        this.isLoaded = false;
+        this.dataSourceDocuments = this.$refs[this.gridRefName].instance.getDataSource()._items
+      }
     }
   },
   async created() {
@@ -182,7 +198,6 @@ export default {
         [
           this.initNomenclatures(),
           this.initDepartments(),
-          this.initDocuments()
         ]
     )
   },
@@ -205,23 +220,18 @@ export default {
             console.log(response)
           })
     },
-    async initDocuments() {
-      await axios.get(`api/document`)
-          .then(response => {
-            this.dataSourceDocuments = response.data;
-          })
-          .catch(response => {
-            console.log(response)
-          })
-    },
     openNeededForm(documentType) {
+      this.documentEditFormData.formData['type'] = documentType;
+
       if (documentType === this.$enums.documentTypes.drawing ||
           documentType === this.$enums.documentTypes.specification) {
         this.documentTypeFormVisible = false;
-        this.documentType = documentType;
-        this.documentEditFormData.title += ` - ${data.documentTypes.find(t => t.id === documentType).name}`;
-        this.documentEditFormData.formData['type'] = documentType;
-        this.documentEditFormData.visible = true;
+        this.documentEditFormVisible = true;
+
+      } else if (documentType === this.$enums.documentTypes.kitCD) {
+        this.documentTypeFormVisible = false;
+        this.kitDocumentsEditFormVisible = true;
+
       } else {
         notify('В разработке', 'info', 3000);
       }
@@ -229,7 +239,7 @@ export default {
     updateDocument(data) {
       this.documentEditFormData.formData = data;
       this.documentEditFormData.title = 'Редактирование документа';
-      this.documentEditFormData.visible = false;
+      this.documentEditFormVisible = false;
       this.openNeededForm(data.type);
     },
     dataGridRowDblClick(row) {
@@ -238,10 +248,9 @@ export default {
     },
     buttonAddDocumentClick() {
       this.documentEditFormData.title = `Регистрация документа`;
-      this.documentEditFormData.visible = false;
+      this.documentEditFormVisible = false;
       this.documentEditFormData.formData = {};
       this.documentTypeFormVisible = true;
-      this.documentType = null;
     },
     nomenclatureDisplayExpr(data) {
       return `${data.index} - ${data.name}`;
@@ -251,7 +260,7 @@ export default {
         axios.put(`api/document/update-drawing/${this.documentEditFormData.formData.id}`,
             this.documentEditFormData.formData)
             .then(response => {
-              this.documentEditFormData.visible = false;
+              this.documentEditFormVisible = false;
               this.refreshDataGrid();
               notify('Документ успешно обновлен', 'success', 3000);
             })
@@ -261,7 +270,7 @@ export default {
       } else {
         axios.post(`api/document/create-drawing`, this.documentEditFormData.formData)
             .then(response => {
-              this.documentEditFormData.visible = false;
+              this.documentEditFormVisible = false;
               this.refreshDataGrid();
               notify('Документ успешно зарегистрирован', 'success', 3000);
             })
@@ -270,7 +279,30 @@ export default {
             })
       }
     },
-
+    kitConstructDocumentsSubmit() {
+      if (this.documentEditFormData.formData.id) {
+        axios.put(`api/document/update-kit-construct-documents/${this.documentEditFormData.formData.id}`,
+            this.documentEditFormData.formData)
+            .then(response => {
+              this.kitDocumentsEditFormVisible = false;
+              this.refreshDataGrid();
+              notify('Документ успешно обновлен', 'success', 3000);
+            })
+            .catch(response => {
+              notify('Во время обработки запроса произошла ошибка', 'error', 3000);
+            })
+      } else {
+        axios.post(`api/document/create-kit-construct-documents`, this.documentEditFormData.formData)
+            .then(response => {
+              this.kitDocumentsEditFormVisible = false;
+              this.refreshDataGrid();
+              notify('Документ успешно зарегистрирован', 'success', 3000);
+            })
+            .catch(response => {
+              notify('Во время обработки запроса произошла ошибка', 'error', 3000);
+            })
+      }
+    },
     toolbarPreparing(e) {
       e.toolbarOptions.items.unshift(
           {
@@ -310,7 +342,7 @@ export default {
 }
 </script>
 
-<style lang="scss" т>
+<style lang="scss">
 .document-tree-list {
   height: calc(100vh - 150px);
 }

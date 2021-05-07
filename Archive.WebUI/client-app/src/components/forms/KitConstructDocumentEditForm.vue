@@ -65,13 +65,12 @@
               data-field="incomingDate"
               template="incomingDateTemplate"
           />
+          <DxSimpleItem
+              :col-span="2"
+              template="fileUploaderTemplate"
+          />
         </DxGroupItem>
-        <DxGroupItem
-            :col-count="2"
-            :col-span="2"
-        >
-          <DxSimpleItem template="fileUploaderTemplate"/>
-        </DxGroupItem>
+
 
         <DxGroupItem
             :col-count="2"
@@ -142,7 +141,7 @@ import DocumentDropDownBox from "../dropDowBoxes/DocumentDropDownBox";
 import axios from "axios";
 
 export default {
-  name: "ConstructDocumentEditForm",
+  name: "KitConstructDocumentEditForm",
   props: {
     visible: {
       type: Boolean,
@@ -184,17 +183,17 @@ export default {
     DxSelectBox,
     DxDateBox
   },
-  computed: {
-    form: function () {
-      return this.$refs[this.formRefName].instance;
-    },
-  },
   created() {
     console.log(this.formData);
     axios.get('api/document')
         .then(response => {
           this.dataSourceDocuments = response.data;
         });
+  },
+  computed: {
+    form: function () {
+      return this.$refs[this.formRefName].instance;
+    },
   },
   methods: {
     nomenclatureChanged(value) {
@@ -217,6 +216,6 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
 
 </style>

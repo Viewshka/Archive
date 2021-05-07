@@ -26,7 +26,16 @@
             value-expr="id"
             key-expr="id"
         >
-          <DxColumn data-field="name" caption="Документ"/>
+          <DxColumn 
+              data-field="name" 
+              caption="Документ"
+          />
+          <DxColumn 
+              data-field="type" 
+              caption="Тип документа"
+          >
+            <DxLookup :data-source="dataSourceDocumentType" value-expr="id" display-expr="name"/>
+          </DxColumn>
 
           <DxSearchPanel :visible="true" :width="450"/>
           <DxPaging :enabled="true" :page-size="20"/>
@@ -46,15 +55,17 @@ import DxDataGrid, {
   DxPaging,
   DxScrolling,
   DxSearchPanel,
-  DxSelection
+  DxSelection,
 } from "devextreme-vue/data-grid";
+
+import data from '../../data';
 
 const dropDownBoxRefName = 'dropDownBoxRef';
 export default {
   name: "DocumentDropDownBox",
   props: {
     value: {
-      type: Number,
+      type: String,
       default: null
     },
     onValueChanged: {
@@ -72,6 +83,7 @@ export default {
       dropDownBoxRefName,
       currentValue: this.value,
       dropDownOptions: {width: 500},
+      dataSourceDocumentType: data.documentTypes,
     }
   },
   components: {

@@ -14,5 +14,6 @@ namespace Archive.Application.Feature.Document.Queries.GetAllDocuments
         public DateTime DocumentDate { get; set; }
         public DocumentTypeEnum Type { get; set; }
         public string NomenclatureId { get; set; }
+        public string ParentId { get; set; }
     }
 }
