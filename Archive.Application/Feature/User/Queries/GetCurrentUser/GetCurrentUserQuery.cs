@@ -1,8 +1,11 @@
-﻿using System.Threading;
+﻿using System;
+using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Archive.Application.Common.Interfaces;
 using Archive.Application.Common.Options.MongoDb;
 using Archive.Application.Extensions;
+using Archive.Core.Enums;
 using MediatR;
 using Microsoft.Extensions.Options;
 using MongoDB.Driver;
@@ -34,7 +37,11 @@ namespace Archive.Application.Feature.User.Queries.GetCurrentUser
             var filter = Builders<CurrentUserDto>.Filter.Eq("_id", _currentUserService.UserId);
             var currentUser = await usersCollection.Find(filter).SingleOrDefaultAsync(cancellationToken);
 
-            currentUser?.SetBriefName();
+            if (currentUser == null) throw new Exception("Пользователь не найден");
+
+            currentUser.SetBriefName();
+            currentUser.IsUserArchivist = currentUser.Roles
+                .Any(role => role == Roles.Архивариус);
 
             return currentUser;
         }

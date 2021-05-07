@@ -61,10 +61,10 @@ export default {
     unsubscribe(this.screenSizeChanged);
   },
   computed: {
+    ...mapState(["currentUser"]),
     cssClasses() {
       return ["app"].concat(this.screen.cssClasses);
     },
-    ...mapState(["currentUser"]),
   },
   methods: {
     screenSizeChanged() {

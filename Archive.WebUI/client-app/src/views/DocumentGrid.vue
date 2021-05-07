@@ -11,7 +11,7 @@
         :hover-state-enabled="true"
         :show-row-lines="true"
         :allow-column-reordering="true"
-        
+
         @row-dbl-click="dataGridRowDblClick"
         @toolbar-preparing="toolbarPreparing($event)"
     >
@@ -102,7 +102,7 @@
         :document-type.sync="documentType"
     />
     <GiveOutDocumentsForm
-      :visible.sync="giveOutDocumentsFormVisible"
+        :visible.sync="giveOutDocumentsFormVisible"
     />
   </div>
 </template>
@@ -134,6 +134,7 @@ import notify from "devextreme/ui/notify";
 import axios from "axios";
 import * as AspNetData from "devextreme-aspnet-data-nojquery";
 import data from '../data';
+import {mapState} from 'vuex';
 
 const dataSource = AspNetData.createStore({
   key: 'id',
@@ -185,6 +186,9 @@ export default {
     DxButton,
     DxLookup,
     DxSelectBox
+  },
+  computed: {
+    ...mapState(['currentUser']),
   },
   watch: {
     documentType: function (value) {
@@ -261,7 +265,7 @@ export default {
     nomenclatureDisplayExpr(data) {
       return `${data.index} - ${data.name}`;
     },
-    giveOutDocumentButtonClick(){
+    giveOutDocumentButtonClick() {
       this.giveOutDocumentsFormVisible = true;
     },
     constructDocumentSubmit() {
@@ -323,7 +327,8 @@ export default {
               hint: 'Выдача',
               type: 'normal',
               stylingMode: 'contained',
-              onClick: () => this.giveOutDocumentButtonClick()
+              onClick: () => this.giveOutDocumentButtonClick(),
+              visible: this.currentUser.isUserArchivist
             }
           },
           {
@@ -337,7 +342,8 @@ export default {
               icon: 'plus',
               type: 'normal',
               stylingMode: 'contained',
-              onClick: () => this.buttonAddDocumentClick()
+              onClick: () => this.buttonAddDocumentClick(),
+              visible: this.currentUser.isUserArchivist
             }
           },
           {

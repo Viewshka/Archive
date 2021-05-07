@@ -13,5 +13,7 @@ namespace Archive.Application.Feature.User.Queries.GetCurrentUser
         public string DepartmentId { get; set; }
         public IList<string> Roles { get; set; }
         public string BriefName { get; set; }
+
+        public bool IsUserArchivist { get; set; }
     }
 }

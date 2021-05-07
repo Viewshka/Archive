@@ -41,9 +41,6 @@ export default {
     cancel: function () {
       this.$emit('update:visible', false);
     },
-    onItemClick(item) {
-      this.$emit('update:documentType', item.itemData.id);
-    },
   },
 }
 </script>
