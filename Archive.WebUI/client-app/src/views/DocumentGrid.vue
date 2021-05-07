@@ -101,6 +101,9 @@
         :visible.sync="documentTypeFormVisible"
         :document-type.sync="documentType"
     />
+    <GiveOutDocumentsForm
+      :visible.sync="giveOutDocumentsFormVisible"
+    />
   </div>
 </template>
 
@@ -110,6 +113,7 @@ import PreviewForm from "../components/forms/PreviewForm";
 import KitConstructDocumentEditForm from "../components/forms/KitConstructDocumentEditForm";
 import ConstructDocumentEditForm from "../components/forms/ConstructDocumentEditForm";
 import DocumentTypeForm from "../components/forms/DocumentTypeForm";
+import GiveOutDocumentsForm from "../components/forms/GiveOutDocumentsForm";
 
 import DxDataGrid, {
   DxColumn,
@@ -160,6 +164,7 @@ export default {
       kitDocumentsEditFormVisible: false,
       documentTypeFormVisible: false,
       documentType: null,
+      giveOutDocumentsFormVisible: false,
     }
   },
   components: {
@@ -167,6 +172,7 @@ export default {
     ConstructDocumentEditForm,
     DocumentTypeForm,
     KitConstructDocumentEditForm,
+    GiveOutDocumentsForm,
     DxDataGrid,
     DxColumn,
     DxScrolling,
@@ -255,6 +261,9 @@ export default {
     nomenclatureDisplayExpr(data) {
       return `${data.index} - ${data.name}`;
     },
+    giveOutDocumentButtonClick(){
+      this.giveOutDocumentsFormVisible = true;
+    },
     constructDocumentSubmit() {
       if (this.documentEditFormData.formData.id) {
         axios.put(`api/document/update-drawing/${this.documentEditFormData.formData.id}`,
@@ -305,6 +314,18 @@ export default {
     },
     toolbarPreparing(e) {
       e.toolbarOptions.items.unshift(
+          {
+            location: 'after',
+            widget: 'dxButton',
+            locateInMenu: 'auto',
+            options: {
+              text: 'Выдача',
+              hint: 'Выдача',
+              type: 'normal',
+              stylingMode: 'contained',
+              onClick: () => this.giveOutDocumentButtonClick()
+            }
+          },
           {
             location: 'after',
             widget: 'dxButton',
