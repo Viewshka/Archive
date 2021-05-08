@@ -74,9 +74,10 @@
       </template>
     </DxDataGrid>
     <PreviewForm
-        v-if="previewFormData.visible"
+        v-if="previewFormData.visible && previewFormData.url"
         :visible.sync="previewFormData.visible"
         :document-subject="previewFormData.documentSubject"
+        :url="previewFormData.url"
     />
     <ConstructDocumentEditForm
         v-if="documentEditFormVisible"
@@ -155,7 +156,8 @@ export default {
       dataSourceDepartments: [],
       previewFormData: {
         visible: false,
-        documentSubject: ''
+        documentSubject: '',
+        url: null
       },
       documentEditFormData: {
         title: '',
@@ -253,8 +255,9 @@ export default {
       this.openNeededForm(data.type);
     },
     dataGridRowDblClick(row) {
-      this.previewFormData.documentSubject = `${row.data.subject} - ${data.documentTypes.find(t => t.id === row.data.type).name}`;
+      this.previewFormData.documentSubject = `${row.data.name} - ${data.documentTypes.find(t => t.id === row.data.type).name}`;
       this.previewFormData.visible = true;
+      this.previewFormData.url = `api/file/${row.data.id}`
     },
     buttonAddDocumentClick() {
       this.documentEditFormData.title = `Регистрация документа`;
@@ -292,13 +295,15 @@ export default {
             })
       }
     },
-    kitConstructDocumentsSubmit() {
+    kitConstructDocumentsSubmit(fileFormData) {
       if (this.documentEditFormData.formData.id) {
         axios.put(`api/document/update-kit-construct-documents/${this.documentEditFormData.formData.id}`,
             this.documentEditFormData.formData)
             .then(response => {
               this.kitDocumentsEditFormVisible = false;
               this.refreshDataGrid();
+              if (fileFormData)
+                this.uploadFile(this.documentEditFormData.formData.id, fileFormData)
               notify('Документ успешно обновлен', 'success', 3000);
             })
             .catch(response => {
@@ -309,12 +314,29 @@ export default {
             .then(response => {
               this.kitDocumentsEditFormVisible = false;
               this.refreshDataGrid();
+              if (fileFormData)
+                this.uploadFile(this.documentEditFormData.formData.id, fileFormData)
               notify('Документ успешно зарегистрирован', 'success', 3000);
             })
             .catch(response => {
               notify('Во время обработки запроса произошла ошибка', 'error', 3000);
             })
       }
+    },
+    uploadFile(documentId, fileFormData) {
+      axios.post(`api/file/upload/${documentId}`,
+          fileFormData,
+          {
+            headers: {
+              'Content-Type': 'multipart/form-data'
+            }
+          })
+          .then(response => {
+            console.log(response)
+          })
+          .catch(response => {
+            console.log(response)
+          })
     },
     toolbarPreparing(e) {
       e.toolbarOptions.items.unshift(

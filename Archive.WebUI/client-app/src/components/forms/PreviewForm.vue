@@ -14,7 +14,7 @@
       @hidden="cancel"
   >
     <div style="height: 100%">
-      <iframe src="files/draw2.pdf" height="100%" width="100%"></iframe>
+      <iframe v-if="url" :src="url" height="100%" width="100%"></iframe>
     </div>
 
     <DxToolbarItem
@@ -37,6 +37,10 @@ export default {
       required: true
     },
     documentSubject: {
+      type: String,
+      required: true
+    },
+    url: {
       type: String,
       required: true
     }

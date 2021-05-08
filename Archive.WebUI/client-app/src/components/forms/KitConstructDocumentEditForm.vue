@@ -121,6 +121,7 @@
         <template #fileUploaderTemplate="{data}">
           <DxFileUploader
               upload-mode="useButtons"
+              @value-changed="fileUploaderValueChanged"
           />
         </template>
       </DxForm>
@@ -167,7 +168,8 @@ export default {
   data() {
     return {
       formRefName: 'form',
-      dataSourceDocuments: []
+      dataSourceDocuments: [],
+      files: []
     }
   },
   components: {
@@ -184,7 +186,6 @@ export default {
     DxDateBox
   },
   created() {
-    console.log(this.formData);
     axios.get('api/document')
         .then(response => {
           this.dataSourceDocuments = response.data;
@@ -196,6 +197,9 @@ export default {
     },
   },
   methods: {
+    fileUploaderValueChanged(data) {
+      this.files = data.value;
+    },
     nomenclatureChanged(value) {
       this.formData['nomenclatureId'] = value;
     },
@@ -207,9 +211,12 @@ export default {
     },
     submit: function () {
       const validateResult = this.form.validate();
-      console.log(this.formData)
+      let formData = new FormData();
+      if (this.files.length > 0)
+        formData.append('file', this.files[0], this.files[0].name)
+
       if (validateResult.isValid) {
-        this.$emit('submit', this.formData);
+        this.$emit('submit', formData);
       }
     },
   }
