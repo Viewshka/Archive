@@ -48,7 +48,6 @@ namespace Archive.Application.Feature.Document.KitConstructDoc.Commands.CreateKi
                 IncomingDate = request.IncomingDate ?? DateTime.Now,
                 NomenclatureId = request.NomenclatureId,
                 ParentId = request.ParentId,
-                History = new List<History>()
             };
 
             await documentsCollection.InsertOneAsync(entity, cancellationToken: cancellationToken);

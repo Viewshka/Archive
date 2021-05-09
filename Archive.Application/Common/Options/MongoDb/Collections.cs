@@ -9,5 +9,6 @@
 
         public string Nomenclatures { get; set; }
         public string Departments { get; set; }
+        public string Requisitions { get; set; }
     }
 }

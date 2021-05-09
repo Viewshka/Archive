@@ -56,10 +56,5 @@ namespace Archive.Core.Collections.Document
         /// Принадлежность к другому документу
         /// </summary>
         public string ParentId { get; set; }
-
-        /// <summary>
-        /// История использования документа
-        /// </summary>
-        public IList<History> History { get; set; }
     }
 }
