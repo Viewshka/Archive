@@ -4,6 +4,7 @@ import Home from '../views/Home.vue';
 import defaultLayout from '../layouts/SideNavOuterToolbar';
 import NomenclatureGrid from "../views/NomenclatureGrid";
 import DocumentGrid from "../views/DocumentGrid";
+import Requisition from "../views/Requisition";
 
 Vue.use(VueRouter)
 
@@ -37,7 +38,7 @@ const routes = [
     name: 'history',
     components: {
       layout: defaultLayout,
-      content: DocumentGrid
+      content: Requisition
     }
   },
   {
