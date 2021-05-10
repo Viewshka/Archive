@@ -4,6 +4,7 @@ using Archive.Application.Feature.Document.Draw.Commands.UpdateDraw;
 using Archive.Application.Feature.Document.KitConstructDoc.Commands.CreateKitConstructDoc;
 using Archive.Application.Feature.Document.KitConstructDoc.Commands.UpdateKitCreateConstructDoc;
 using Archive.Application.Feature.Document.Queries.GetAllDocuments;
+using Archive.Application.Feature.Document.Queries.GetDocumentHistory;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -76,6 +77,16 @@ namespace Archive.WebUI.Controllers
                 return BadRequest("Ошибка обновления");
 
             return Ok(await Mediator.Send(command));
+        }
+        
+        /// <summary>
+        /// Получить историю использования документа
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("{documentId}/history")]
+        public async Task<IActionResult> GetDocumentHistory(string documentId)
+        {
+            return Ok(await Mediator.Send(new GetDocumentHistoryQuery {DocumentId = documentId}));
         }
     }
 }

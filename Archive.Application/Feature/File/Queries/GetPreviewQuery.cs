@@ -49,7 +49,7 @@ namespace Archive.Application.Feature.File.Queries
             var ms = new MemoryStream();
             await file.CopyToAsync(ms, cancellationToken);
             ms.Position = 0;
-            
+            file.Close();
             return ms;
         }
     }

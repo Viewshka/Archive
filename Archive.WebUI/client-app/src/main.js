@@ -5,7 +5,6 @@ import store from './store'
 import axios from 'axios';
 import appInfo from './app-info'
 import enums from './plugins/enums_plugin'
-
 import 'devextreme/dist/css/dx.common.css';
 import './themes/generated/theme.base.css';
 import './themes/generated/theme.additional.css';

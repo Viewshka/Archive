@@ -78,6 +78,11 @@
              title="Редактировать"
              v-on:click="updateDocument(data.data)"
           ></a>
+          <a href="#"
+             class="dx-link dx-icon-find dx-link-icon"
+             title="История использования документа"
+             v-on:click="openDocumentHistory(data.data)"
+          ></a>
         </div>
       </template>
     </DxTreeList>
@@ -117,6 +122,12 @@
         :data-source="dataSourceUsersForAutocomplete"
         @submit="giveOutDocumentsSubmit"
     />
+    <DocumentHistoryForm
+        v-if="historyFormData.visible"
+        :data-source="historyFormData.dataSource"
+        :title="historyFormData.title"
+        :visible.sync="historyFormData.visible"
+    />
   </div>
 </template>
 
@@ -127,6 +138,7 @@ import KitConstructDocumentEditForm from "../components/forms/KitConstructDocume
 import ConstructDocumentEditForm from "../components/forms/ConstructDocumentEditForm";
 import DocumentTypeForm from "../components/forms/DocumentTypeForm";
 import GiveOutDocumentsForm from "../components/forms/GiveOutDocumentsForm";
+import DocumentHistoryForm from "../components/forms/DocumentHistoryForm";
 
 import DxTreeList, {
   DxColumn,
@@ -185,7 +197,12 @@ export default {
       documentTypeFormVisible: false,
       documentType: null,
       dataSourceUsersForAutocomplete: [],
-      selectedRowKeys: []
+      selectedRowKeys: [],
+      historyFormData: {
+        visible: false,
+        title: null,
+        dataSource: [],
+      }
     }
   },
   components: {
@@ -194,6 +211,7 @@ export default {
     DocumentTypeForm,
     KitConstructDocumentEditForm,
     GiveOutDocumentsForm,
+    DocumentHistoryForm,
     DxTreeList,
     DxColumn,
     DxScrolling,
@@ -237,6 +255,21 @@ export default {
     )
   },
   methods: {
+    openDocumentHistory(data) {
+      axios.get(`api/document/${data.id}/history`)
+          .then(response => {
+            this.historyFormData.title = data.name;
+            this.historyFormData.visible = true;
+            this.historyFormData.loading = true;
+            this.historyFormData.dataSource = response.data;
+          })
+          .catch(response => {
+            notify("Во время запроса произошла ошибка", 'error', 3000);
+          })
+          .finally(() => {
+            this.historyFormData.loading = false;
+          })
+    },
     async initNomenclatures() {
       await axios.get(`api/nomenclature`)
           .then(response => {
