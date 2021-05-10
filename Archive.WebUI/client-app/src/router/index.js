@@ -31,6 +31,14 @@ const routes = [
       layout: defaultLayout,
       content: DocumentGrid
     }
+  },  
+  {
+    path: '/history',
+    name: 'history',
+    components: {
+      layout: defaultLayout,
+      content: DocumentGrid
+    }
   },
   {
     path: "*",

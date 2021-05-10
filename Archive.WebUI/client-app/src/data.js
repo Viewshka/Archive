@@ -16,6 +16,21 @@
     }
 ];
 
+const documentUsageTypes = [
+    {
+        id:1,
+        name: 'Копирование'
+    },
+    {
+        id:2,
+        name: 'Просмотр'
+    },
+    {
+        id:3,
+        name: 'Выписки'
+    }
+];
+
 export default {
-    documentTypes
+    documentTypes, documentUsageTypes
 }

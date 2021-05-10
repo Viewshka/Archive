@@ -1,7 +1,7 @@
 <template>
   <div class="document-tree-list">
     <h2 style="margin-left: 5px">Все документы</h2>
-    <DxDataGrid
+    <DxTreeList
         :ref="gridRefName"
         :data-source="dataSource"
 
@@ -11,6 +11,12 @@
         :hover-state-enabled="true"
         :show-row-lines="true"
         :allow-column-reordering="true"
+        :auto-expand-all="true"
+        v-model:selected-row-keys="selectedRowKeys"
+        :root-value="null"
+        key-expr="id"
+        parent-id-expr="parentId"
+        data-structure="plain"
 
         @row-dbl-click="dataGridRowDblClick"
         @toolbar-preparing="toolbarPreparing($event)"
@@ -62,17 +68,19 @@
       <DxHeaderFilter :visible="true"/>
       <DxLoadPanel :enabled="true" :show-pane="true" :show-indicator="true"/>
       <DxPaging :enabled="true" :page-size="20"/>
+      <DxSelection :recursive="true" :allow-select-all="false" mode="multiple"/>
 
       <template #buttonControl="{data}">
         <div class="dx-command-edit dx-command-edit-with-icons">
-          <a href="#"
+          <a v-if="currentUser.isUserArchivist"
+             href="#"
              class="dx-link dx-icon-edit dx-link-icon"
              title="Редактировать"
              v-on:click="updateDocument(data.data)"
           ></a>
         </div>
       </template>
-    </DxDataGrid>
+    </DxTreeList>
     <PreviewForm
         v-if="previewFormData.visible && previewFormData.url"
         :visible.sync="previewFormData.visible"
@@ -103,7 +111,11 @@
         :document-type.sync="documentType"
     />
     <GiveOutDocumentsForm
-        :visible.sync="giveOutDocumentsFormVisible"
+        v-if="giveOutDocumentsFormData.visible"
+        :visible.sync="giveOutDocumentsFormData.visible"
+        :form-data="giveOutDocumentsFormData.formData"
+        :data-source="dataSourceUsersForAutocomplete"
+        @submit="giveOutDocumentsSubmit"
     />
   </div>
 </template>
@@ -116,7 +128,7 @@ import ConstructDocumentEditForm from "../components/forms/ConstructDocumentEdit
 import DocumentTypeForm from "../components/forms/DocumentTypeForm";
 import GiveOutDocumentsForm from "../components/forms/GiveOutDocumentsForm";
 
-import DxDataGrid, {
+import DxTreeList, {
   DxColumn,
   DxScrolling,
   DxColumnChooser,
@@ -125,9 +137,10 @@ import DxDataGrid, {
   DxHeaderFilter,
   DxLoadPanel,
   DxPaging,
-  DxLookup
+  DxLookup,
+  DxSelection
 }
-  from 'devextreme-vue/data-grid';
+  from 'devextreme-vue/tree-list';
 import DxButton from "devextreme-vue/button";
 import DxSelectBox from "devextreme-vue/select-box";
 
@@ -163,11 +176,16 @@ export default {
         title: '',
         formData: {}
       },
+      giveOutDocumentsFormData: {
+        visible: false,
+        formData: {}
+      },
       documentEditFormVisible: false,
       kitDocumentsEditFormVisible: false,
       documentTypeFormVisible: false,
       documentType: null,
-      giveOutDocumentsFormVisible: false,
+      dataSourceUsersForAutocomplete: [],
+      selectedRowKeys: []
     }
   },
   components: {
@@ -176,7 +194,7 @@ export default {
     DocumentTypeForm,
     KitConstructDocumentEditForm,
     GiveOutDocumentsForm,
-    DxDataGrid,
+    DxTreeList,
     DxColumn,
     DxScrolling,
     DxColumnChooser,
@@ -187,7 +205,8 @@ export default {
     DxPaging,
     DxButton,
     DxLookup,
-    DxSelectBox
+    DxSelectBox,
+    DxSelection
   },
   computed: {
     ...mapState(['currentUser']),
@@ -203,6 +222,9 @@ export default {
         this.isLoaded = false;
         this.dataSourceDocuments = this.$refs[this.gridRefName].instance.getDataSource()._items
       }
+    },
+    selectedRowKeys: function (value) {
+      console.log(value)
     }
   },
   async created() {
@@ -210,6 +232,7 @@ export default {
         [
           this.initNomenclatures(),
           this.initDepartments(),
+          this.initUsersForAutoComplete()
         ]
     )
   },
@@ -227,6 +250,15 @@ export default {
       await axios.get(`api/department`)
           .then(response => {
             this.dataSourceDepartments = response.data;
+          })
+          .catch(response => {
+            console.log(response)
+          })
+    },
+    async initUsersForAutoComplete() {
+      await axios.get(`api/user/users`)
+          .then(response => {
+            this.dataSourceUsersForAutocomplete = response.data;
           })
           .catch(response => {
             console.log(response)
@@ -269,7 +301,9 @@ export default {
       return `${data.index} - ${data.name}`;
     },
     giveOutDocumentButtonClick() {
-      this.giveOutDocumentsFormVisible = true;
+      console.log(this.getSelectedRowKeys())
+      this.giveOutDocumentsFormData.formData['documents'] = this.getSelectedRowKeys();
+      this.giveOutDocumentsFormData.visible = true;
     },
     constructDocumentSubmit() {
       if (this.documentEditFormData.formData.id) {
@@ -323,6 +357,20 @@ export default {
             })
       }
     },
+    getSelectedRowKeys() {
+      return this.$refs[this.gridRefName].instance.getSelectedRowKeys("all");
+    },
+    giveOutDocumentsSubmit(formData) {
+      axios.post(`api/requisition`, formData)
+          .then(response => {
+            this.giveOutDocumentsFormData.visible = false;
+            this.refreshDataGrid();
+            notify('Документ выдан', 'success', 3000);
+          })
+          .catch(response => {
+            notify('Во время обработки запроса произошла ошибка', 'error', 3000);
+          })
+    },
     uploadFile(documentId, fileFormData) {
       axios.post(`api/file/upload/${documentId}`,
           fileFormData,
@@ -349,8 +397,8 @@ export default {
               hint: 'Выдача',
               type: 'normal',
               stylingMode: 'contained',
-              onClick: () => this.giveOutDocumentButtonClick(),
-              visible: this.currentUser.isUserArchivist
+              visible: this.currentUser.isUserArchivist,
+              onClick: () => this.giveOutDocumentButtonClick()
             }
           },
           {

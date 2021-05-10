@@ -15,6 +15,12 @@ export default [
         icon: "file",
     },
     {
+
+        text: "История документов",
+        path: "/history",
+        icon: "alignleft",
+    },
+    {
         text: "Справочники",
         icon: "menu",
         items: [

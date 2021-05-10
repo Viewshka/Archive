@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Archive.Application.Common.Interfaces;
 using Archive.Application.Common.Options.MongoDb;
+using Archive.Core.Enums;
 using MediatR;
 using Microsoft.Extensions.Options;
 using MongoDB.Driver;
@@ -14,7 +15,8 @@ namespace Archive.Application.Feature.Requisition.Commands.CreateRequisition
     {
         public string RecipientId { get; set; }
         public IList<string> Documents { get; set; }
-        public DateTime DateOfGiveOut { get; set; }
+        public DateTime? DateOfGiveOut { get; set; }
+        public DocumentUsageType UsageType { get; set; }
     }
 
     public class CreateRequisitionCommandHandler : IRequestHandler<CreateRequisitionCommand>
@@ -42,7 +44,8 @@ namespace Archive.Application.Feature.Requisition.Commands.CreateRequisition
                 GiverId = _currentUserService.UserId,
                 RecipientId = request.RecipientId,
                 DateOfCreated = DateTime.Now,
-                DateOfGiveOut = request.DateOfGiveOut
+                DateOfGiveOut = request.DateOfGiveOut ?? DateTime.Now,
+                UsageType = request.UsageType
             };
             
             await requisitionCollection.InsertOneAsync(entity,cancellationToken:cancellationToken);

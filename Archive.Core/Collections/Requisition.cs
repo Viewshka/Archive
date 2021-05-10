@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Archive.Core.Collections.Common;
+using Archive.Core.Enums;
 
 namespace Archive.Core.Collections
 {
@@ -35,5 +36,10 @@ namespace Archive.Core.Collections
         /// Дата возврата
         /// </summary>
         public DateTime? DateOfReturn { get; set; }
+
+        /// <summary>
+        /// Характер использования документа
+        /// </summary>
+        public DocumentUsageType UsageType { get; set; }
     }
 }
