@@ -5,6 +5,7 @@ using Archive.Application.Feature.Document.KitConstructDoc.Commands.CreateKitCon
 using Archive.Application.Feature.Document.KitConstructDoc.Commands.UpdateKitCreateConstructDoc;
 using Archive.Application.Feature.Document.Queries.GetAllDocuments;
 using Archive.Application.Feature.Document.Queries.GetDocumentHistory;
+using Archive.Application.Feature.Document.ReturnDocument;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -87,6 +88,16 @@ namespace Archive.WebUI.Controllers
         public async Task<IActionResult> GetDocumentHistory(string documentId)
         {
             return Ok(await Mediator.Send(new GetDocumentHistoryQuery {DocumentId = documentId}));
+        }
+        
+        /// <summary>
+        /// Вернуть документ
+        /// </summary>
+        /// <returns></returns>
+        [HttpPut("{id}/return")]
+        public async Task<IActionResult> ReturnDocument(string id)
+        {
+            return Ok(await Mediator.Send(new ReturnDocumentCommand {Id = id}));
         }
     }
 }

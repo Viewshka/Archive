@@ -38,17 +38,34 @@
       >
         <DxLookup :data-source="dataSourceUsageType" value-expr="id" display-expr="name"/>
       </DxColumn>
-
+      <DxColumn
+          caption="Управление"
+          type="buttons"
+          :hiding-priority="10"
+          cell-template="buttonControl"
+          alignment="center"
+      />
+      
       <DxMasterDetail
           style="background: grey"
           :enabled="false"
           template="masterDetailTemplate"
       />
-      
+
       <template #masterDetailTemplate="{data}">
         <DocumentsMasterDetail :data-source="getDataSourceDocumentsFiltered(data)"/>
       </template>
-      
+
+      <template #buttonControl="{data}">
+        <div class="dx-command-edit dx-command-edit-with-icons">
+          <a href="#"
+             class="dx-link dx-icon-check dx-link-icon"
+             title="Возврашен"
+             v-on:click="returnDocument(data.data)"
+          ></a>
+        </div>
+      </template>
+
       <DxScrolling mode="virtual"/>
       <DxColumnChooser :enabled="true" mode="select"/>
       <DxSearchPanel :visible="true"/>
@@ -130,8 +147,8 @@ export default {
     ])
   },
   methods: {
-    getDataSourceDocumentsFiltered(data){
-      return this.dataSourceDocuments.filter(doc=>data.data.documents.includes(doc.id));
+    getDataSourceDocumentsFiltered(data) {
+      return this.dataSourceDocuments.filter(doc => data.data.documents.includes(doc.id));
     },
     selectionChanged(e) {
       e.component.collapseAll(-1);
@@ -172,6 +189,21 @@ export default {
             }
           },
       )
+    },
+    returnDocument(data){
+      confirm(`Вернуть документы?`, "Возврат")
+          .then((dialogResult) => {
+            if (dialogResult) {
+              axios.put(`/api/document/${data.id}/return`)
+                  .then(() => {
+                    this.refreshDataGrid();
+                  })
+                  .catch(reason => {
+                    console.log(reason)
+                    notify('Во время обработки запроса произошла ошибка', 'error', 3000)
+                  });
+            }
+          });
     },
     async refreshDataGrid() {
       this.dataGrid.refresh();
