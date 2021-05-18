@@ -64,7 +64,8 @@
       </template>
 
       <template #buttonControl="{data}">
-        <div class="dx-command-edit dx-command-edit-with-icons" v-if="data.data.status !== $enums.requisitionStatus.canceled">
+        <div class="dx-command-edit dx-command-edit-with-icons"
+             v-if="data.data.status !== $enums.requisitionStatus.canceled">
           <a v-if="!data.data.isDenied && data.data.dateOfGiveOut && data.data.dateOfReturn === null"
              href="#"
              class="dx-link dx-icon-check dx-link-icon"
@@ -75,16 +76,19 @@
              href="#"
              class="dx-link dx-icon-close dx-link-icon"
              title="Отказать"
+             v-on:click="deniedRequisition(data.data.id)"
           ></a>
           <a v-if="currentUser.isUserArchivist && data.data.status === $enums.requisitionStatus.new"
              href="#"
              class="dx-link dx-icon-box dx-link-icon"
              title="Готово к выдаче"
+             v-on:click="readyToGiveOut(data.data.id)"
           ></a>
           <a v-if="!currentUser.isUserArchivist && data.data.status === $enums.requisitionStatus.new"
              href="#"
              class="dx-link dx-icon-close dx-link-icon"
              title="Отозвать заявку"
+             v-on:click="canceledRequisition(data.data.id)"
           ></a>
         </div>
       </template>
@@ -187,7 +191,7 @@ export default {
     ])
   },
   methods: {
-    requisitionFormSubmit(formData){
+    requisitionFormSubmit(formData) {
       axios.post(`api/requisition`, formData)
           .then(response => {
             this.requisitionForm.visible = false;
@@ -264,6 +268,52 @@ export default {
           .then((dialogResult) => {
             if (dialogResult) {
               axios.put(`/api/document/${data.id}/return`)
+                  .then(() => {
+                    this.refreshDataGrid();
+                  })
+                  .catch(reason => {
+                    console.log(reason)
+                    notify('Во время обработки запроса произошла ошибка', 'error', 3000)
+                  });
+            }
+          });
+    },
+    canceledRequisition(id) {
+      confirm(`Отменить заявку?`, "Отмена")
+          .then((dialogResult) => {
+            if (dialogResult) {
+              axios.put(`/api/requisition/${id}/canceled`)
+                  .then(() => {
+                    notify('Заявка отменена', 'success', 3000)
+                    this.refreshDataGrid();
+                  })
+                  .catch(reason => {
+                    console.log(reason)
+                    notify('Во время обработки запроса произошла ошибка', 'error', 3000)
+                  });
+            }
+          });
+    },
+    deniedRequisition(id) {
+      confirm(`Отказаться от заявки?`, "Отказ")
+          .then((dialogResult) => {
+            if (dialogResult) {
+              axios.put(`/api/requisition/${id}/denied`)
+                  .then(() => {
+                    this.refreshDataGrid();
+                  })
+                  .catch(reason => {
+                    console.log(reason)
+                    notify('Во время обработки запроса произошла ошибка', 'error', 3000)
+                  });
+            }
+          });
+    },
+    readyToGiveOut(id) {
+      confirm(`Сообщить о готовности выдать документы?`, "Готовность к выдаче")
+          .then((dialogResult) => {
+            if (dialogResult) {
+              axios.put(`/api/requisition/${id}/ready`)
                   .then(() => {
                     this.refreshDataGrid();
                   })

@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Archive.Application.Common.Options.MongoDb;
 using Archive.Application.Extensions;
+using Archive.Core.Enums;
 using MediatR;
 using Microsoft.Extensions.Options;
 using MongoDB.Driver;
@@ -42,15 +43,31 @@ namespace Archive.Application.Feature.Document.Queries.GetDocumentHistory
 
 
             return result.Where(dto => dto.Documents.Contains(request.DocumentId))
-                .Select(s=>new HistoryDto
+                .Select(s => new HistoryDto
                 {
-                    Giver = s.Giver.FirstOrDefault().GetFullName(),
-                    Recipient = s.Recipient.FirstOrDefault().GetFullName(),
+                    Giver = s.Giver.FirstOrDefault() is null ? "-" : s.Giver.FirstOrDefault().GetFullName(),
+                    Recipient = s.Recipient.FirstOrDefault() is null ? "-" : s.Recipient.FirstOrDefault().GetFullName(),
                     UsageType = s.UsageType.GetString(),
                     DateOfReturn = s.DateOfReturn,
-                    DateOfGiveOut = s.DateOfGiveOut
+                    DateOfGiveOut = s.DateOfGiveOut,
+                    Status = GetStatus(s).StatusToString()
                 })
                 .ToList();
+        }
+
+        private static RequisitionStatusEnum GetStatus(RequisitionInfoDto requisition)
+        {
+            return requisition.Canceled
+                ? RequisitionStatusEnum.Отменено
+                : requisition.IsDenied
+                    ? RequisitionStatusEnum.Отказано
+                    : requisition.DateOfReturn.HasValue
+                        ? RequisitionStatusEnum.Возвращено
+                        : !requisition.DateOfReturn.HasValue && !requisition.DateOfGiveOut.HasValue
+                            ? RequisitionStatusEnum.Новая
+                            : requisition.DateOfGiveOut.HasValue && !requisition.DateOfReturn.HasValue
+                                ? RequisitionStatusEnum.Выдано
+                                : RequisitionStatusEnum.ГотовоКВыдаче;
         }
     }
 }

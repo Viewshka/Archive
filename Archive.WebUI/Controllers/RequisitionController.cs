@@ -1,6 +1,8 @@
 ﻿using System.Threading.Tasks;
+using Archive.Application.Feature.Requisition.Commands.CanceledRequisition;
 using Archive.Application.Feature.Requisition.Commands.CreateRequisition;
 using Archive.Application.Feature.Requisition.Commands.DeleteRequisition;
+using Archive.Application.Feature.Requisition.Commands.ReadyRequisition;
 using Archive.Application.Feature.Requisition.Commands.UpdateRequisition;
 using Archive.Application.Feature.Requisition.Queries.GetRequisitions;
 using Microsoft.AspNetCore.Mvc;
@@ -34,8 +36,26 @@ namespace Archive.WebUI.Controllers
         public async Task<IActionResult> DeleteRequisition(string id)
         {
             if (string.IsNullOrWhiteSpace(id)) return BadRequest("Не указан идентификатор");
-            
+
             return Ok(await Mediator.Send(new DeleteRequisitionCommand {Id = id}));
+        }
+
+        [HttpPut("{id}/canceled")]
+        public async Task<IActionResult> CanceledRequisition(string id)
+        {
+            return Ok(await Mediator.Send(new CanceledRequisitionCommand {Id = id}));
+        }
+        
+        [HttpPut("{id}/denied")]
+        public async Task<IActionResult> DeniedRequisition(string id)
+        {
+            return Ok(await Mediator.Send(new CanceledRequisitionCommand {Id = id}));
+        }
+        
+        [HttpPut("{id}/ready")]
+        public async Task<IActionResult> ReadyRequisition(string id)
+        {
+            return Ok(await Mediator.Send(new ReadyRequisitionCommand {Id = id}));
         }
     }
 }

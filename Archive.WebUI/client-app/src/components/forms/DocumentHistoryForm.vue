@@ -14,18 +14,20 @@
       @hidden="cancel"
   >
     <div>
+<!--      TODO: Добавить скроллинг-->
       <DxList
           :data-source="dataSource"
       >
         <template #item="{ data: item }">
           <div>
             <span><b>Выдал:</b> {{ item.giver }} <br></span>
-            <span><b>Дата выдачи:</b> {{ $moment(item.dateOfGiveOut).locale('ru').format('L') }}<br></span>
+            <span v-if="item.dateOfGiveOut"><b>Дата выдачи:</b> {{ $moment(item.dateOfGiveOut).locale('ru').format('L') }}<br></span>
+            <span v-else><b>Дата выдачи:</b> - <br></span>
             <span> <b>Получатель:</b> {{ item.recipient }}<br></span>
             <span v-if="item.dateOfReturn"><b>Дата возврата:</b> {{ $moment(item.dateOfReturn).locale('ru').format('L') }}<br></span>
             <span v-else><b>Дата возврата:</b> - <br></span>
-            <span><b>Характер использования:</b> {{item.usageType}}</span>
-            <!--TODO: Добавить статус -->
+            <span><b>Характер использования:</b> {{item.usageType}}<br></span>
+            <span><b>Статус:</b> {{item.status}}</span>
           </div>
         </template>
       </DxList>
