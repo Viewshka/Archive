@@ -16,7 +16,7 @@ export default [
     },
     {
 
-        text: "История документов",
+        text: "Заявки",
         path: "/history",
         icon: "alignleft",
     },

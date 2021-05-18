@@ -10,6 +10,9 @@ namespace Archive.Core.Collections
     /// </summary>
     public class Requisition : Entity
     {
+        /// <summary>
+        /// Получатель (он же создатель заявки)
+        /// </summary>
         public string RecipientId { get; set; }
 
         /// <summary>
@@ -30,7 +33,7 @@ namespace Archive.Core.Collections
         /// <summary>
         /// Дата выдачи документа
         /// </summary>
-        public DateTime DateOfGiveOut { get; set; }
+        public DateTime? DateOfGiveOut { get; set; }
 
         /// <summary>
         /// Дата возврата
@@ -41,5 +44,10 @@ namespace Archive.Core.Collections
         /// Характер использования документа
         /// </summary>
         public DocumentUsageType UsageType { get; set; }
+
+        /// <summary>
+        /// Отказано
+        /// </summary>
+        public bool IsDenied { get; set; }
     }
 }

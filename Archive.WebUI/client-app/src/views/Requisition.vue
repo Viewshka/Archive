@@ -1,6 +1,7 @@
 ﻿<template>
   <div style="height: calc(100vh - 150px);">
-    <h2 style="margin-left: 5px">Использование документов</h2>
+    <h2 v-if="currentUser.isUserArchivist" style="margin-left: 5px">Заявки на выдачу документов</h2>
+    <h2 v-else style="margin-left: 5px">Мои заявки</h2>
     <DxDataGrid
         :ref="gridRefName"
         :data-source="dataSource"
@@ -39,13 +40,19 @@
         <DxLookup :data-source="dataSourceUsageType" value-expr="id" display-expr="name"/>
       </DxColumn>
       <DxColumn
+          caption="Статус"
+          data-field="status"
+      >
+        <DxLookup :data-source="dataSourceStatus" value-expr="id" display-expr="name"/>
+      </DxColumn>
+      <DxColumn
           caption="Управление"
           type="buttons"
           :hiding-priority="10"
           cell-template="buttonControl"
           alignment="center"
       />
-      
+
       <DxMasterDetail
           style="background: grey"
           :enabled="false"
@@ -58,7 +65,8 @@
 
       <template #buttonControl="{data}">
         <div class="dx-command-edit dx-command-edit-with-icons">
-          <a href="#"
+          <a v-if="currentUser.isUserArchivist && data.data.dateOfReturn === null"
+             href="#"
              class="dx-link dx-icon-check dx-link-icon"
              title="Возврашен"
              v-on:click="returnDocument(data.data)"
@@ -99,7 +107,7 @@ import * as AspNetData from 'devextreme-aspnet-data-nojquery'
 import axios from "axios";
 import notify from "devextreme/ui/notify";
 import DocumentsMasterDetail from "../components/DocumentsMasterDetail";
-
+import {mapState} from "vuex";
 const dataSource = AspNetData.createStore({
   key: 'id',
   loadUrl: `/api/requisition`,
@@ -117,12 +125,14 @@ export default {
       dataSourceDocuments: [],
       dataSourceUsers: [],
       dataSourceUsageType: data.documentUsageTypes,
+      dataSourceStatus: data.requisitionStatus,
     }
   },
   computed: {
+    ...mapState(['currentUser']),
     dataGrid: function () {
       return this.$refs[this.gridRefName].instance;
-    }
+    },
   },
   components: {
     DocumentsMasterDetail,
@@ -185,12 +195,12 @@ export default {
               icon: 'refresh',
               type: 'normal',
               stylingMode: 'contained',
-              onClick: this.refreshDataGrid()
+              onClick: () => this.refreshDataGrid()
             }
           },
       )
     },
-    returnDocument(data){
+    returnDocument(data) {
       confirm(`Вернуть документы?`, "Возврат")
           .then((dialogResult) => {
             if (dialogResult) {

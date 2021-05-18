@@ -18,19 +18,42 @@
 
 const documentUsageTypes = [
     {
-        id:1,
+        id: 1,
         name: 'Копирование'
     },
     {
-        id:2,
+        id: 2,
         name: 'Просмотр'
     },
     {
-        id:3,
+        id: 3,
         name: 'Выписки'
     }
 ];
 
+const requisitionStatus = [
+    {
+        id: 1,
+        name: 'Новая'
+    },
+    {
+        id: 2,
+        name: 'Готово к выдаче'
+    },
+    {
+        id: 3,
+        name: 'Выдано'
+    },
+    {
+        id: 4,
+        name: 'Отказано'
+    },
+    {
+        id: 5,
+        name: 'Возвращено'
+    },
+]
+
 export default {
-    documentTypes, documentUsageTypes
+    documentTypes, documentUsageTypes,requisitionStatus
 }

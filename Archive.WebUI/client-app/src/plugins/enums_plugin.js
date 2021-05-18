@@ -1,7 +1,7 @@
 ﻿const documentTypes = Object.freeze({
     drawing: 1,
     specification: 2,
-    kitCD : 3
+    kitCD: 3
 });
 
 const roles = Object.freeze({
@@ -9,10 +9,18 @@ const roles = Object.freeze({
     employee: 'fc8630e3-e025-4b41-8751-1a92b93154da'
 });
 
+const requisitionStatus = Object.freeze({
+    new: 1,
+    readyToGiveOut: 2,
+    wasGiveOut: 3,
+    isDenied: 4,
+    returned: 5
+});
+
 export default {
     install(Vue, options) {
         Vue.prototype.$enums = {
-            documentTypes, roles
+            documentTypes, roles, requisitionStatus
         };
     }
 }

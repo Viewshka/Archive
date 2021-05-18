@@ -1,5 +1,5 @@
 <template>
-  <div id="root" class="dx-swatch-arktika-scheme" v-if="currentUser"
+  <div v-if="currentUser" id="root" class="dx-swatch-arktika-scheme" 
        v-bind:class="{ 'dx-swatch-arktika-scheme-dark': isDark }">
     <div :class="cssClasses">
       <RouterView
