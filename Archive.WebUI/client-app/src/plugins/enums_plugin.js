@@ -14,7 +14,8 @@ const requisitionStatus = Object.freeze({
     readyToGiveOut: 2,
     wasGiveOut: 3,
     isDenied: 4,
-    returned: 5
+    returned: 5,
+    canceled: 6
 });
 
 export default {

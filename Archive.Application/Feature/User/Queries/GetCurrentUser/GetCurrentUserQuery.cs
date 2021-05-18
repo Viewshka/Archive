@@ -41,7 +41,7 @@ namespace Archive.Application.Feature.User.Queries.GetCurrentUser
 
             currentUser.SetBriefName();
             currentUser.IsUserArchivist = currentUser.Roles
-                .Any(role => role == Roles.Архивариус);
+                .Any(role => role == Roles.АрхивариусId);
 
             return currentUser;
         }

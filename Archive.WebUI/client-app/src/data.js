@@ -52,6 +52,10 @@ const requisitionStatus = [
         id: 5,
         name: 'Возвращено'
     },
+    {
+        id: 6,
+        name: 'Отменено'
+    },
 ]
 
 export default {

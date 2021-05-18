@@ -4,8 +4,10 @@ using System.Threading;
 using System.Threading.Tasks;
 using Archive.Application.Common.Interfaces;
 using Archive.Application.Common.Options.MongoDb;
+using Archive.Core.Collections.Identity;
 using Archive.Core.Enums;
 using MediatR;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using MongoDB.Driver;
 
@@ -22,12 +24,15 @@ namespace Archive.Application.Feature.Requisition.Commands.CreateRequisition
     public class CreateRequisitionCommandHandler : IRequestHandler<CreateRequisitionCommand>
     {
         private readonly ICurrentUserService _currentUserService;
+        private readonly UserManager<ApplicationUser> _userManager;
         private readonly MongoDbOptions _mongoDbOptions;
 
         public CreateRequisitionCommandHandler(ICurrentUserService currentUserService,
-            IOptions<MongoDbOptions> mongoDbOptions)
+            IOptions<MongoDbOptions> mongoDbOptions,
+            UserManager<ApplicationUser> userManager)
         {
             _currentUserService = currentUserService;
+            _userManager = userManager;
             _mongoDbOptions = mongoDbOptions.Value;
         }
 
@@ -38,18 +43,27 @@ namespace Archive.Application.Feature.Requisition.Commands.CreateRequisition
             var requisitionCollection = database
                 .GetCollection<Core.Collections.Requisition>(_mongoDbOptions.Collections.Requisitions);
 
+            var currentUser = await _userManager.FindByIdAsync(_currentUserService.UserId);
+            var isUserArchivist = await _userManager.IsInRoleAsync(currentUser, Roles.Архивариус);
+
             var entity = new Core.Collections.Requisition
             {
                 Documents = request.Documents,
-                GiverId = _currentUserService.UserId,
                 RecipientId = request.RecipientId,
+                UsageType = request.UsageType,
                 DateOfCreated = DateTime.Now,
-                DateOfGiveOut = request.DateOfGiveOut ?? DateTime.Now,
-                UsageType = request.UsageType
+                IsDenied = false,
+                Canceled = false
             };
-            
-            await requisitionCollection.InsertOneAsync(entity,cancellationToken:cancellationToken);
-            
+
+            if (isUserArchivist)
+            {
+                entity.GiverId = _currentUserService.UserId;
+                entity.DateOfGiveOut = request.DateOfGiveOut ?? DateTime.Now;
+            }
+
+            await requisitionCollection.InsertOneAsync(entity, cancellationToken: cancellationToken);
+
             return Unit.Value;
         }
     }

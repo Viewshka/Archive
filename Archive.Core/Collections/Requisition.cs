@@ -49,5 +49,10 @@ namespace Archive.Core.Collections
         /// Отказано
         /// </summary>
         public bool IsDenied { get; set; }
+
+        /// <summary>
+        /// Отмена
+        /// </summary>
+        public bool Canceled { get; set; }
     }
 }

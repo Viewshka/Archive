@@ -63,15 +63,17 @@ namespace Archive.Application.Feature.Requisition.Queries.GetRequisitions
                     DateOfCreated = requisition.DateOfCreated,
                     DateOfGiveOut = requisition.DateOfGiveOut,
                     DateOfReturn = requisition.DateOfReturn,
-                    Status = requisition.IsDenied
-                        ? RequisitionStatusEnum.Отказано
-                        : requisition.DateOfReturn.HasValue
-                            ? RequisitionStatusEnum.Возвращено
-                            : !requisition.DateOfReturn.HasValue && !requisition.DateOfGiveOut.HasValue
-                                ? RequisitionStatusEnum.Новая
-                                : requisition.DateOfGiveOut.HasValue && !requisition.DateOfReturn.HasValue
-                                    ? RequisitionStatusEnum.Выдано
-                                    : RequisitionStatusEnum.ГотовоКВыдаче
+                    Status = requisition.Canceled
+                        ? RequisitionStatusEnum.Отменено
+                        : requisition.IsDenied
+                            ? RequisitionStatusEnum.Отказано
+                            : requisition.DateOfReturn.HasValue
+                                ? RequisitionStatusEnum.Возвращено
+                                : !requisition.DateOfReturn.HasValue && !requisition.DateOfGiveOut.HasValue
+                                    ? RequisitionStatusEnum.Новая
+                                    : requisition.DateOfGiveOut.HasValue && !requisition.DateOfReturn.HasValue
+                                        ? RequisitionStatusEnum.Выдано
+                                        : RequisitionStatusEnum.ГотовоКВыдаче
                 })
                 .ToList();
         }

@@ -64,12 +64,27 @@
       </template>
 
       <template #buttonControl="{data}">
-        <div class="dx-command-edit dx-command-edit-with-icons">
-          <a v-if="currentUser.isUserArchivist && data.data.dateOfReturn === null"
+        <div class="dx-command-edit dx-command-edit-with-icons" v-if="data.data.status !== $enums.requisitionStatus.canceled">
+          <a v-if="!data.data.isDenied && data.data.dateOfGiveOut && data.data.dateOfReturn === null"
              href="#"
              class="dx-link dx-icon-check dx-link-icon"
-             title="Возврашен"
+             title="Вернуть"
              v-on:click="returnDocument(data.data)"
+          ></a>
+          <a v-if="currentUser.isUserArchivist && data.data.status === $enums.requisitionStatus.new"
+             href="#"
+             class="dx-link dx-icon-close dx-link-icon"
+             title="Отказать"
+          ></a>
+          <a v-if="currentUser.isUserArchivist && data.data.status === $enums.requisitionStatus.new"
+             href="#"
+             class="dx-link dx-icon-box dx-link-icon"
+             title="Готово к выдаче"
+          ></a>
+          <a v-if="!currentUser.isUserArchivist && data.data.status === $enums.requisitionStatus.new"
+             href="#"
+             class="dx-link dx-icon-close dx-link-icon"
+             title="Отозвать заявку"
           ></a>
         </div>
       </template>
@@ -83,6 +98,13 @@
       <DxPaging :enabled="true" :page-size="20"/>
       <DxSelection mode="single"/>
     </DxDataGrid>
+    <RequisitionForm
+        v-if="requisitionForm.visible"
+        :visible.sync="requisitionForm.visible"
+        :form-data="requisitionForm.formData"
+        :data-source-users="dataSourceUsers"
+        @submit="requisitionFormSubmit"
+    />
   </div>
 </template>
 
@@ -108,6 +130,9 @@ import axios from "axios";
 import notify from "devextreme/ui/notify";
 import DocumentsMasterDetail from "../components/DocumentsMasterDetail";
 import {mapState} from "vuex";
+
+import RequisitionForm from "../components/forms/requisition/RequisitionForm";
+
 const dataSource = AspNetData.createStore({
   key: 'id',
   loadUrl: `/api/requisition`,
@@ -126,6 +151,10 @@ export default {
       dataSourceUsers: [],
       dataSourceUsageType: data.documentUsageTypes,
       dataSourceStatus: data.requisitionStatus,
+      requisitionForm: {
+        visible: false,
+        formData: {}
+      }
     }
   },
   computed: {
@@ -136,6 +165,7 @@ export default {
   },
   components: {
     DocumentsMasterDetail,
+    RequisitionForm,
     DxDataGrid,
     DxColumn,
     DxScrolling,
@@ -157,6 +187,21 @@ export default {
     ])
   },
   methods: {
+    requisitionFormSubmit(formData){
+      axios.post(`api/requisition`, formData)
+          .then(response => {
+            this.requisitionForm.visible = false;
+            this.refreshDataGrid();
+            notify('Заявка создана', 'success', 3000);
+          })
+          .catch(response => {
+            notify('Во время обработки запроса произошла ошибка', 'error', 3000);
+          })
+    },
+    createRequisition() {
+      this.requisitionForm.formData = {recipientId: this.currentUser.id};
+      this.requisitionForm.visible = true;
+    },
     getDataSourceDocumentsFiltered(data) {
       return this.dataSourceDocuments.filter(doc => data.data.documents.includes(doc.id));
     },
@@ -196,6 +241,20 @@ export default {
               type: 'normal',
               stylingMode: 'contained',
               onClick: () => this.refreshDataGrid()
+            }
+          },
+          {
+            location: 'after',
+            widget: 'dxButton',
+            locateInMenu: 'auto',
+            showText: 'inMenu',
+            options: {
+              text: 'Создать заявку',
+              hint: 'Создать заявку',
+              icon: 'plus',
+              type: 'normal',
+              stylingMode: 'contained',
+              onClick: () => this.createRequisition()
             }
           },
       )

@@ -25,7 +25,7 @@
             <span v-if="item.dateOfReturn"><b>Дата возврата:</b> {{ $moment(item.dateOfReturn).locale('ru').format('L') }}<br></span>
             <span v-else><b>Дата возврата:</b> - <br></span>
             <span><b>Характер использования:</b> {{item.usageType}}</span>
-
+            <!--TODO: Добавить статус -->
           </div>
         </template>
       </DxList>
