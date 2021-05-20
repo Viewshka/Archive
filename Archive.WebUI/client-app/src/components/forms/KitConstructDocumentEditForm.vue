@@ -66,6 +66,12 @@
               template="incomingDateTemplate"
           />
           <DxSimpleItem
+              :col-span="1"
+              :label="{text: 'Дата хранения'}"
+              data-field="storageDate"
+              template="storageDateTemplate"
+          />
+          <DxSimpleItem
               :col-span="2"
               template="fileUploaderTemplate"
           />
@@ -89,6 +95,12 @@
           />
         </DxGroupItem>
 
+        <template #storageDateTemplate="data">
+          <DxDateBox
+              v-model:value="formData[data.dataField]"
+              placeholder="Необязательно"
+          />
+        </template>
         <template #incomingDateTemplate="data">
           <DxDateBox
               v-model:value="formData[data.dataField]"

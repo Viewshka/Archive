@@ -56,5 +56,7 @@ namespace Archive.Core.Collections.Document
         /// Принадлежность к другому документу
         /// </summary>
         public string ParentId { get; set; }
+
+        public DateTime? StorageDate { get; set; }
     }
 }

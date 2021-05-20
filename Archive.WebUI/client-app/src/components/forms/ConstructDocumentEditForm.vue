@@ -65,6 +65,12 @@
               data-field="incomingDate"
               template="incomingDateTemplate"
           />
+          <DxSimpleItem
+              :col-span="1"
+              :label="{text: 'Дата хранения'}"
+              data-field="storageDate"
+              template="storageDateTemplate"
+          />
         </DxGroupItem>
         <DxGroupItem
             :col-count="2"
@@ -90,6 +96,12 @@
           />
         </DxGroupItem>
 
+        <template #storageDateTemplate="data">
+          <DxDateBox
+              v-model:value="formData[data.dataField]"
+              placeholder="Необязательно"
+          />
+        </template>
         <template #incomingDateTemplate="data">
           <DxDateBox
               v-model:value="formData[data.dataField]"
@@ -213,7 +225,7 @@ export default {
     },
     submit: function () {
       const validateResult = this.form.validate();
-      
+
       let formData = new FormData();
       if (this.files.length > 0)
         formData.append('file', this.files[0], this.files[0].name)

@@ -18,6 +18,7 @@ namespace Archive.Application.Feature.Document.KitConstructDoc.Commands.UpdateKi
         public DateTime? IncomingDate { get; set; }
         public string NomenclatureId { get; set; }
         public string ParentId { get; set; }
+        public DateTime? StorageDate { get; set; }
     }
 
     public class UpdateKitConstructDocCommandHandler : IRequestHandler<UpdateKitConstructDocCommand>
@@ -44,6 +45,7 @@ namespace Archive.Application.Feature.Document.KitConstructDoc.Commands.UpdateKi
                 .Set("NomenclatureId", request.NomenclatureId)
                 .Set("ParentId", request.ParentId)
                 .Set("Name", request.Name)
+                .Set("StorageDate", request.StorageDate)
                 .Set("Note", request.Note);
 
             var result = await documentsCollection.UpdateOneAsync(filter, update, cancellationToken: cancellationToken);

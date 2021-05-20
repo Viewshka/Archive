@@ -19,6 +19,7 @@ namespace Archive.Application.Feature.Document.Draw.Commands.UpdateDraw
         public DateTime? IncomingDate { get; set; }
         public string NomenclatureId { get; set; }
         public string ParentId { get; set; }
+        public DateTime? StorageDate { get; set; }
     }
 
     public class UpdateDrawCommandHandler : IRequestHandler<UpdateDrawCommand>
@@ -45,6 +46,7 @@ namespace Archive.Application.Feature.Document.Draw.Commands.UpdateDraw
                 .Set("NomenclatureId", request.NomenclatureId)
                 .Set("ParentId", request.ParentId)
                 .Set("Name", request.Name)
+                .Set("StorageDate", request.StorageDate)
                 .Set("Note", request.Note);
 
             var result = await documentsCollection.UpdateOneAsync(filter, update, cancellationToken: cancellationToken);
