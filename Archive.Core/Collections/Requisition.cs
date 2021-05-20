@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Security.AccessControl;
 using Archive.Core.Collections.Common;
 using Archive.Core.Enums;
 
@@ -54,5 +55,7 @@ namespace Archive.Core.Collections
         /// Отмена
         /// </summary>
         public bool Canceled { get; set; }
+
+        public bool ReadyToGiveOut { get; set; }
     }
 }

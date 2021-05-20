@@ -2,6 +2,7 @@
 using Archive.Application.Feature.Requisition.Commands.CanceledRequisition;
 using Archive.Application.Feature.Requisition.Commands.CreateRequisition;
 using Archive.Application.Feature.Requisition.Commands.DeleteRequisition;
+using Archive.Application.Feature.Requisition.Commands.GiveOutDocument;
 using Archive.Application.Feature.Requisition.Commands.ReadyRequisition;
 using Archive.Application.Feature.Requisition.Commands.UpdateRequisition;
 using Archive.Application.Feature.Requisition.Queries.GetRequisitions;
@@ -56,6 +57,12 @@ namespace Archive.WebUI.Controllers
         public async Task<IActionResult> ReadyRequisition(string id)
         {
             return Ok(await Mediator.Send(new ReadyRequisitionCommand {Id = id}));
+        }       
+        
+        [HttpPut("{id}/give-out")]
+        public async Task<IActionResult> GiveOutDocuments(string id)
+        {
+            return Ok(await Mediator.Send(new GiveOutDocumentCommand {Id = id}));
         }
     }
 }

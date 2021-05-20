@@ -69,11 +69,11 @@ namespace Archive.Application.Feature.Requisition.Queries.GetRequisitions
                             ? RequisitionStatusEnum.Отказано
                             : requisition.DateOfReturn.HasValue
                                 ? RequisitionStatusEnum.Возвращено
-                                : !requisition.DateOfReturn.HasValue && !requisition.DateOfGiveOut.HasValue
-                                    ? RequisitionStatusEnum.Новая
+                                : requisition.ReadyToGiveOut && !requisition.DateOfGiveOut.HasValue
+                                    ? RequisitionStatusEnum.ГотовоКВыдаче
                                     : requisition.DateOfGiveOut.HasValue && !requisition.DateOfReturn.HasValue
                                         ? RequisitionStatusEnum.Выдано
-                                        : RequisitionStatusEnum.ГотовоКВыдаче
+                                        : RequisitionStatusEnum.Новая
                 })
                 .ToList();
         }

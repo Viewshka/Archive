@@ -35,6 +35,12 @@
               data-field="documents"
               template="documentsTemplate"
           />
+          <DxSimpleItem
+              :col-span="2"
+              :label="{text: 'Получатель'}"
+              data-field="recipientId"
+              template="recipientTemplate"
+          />
         </DxGroupItem>
         <DxGroupItem
             :col-count="2"
@@ -74,6 +80,22 @@
               :show-clear-button="true"
           />
         </template>
+        <template #recipientTemplate="{data}">
+          <DxSelectBox
+              v-model:value="formData['recipientId']"
+              :data-source="dataSourceUsers"
+
+              display-expr="briefName"
+              value-expr="userId"
+              search-expr="briefName"
+              search-mode="contains"
+
+              :search-enabled="true"
+              :open-on-field-click="true"
+              :show-drop-down-button="true"
+              :show-clear-button="true"
+          />
+        </template>
         <template #dateOfGiveOutTemplate="{data}">
           <DxDateBox
               v-model:value="formData[data.dataField]"
@@ -95,7 +117,7 @@ import data from '../../../data'
 import DocumentsDropDownBox from "../../dropDowBoxes/DocumentsDropDownBox";
 import axios from "axios";
 export default {
-  name: "RequisitionForm",
+  name: "RequisitionFormForArchivist",
   props: {
     visible: {
       type: Boolean,
@@ -105,6 +127,10 @@ export default {
       type: Object,
       required: true
     },
+    dataSourceUsers: {
+      type: Array,
+      required: true
+    }
   },
   data() {
     return {

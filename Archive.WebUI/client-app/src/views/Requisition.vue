@@ -65,12 +65,14 @@
 
       <template #buttonControl="{data}">
         <div class="dx-command-edit dx-command-edit-with-icons"
-             v-if="data.data.status !== $enums.requisitionStatus.canceled">
+             v-if="data.data.status !== $enums.requisitionStatus.canceled ||
+                  data.data.static !== $enums.requisitionStatus.isDenied"
+        >
           <a v-if="!data.data.isDenied && data.data.dateOfGiveOut && data.data.dateOfReturn === null"
              href="#"
              class="dx-link dx-icon-check dx-link-icon"
              title="Вернуть"
-             v-on:click="returnDocument(data.data)"
+             v-on:click="returnDocument(data)"
           ></a>
           <a v-if="currentUser.isUserArchivist && data.data.status === $enums.requisitionStatus.new"
              href="#"
@@ -90,6 +92,12 @@
              title="Отозвать заявку"
              v-on:click="canceledRequisition(data.data.id)"
           ></a>
+          <a v-if="currentUser.isUserArchivist && data.data.status === $enums.requisitionStatus.readyToGiveOut && !data.data.dateOfGiveOut"
+             href="#"
+             class="dx-link dx-icon-chevronright dx-link-icon"
+             title="Выдать документы"
+             v-on:click="giveOutDocument(data.data.id)"
+          ></a>
         </div>
       </template>
 
@@ -106,6 +114,12 @@
         v-if="requisitionForm.visible"
         :visible.sync="requisitionForm.visible"
         :form-data="requisitionForm.formData"
+        @submit="requisitionFormSubmit"
+    />
+    <RequisitionFormForArchivist
+        v-if="requisitionFormForArchivist.visible"
+        :visible.sync="requisitionFormForArchivist.visible"
+        :form-data="requisitionFormForArchivist.formData"
         :data-source-users="dataSourceUsers"
         @submit="requisitionFormSubmit"
     />
@@ -136,6 +150,7 @@ import DocumentsMasterDetail from "../components/DocumentsMasterDetail";
 import {mapState} from "vuex";
 
 import RequisitionForm from "../components/forms/requisition/RequisitionForm";
+import RequisitionFormForArchivist from "../components/forms/requisition/RequisitionFormForArchivist";
 
 const dataSource = AspNetData.createStore({
   key: 'id',
@@ -158,6 +173,10 @@ export default {
       requisitionForm: {
         visible: false,
         formData: {}
+      },
+      requisitionFormForArchivist: {
+        visible: false,
+        formData: {}
       }
     }
   },
@@ -168,6 +187,7 @@ export default {
     },
   },
   components: {
+    RequisitionFormForArchivist,
     DocumentsMasterDetail,
     RequisitionForm,
     DxDataGrid,
@@ -195,6 +215,7 @@ export default {
       axios.post(`api/requisition`, formData)
           .then(response => {
             this.requisitionForm.visible = false;
+            this.requisitionFormForArchivist.visible = false;
             this.refreshDataGrid();
             notify('Заявка создана', 'success', 3000);
           })
@@ -203,8 +224,13 @@ export default {
           })
     },
     createRequisition() {
-      this.requisitionForm.formData = {recipientId: this.currentUser.id};
-      this.requisitionForm.visible = true;
+      if (this.currentUser.isUserArchivist) {
+        this.requisitionFormForArchivist.formData = {};
+        this.requisitionFormForArchivist.visible = true;
+      } else {
+        this.requisitionForm.formData = {recipientId: this.currentUser.id};
+        this.requisitionForm.visible = true;
+      }
     },
     getDataSourceDocumentsFiltered(data) {
       return this.dataSourceDocuments.filter(doc => data.data.documents.includes(doc.id));
@@ -267,7 +293,7 @@ export default {
       confirm(`Вернуть документы?`, "Возврат")
           .then((dialogResult) => {
             if (dialogResult) {
-              axios.put(`/api/document/${data.id}/return`)
+              axios.put(`/api/document/${data.data.id}/return`)
                   .then(() => {
                     this.refreshDataGrid();
                   })
@@ -314,6 +340,21 @@ export default {
           .then((dialogResult) => {
             if (dialogResult) {
               axios.put(`/api/requisition/${id}/ready`)
+                  .then(() => {
+                    this.refreshDataGrid();
+                  })
+                  .catch(reason => {
+                    console.log(reason)
+                    notify('Во время обработки запроса произошла ошибка', 'error', 3000)
+                  });
+            }
+          });
+    },
+    giveOutDocument(id) {
+      confirm(`Выдать документы?`, "Выдача")
+          .then((dialogResult) => {
+            if (dialogResult) {
+              axios.put(`/api/requisition/${id}/give-out`)
                   .then(() => {
                     this.refreshDataGrid();
                   })
