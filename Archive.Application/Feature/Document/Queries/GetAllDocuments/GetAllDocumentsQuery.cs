@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Archive.Application.Common.Interfaces;
 using Archive.Application.Common.Options.MongoDb;
+using Archive.Application.Feature.User.Queries.GetCurrentUser;
 using MediatR;
 using Microsoft.Extensions.Options;
 using MongoDB.Bson;
@@ -14,24 +15,27 @@ namespace Archive.Application.Feature.Document.Queries.GetAllDocuments
     {
     }
 
-    public class GetAllDocumentsQueryHandler : IRequestHandler<GetAllDocumentsQuery,IList<DocumentDto>>
+    public class GetAllDocumentsQueryHandler : IRequestHandler<GetAllDocumentsQuery, IList<DocumentDto>>
     {
-        private readonly ICurrentUserService _currentUserService;
+        private readonly IMediator _mediator;
         private readonly MongoDbOptions _mongoDbOptions;
 
-        public GetAllDocumentsQueryHandler(ICurrentUserService currentUserService,
-            IOptions<MongoDbOptions> mongoDbOptions)
+        public GetAllDocumentsQueryHandler(IOptions<MongoDbOptions> mongoDbOptions,
+            IMediator mediator)
         {
-            _currentUserService = currentUserService;
+            _mediator = mediator;
             _mongoDbOptions = mongoDbOptions.Value;
         }
+
         public async Task<IList<DocumentDto>> Handle(GetAllDocumentsQuery request, CancellationToken cancellationToken)
         {
             var client = new MongoClient(_mongoDbOptions.ConnectionString);
             var database = client.GetDatabase(_mongoDbOptions.DatabaseName);
             var documentsCollection = database.GetCollection<DocumentDto>(_mongoDbOptions.Collections.Documents);
 
-            var filter = new BsonDocument();
+            var currentUser = await _mediator.Send(new GetCurrentUserQuery(), cancellationToken);
+
+            var filter = Builders<DocumentDto>.Filter.Gte("Priority", currentUser.Priority);
 
             return await documentsCollection.Find(filter).ToListAsync(cancellationToken);
         }

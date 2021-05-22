@@ -5,8 +5,8 @@ using Archive.Application.Feature.Document.KitConstructDoc.Commands.CreateKitCon
 using Archive.Application.Feature.Document.KitConstructDoc.Commands.UpdateKitCreateConstructDoc;
 using Archive.Application.Feature.Document.Queries.GetAllDocuments;
 using Archive.Application.Feature.Document.Queries.GetDocumentHistory;
+using Archive.Application.Feature.Document.Queries.GetDocumentsByNomenclature;
 using Archive.Application.Feature.Document.ReturnDocument;
-using Archive.Application.Feature.Nomenclature.Queries.GetDocumentsByNomenclature;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 

@@ -2,10 +2,10 @@
 using Archive.Core.Enums;
 using MongoDB.Bson.Serialization.Attributes;
 
-namespace Archive.Application.Feature.User.Queries.GetCurrentUser
+namespace Archive.Application.Feature.User.Queries.GetAllUsers
 {
     [BsonIgnoreExtraElements]
-    public class CurrentUserDto
+    public class UserDto
     {
         public string Id { get; set; }
         public string FirstName { get; set; }
@@ -14,9 +14,7 @@ namespace Archive.Application.Feature.User.Queries.GetCurrentUser
         public string DepartmentId { get; set; }
         public IList<string> Roles { get; set; }
         public string BriefName { get; set; }
-
         public bool IsUserArchivist { get; set; }
-
         public Priority Priority { get; set; }
     }
 }

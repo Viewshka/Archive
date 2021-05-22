@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using Archive.Application.Feature.User.Queries.GetAllUsers;
 using Archive.Application.Feature.User.Queries.GetCurrentUser;
 using Archive.Application.Feature.User.Queries.GetUsersForAutoComplete;
 using Microsoft.AspNetCore.Authorization;
@@ -19,6 +20,13 @@ namespace Archive.WebUI.Controllers
         public async Task<IActionResult> GetUsersForAutoComplete()
         {
             return Ok(await Mediator.Send(new GetUsersForAutocompleteQuery()));
+        }
+        
+        [Authorize(Roles = "Архивариус")]
+        [HttpGet("all-users")]
+        public async Task<IActionResult> GetAllUsers()
+        {
+            return Ok(await Mediator.Send(new GetAllUsersQuery()));
         }
     }
 }

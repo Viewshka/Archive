@@ -1,4 +1,5 @@
-﻿using AspNetCore.Identity.Mongo.Model;
+﻿using Archive.Core.Enums;
+using AspNetCore.Identity.Mongo.Model;
 
 namespace Archive.Core.Collections.Identity
 {
@@ -8,5 +9,6 @@ namespace Archive.Core.Collections.Identity
         public string MiddleName { get; set; }
         public string LastName { get; set; }
         public string DepartmentId { get; set; }
+        public Priority Priority { get; set; }
     }
 }

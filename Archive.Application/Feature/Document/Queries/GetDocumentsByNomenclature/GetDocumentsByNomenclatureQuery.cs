@@ -1,15 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Archive.Application.Common.Options.MongoDb;
-using Archive.Application.Feature.Nomenclature.Queries.GetAllNomenclatures;
+using Archive.Application.Feature.User.Queries.GetCurrentUser;
 using MediatR;
 using Microsoft.Extensions.Options;
-using MongoDB.Bson;
 using MongoDB.Driver;
 
-namespace Archive.Application.Feature.Nomenclature.Queries.GetDocumentsByNomenclature
+namespace Archive.Application.Feature.Document.Queries.GetDocumentsByNomenclature
 {
     public class GetDocumentsByNomenclatureQuery : IRequest<IList<DocumentsByNomenclatureDto>>
     {
@@ -19,10 +17,13 @@ namespace Archive.Application.Feature.Nomenclature.Queries.GetDocumentsByNomencl
     public class GetDocumentsByNomenclatureQueryHandler : IRequestHandler<GetDocumentsByNomenclatureQuery,
         IList<DocumentsByNomenclatureDto>>
     {
+        private readonly IMediator _mediator;
         private readonly MongoDbOptions _mongoDbOptions;
 
-        public GetDocumentsByNomenclatureQueryHandler(IOptions<MongoDbOptions> mongoDbOptions)
+        public GetDocumentsByNomenclatureQueryHandler(IOptions<MongoDbOptions> mongoDbOptions,
+            IMediator mediator)
         {
+            _mediator = mediator;
             _mongoDbOptions = mongoDbOptions.Value;
         }
 
@@ -33,8 +34,13 @@ namespace Archive.Application.Feature.Nomenclature.Queries.GetDocumentsByNomencl
             var database = client.GetDatabase(_mongoDbOptions.DatabaseName);
             var documentsCollection = database
                 .GetCollection<DocumentsByNomenclatureDto>(_mongoDbOptions.Collections.Documents);
+            var currentUser = await _mediator.Send(new GetCurrentUserQuery(), cancellationToken);
 
-            var filter = Builders<DocumentsByNomenclatureDto>.Filter.Eq("NomenclatureId", request.NomenclatureId);
+            var builder = Builders<DocumentsByNomenclatureDto>.Filter;
+
+            var filter = builder.Eq("NomenclatureId", request.NomenclatureId) &
+                         builder.Gte("Priority", currentUser.Priority);
+
             var result = await documentsCollection
                 .Find(filter)
                 .ToListAsync(cancellationToken);

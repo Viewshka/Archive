@@ -2,7 +2,7 @@
 using Archive.Core.Enums;
 using MongoDB.Bson.Serialization.Attributes;
 
-namespace Archive.Application.Feature.Nomenclature.Queries.GetDocumentsByNomenclature
+namespace Archive.Application.Feature.Document.Queries.GetDocumentsByNomenclature
 {
     [BsonIgnoreExtraElements]
     public class DocumentsByNomenclatureDto
@@ -15,5 +15,6 @@ namespace Archive.Application.Feature.Nomenclature.Queries.GetDocumentsByNomencl
         public DocumentTypeEnum Type { get; set; }
         public string NomenclatureId { get; set; }
         public string ParentId { get; set; }
+        public Priority Priority { get; set; }
     }
 }

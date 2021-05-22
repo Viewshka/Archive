@@ -20,6 +20,7 @@ namespace Archive.Application.Feature.Document.Draw.Commands.UpdateDraw
         public string NomenclatureId { get; set; }
         public string ParentId { get; set; }
         public DateTime? StorageDate { get; set; }
+        public Priority Priority { get; set; }
     }
 
     public class UpdateDrawCommandHandler : IRequestHandler<UpdateDrawCommand>
@@ -47,7 +48,8 @@ namespace Archive.Application.Feature.Document.Draw.Commands.UpdateDraw
                 .Set("ParentId", request.ParentId)
                 .Set("Name", request.Name)
                 .Set("StorageDate", request.StorageDate)
-                .Set("Note", request.Note);
+                .Set("Note", request.Note)
+                .Set("Priority", request.Priority);
 
             var result = await documentsCollection.UpdateOneAsync(filter, update, cancellationToken: cancellationToken);
 

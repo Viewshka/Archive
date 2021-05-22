@@ -58,5 +58,7 @@ namespace Archive.Core.Collections.Document
         public string ParentId { get; set; }
 
         public DateTime? StorageDate { get; set; }
+
+        public Priority Priority { get; set; }
     }
 }

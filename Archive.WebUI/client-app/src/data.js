@@ -56,8 +56,19 @@ const requisitionStatus = [
         id: 6,
         name: 'Отменено'
     },
-]
+];
+
+const priority = [
+    {
+        id: 1,
+        name: 'Секретно'
+    },
+    {
+        id: 2,
+        name: 'Открытый доступ'
+    },
+];
 
 export default {
-    documentTypes, documentUsageTypes,requisitionStatus
+    documentTypes, documentUsageTypes,requisitionStatus,priority
 }

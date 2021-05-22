@@ -3,7 +3,6 @@ using Archive.Application.Feature.Nomenclature.Commands.CreateNomenclature;
 using Archive.Application.Feature.Nomenclature.Commands.DeleteNomenclature;
 using Archive.Application.Feature.Nomenclature.Commands.UpdateNoomenclature;
 using Archive.Application.Feature.Nomenclature.Queries.GetAllNomenclatures;
-using Archive.Application.Feature.Nomenclature.Queries.GetDocumentsByNomenclature;
 using Archive.Application.Feature.Nomenclature.Queries.GetNomenclatureName;
 using Microsoft.AspNetCore.Mvc;
 

@@ -72,6 +72,11 @@
               template="storageDateTemplate"
           />
           <DxSimpleItem
+              :col-span="1"
+              :label="{text: 'Гриф'}"
+              template="priorityTemplate"
+          />
+          <DxSimpleItem
               :col-span="2"
               template="fileUploaderTemplate"
           />
@@ -94,7 +99,18 @@
               horizontal-alignment="left"
           />
         </DxGroupItem>
+        <template #priorityTemplate="{data}">
+          <DxSelectBox
+              :data-source="dataSourcePriority"
+              v-model:value="formData['priority']"
+              value-expr="id"
+              display-expr="name"
 
+              :open-on-field-click="true"
+              :show-drop-down-button="true"
+              :show-clear-button="false"
+          />
+        </template>
         <template #storageDateTemplate="data">
           <DxDateBox
               v-model:value="formData['storageDate']"
@@ -149,6 +165,8 @@ import DxDateBox from 'devextreme-vue/date-box';
 import DxFileUploader from 'devextreme-vue/file-uploader';
 import DxSelectBox from 'devextreme-vue/select-box';
 
+import data from '../../data';
+
 import NomenclatureDropDownBox from "../dropDowBoxes/NomenclatureDropDownBox";
 import DocumentDropDownBox from "../dropDowBoxes/DocumentDropDownBox";
 import axios from "axios";
@@ -181,7 +199,8 @@ export default {
     return {
       formRefName: 'form',
       dataSourceDocuments: [],
-      files: []
+      files: [],
+      dataSourcePriority: data.priority,
     }
   },
   components: {
