@@ -69,6 +69,7 @@
           <DepartmentDropDownBox
             :value="formData[data.dataField]"
             :data-source="dataSourceDepartment"
+            :on-value-changed="departmentIdChanged"
           />
         </template>
       </DxForm>
@@ -123,6 +124,9 @@ export default {
     },
   },
   methods: {
+    departmentIdChanged(value){
+      this.formData['departmentId'] = value;
+    },
     cancel: function () {
       this.$emit('update:visible', false);
     },

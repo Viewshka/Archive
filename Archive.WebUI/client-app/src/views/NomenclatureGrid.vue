@@ -8,6 +8,7 @@
         :allow-column-resizing="true"
         :render-async="true"
         @toolbar-preparing="toolbarPreparing($event)"
+        @row-dbl-click="dataGridRowDblClick"
     >
       <DxColumn
           caption="Индекс"
@@ -137,6 +138,9 @@ export default {
     await this.initDepartments();
   },
   methods: {
+    dataGridRowDblClick(data) {
+      this.$router.push(`documents-of-nomenclature/${data.data.id}`);
+    },
     async initDepartments() {
       await axios.get(`api/department`)
           .then(response => {

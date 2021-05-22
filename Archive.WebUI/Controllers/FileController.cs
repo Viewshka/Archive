@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Linq;
+using System.Threading.Tasks;
 using Archive.Application.Feature.File.Commands.FileUpload;
 using Archive.Application.Feature.File.Queries;
 using Microsoft.AspNetCore.Hosting;
@@ -19,6 +20,9 @@ namespace Archive.WebUI.Controllers
         [HttpPost("upload/{documentId}")]
         public async Task<IActionResult> UploadFile(string documentId)
         {
+            if (string.IsNullOrWhiteSpace(documentId) && !Request.Form.Files.Any())
+                return NoContent();
+
             var file = Request.Form.Files[0];
 
             await Mediator.Send(new FileUploadCommand

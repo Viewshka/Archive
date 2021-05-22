@@ -98,13 +98,13 @@
 
         <template #storageDateTemplate="data">
           <DxDateBox
-              v-model:value="formData[data.dataField]"
+              v-model:value="formData['storageDate']"
               placeholder="Необязательно"
           />
         </template>
         <template #incomingDateTemplate="data">
           <DxDateBox
-              v-model:value="formData[data.dataField]"
+              v-model:value="formData['incomingDate']"
               placeholder="Необязательно"
           />
         </template>

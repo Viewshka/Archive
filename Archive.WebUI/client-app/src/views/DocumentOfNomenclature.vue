@@ -1,7 +1,7 @@
-<template>
+﻿<template>
   <div class="document-tree-list">
-    <h2 style="margin-left: 5px">Все документы</h2>
-    <DxTreeList
+    <h2 style="margin-left: 5px">Документы дела: {{ nomenclature.name }}</h2>
+    <DxDataGrid
         :ref="gridRefName"
         :data-source="dataSource"
 
@@ -11,12 +11,8 @@
         :hover-state-enabled="true"
         :show-row-lines="true"
         :allow-column-reordering="true"
-        :auto-expand-all="false"
+        :auto-expand-all="true"
         v-model:selected-row-keys="selectedRowKeys"
-        :root-value="null"
-        key-expr="id"
-        parent-id-expr="parentId"
-        data-structure="plain"
 
         @row-dbl-click="dataGridRowDblClick"
         @toolbar-preparing="toolbarPreparing($event)"
@@ -68,7 +64,7 @@
       <DxHeaderFilter :visible="true"/>
       <DxLoadPanel :enabled="true" :show-pane="true" :show-indicator="true"/>
       <DxPaging :enabled="true" :page-size="20"/>
-      <DxSelection :recursive="true" :allow-select-all="false" mode="multiple"/>
+      <DxSelection show-check-boxes-mode="always" :allow-select-all="false" mode="multiple"/>
 
       <template #buttonControl="{data}">
         <div class="dx-command-edit dx-command-edit-with-icons">
@@ -85,7 +81,7 @@
           ></a>
         </div>
       </template>
-    </DxTreeList>
+    </DxDataGrid>
     <PreviewForm
         v-if="previewFormData.visible && previewFormData.url"
         :visible.sync="previewFormData.visible"
@@ -132,7 +128,6 @@
 </template>
 
 <script>
-
 import PreviewForm from "../components/forms/PreviewForm";
 import KitConstructDocumentEditForm from "../components/forms/KitConstructDocumentEditForm";
 import ConstructDocumentEditForm from "../components/forms/ConstructDocumentEditForm";
@@ -140,7 +135,7 @@ import DocumentTypeForm from "../components/forms/DocumentTypeForm";
 import GiveOutDocumentsForm from "../components/forms/GiveOutDocumentsForm";
 import DocumentHistoryForm from "../components/forms/DocumentHistoryForm";
 
-import DxTreeList, {
+import DxDataGrid, {
   DxColumn,
   DxScrolling,
   DxColumnChooser,
@@ -152,30 +147,27 @@ import DxTreeList, {
   DxLookup,
   DxSelection
 }
-  from 'devextreme-vue/tree-list';
+  from 'devextreme-vue/data-grid';
 import DxButton from "devextreme-vue/button";
 import DxSelectBox from "devextreme-vue/select-box";
 
 import notify from "devextreme/ui/notify";
-import axios from "axios";
-import * as AspNetData from "devextreme-aspnet-data-nojquery";
 import data from '../data';
 import {mapState} from 'vuex';
 
-const dataSource = AspNetData.createStore({
-  key: 'id',
-  loadUrl: `/api/document`,
-  onBeforeSend: (method, ajaxOptions) => {
-    ajaxOptions.xhrFields = {withCredentials: true};
-  },
-});
+import * as AspNetData from "devextreme-aspnet-data-nojquery";
+import axios from "axios";
 
 export default {
-  name: "DocumentGrid",
+  name: "DocumentOfNomenclature",
   data() {
     return {
       gridRefName: 'dataGrid',
-      dataSource,
+      dataSource: null,
+      nomenclature: {
+        id: this.$route.params.nomenclatureId,
+        name: ""
+      },
       dataSourceDocumentTypes: data.documentTypes,
       dataSourceNomenclatures: [],
       dataSourceDepartments: [],
@@ -202,7 +194,7 @@ export default {
         visible: false,
         title: null,
         dataSource: [],
-      },
+      }
     }
   },
   components: {
@@ -212,7 +204,7 @@ export default {
     KitConstructDocumentEditForm,
     GiveOutDocumentsForm,
     DocumentHistoryForm,
-    DxTreeList,
+    DxDataGrid,
     DxColumn,
     DxScrolling,
     DxColumnChooser,
@@ -224,7 +216,7 @@ export default {
     DxButton,
     DxLookup,
     DxSelectBox,
-    DxSelection,
+    DxSelection
   },
   computed: {
     ...mapState(['currentUser']),
@@ -243,16 +235,7 @@ export default {
     },
     selectedRowKeys: function (value) {
       console.log(value)
-    },
-  },
-  async created() {
-    await Promise.all(
-        [
-          this.initNomenclatures(),
-          this.initDepartments(),
-          this.initUsersForAutoComplete()
-        ]
-    )
+    }
   },
   methods: {
     openDocumentHistory(data) {
@@ -468,12 +451,30 @@ export default {
     async refreshDataGrid() {
       this.$refs[this.gridRefName].instance.refresh();
     },
-  }
+  },
+  async created() {
+    await Promise.all(
+        [
+          this.initNomenclatures(),
+          this.initDepartments(),
+          this.initUsersForAutoComplete()
+        ]
+    );
+    axios.get(`api/nomenclature/${this.nomenclature.id}`)
+        .then(response => {
+          this.nomenclature.name = response.data;
+        });
+    this.dataSource = AspNetData.createStore({
+      key: 'id',
+      loadUrl: `/api/document/by-nomenclature-${this.nomenclature.id}`,
+      onBeforeSend: (method, ajaxOptions) => {
+        ajaxOptions.xhrFields = {withCredentials: true};
+      },
+    });
+  },
 }
 </script>
 
-<style lang="scss">
-.document-tree-list {
-  height: calc(100vh - 150px);
-}
+<style>
+
 </style>

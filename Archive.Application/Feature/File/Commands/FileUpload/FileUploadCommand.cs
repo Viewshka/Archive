@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Archive.Application.Common.Interfaces;
@@ -33,7 +34,9 @@ namespace Archive.Application.Feature.File.Commands.FileUpload
 
         public async Task<Unit> Handle(FileUploadCommand request, CancellationToken cancellationToken)
         {
-            var path = Path.Combine(request.WebRootPath, $"files/{request.File.FileName}");
+            var extension = request.File.FileName.Split('.').Last();
+            var newFileName = $"{Guid.NewGuid().ToString()}.{extension}";
+            var path = Path.Combine(request.WebRootPath, $"files/{newFileName}");
             await using var fileStream = new FileStream(path, FileMode.Create);
             await request.File.CopyToAsync(fileStream, cancellationToken);
 
@@ -44,7 +47,7 @@ namespace Archive.Application.Feature.File.Commands.FileUpload
 
             var filter = Builders<Core.Collections.Document.Document>.Filter.Eq("_id", request.DocumentId);
             var update = Builders<Core.Collections.Document.Document>.Update
-                .Set("Path", $"files/{request.File.FileName}");
+                .Set("Path", $"files/{newFileName}");
 
             await documentsCollection.UpdateOneAsync(filter, update, cancellationToken: cancellationToken);
             

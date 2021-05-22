@@ -6,6 +6,7 @@ using Archive.Application.Feature.Document.KitConstructDoc.Commands.UpdateKitCre
 using Archive.Application.Feature.Document.Queries.GetAllDocuments;
 using Archive.Application.Feature.Document.Queries.GetDocumentHistory;
 using Archive.Application.Feature.Document.ReturnDocument;
+using Archive.Application.Feature.Nomenclature.Queries.GetDocumentsByNomenclature;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -24,6 +25,12 @@ namespace Archive.WebUI.Controllers
             return Ok(await Mediator.Send(new GetAllDocumentsQuery()));
         }
 
+        [HttpGet("by-nomenclature-{nomenclatureId}")]
+        public async Task<IActionResult> GetDocumentsByNomenclature(string nomenclatureId)
+        {
+            return Ok(await Mediator.Send(new GetDocumentsByNomenclatureQuery {NomenclatureId = nomenclatureId}));
+        }
+        
         /// <summary>
         /// Добавить новый документ (чертеж)
         /// </summary>

@@ -3,6 +3,8 @@ using Archive.Application.Feature.Nomenclature.Commands.CreateNomenclature;
 using Archive.Application.Feature.Nomenclature.Commands.DeleteNomenclature;
 using Archive.Application.Feature.Nomenclature.Commands.UpdateNoomenclature;
 using Archive.Application.Feature.Nomenclature.Queries.GetAllNomenclatures;
+using Archive.Application.Feature.Nomenclature.Queries.GetDocumentsByNomenclature;
+using Archive.Application.Feature.Nomenclature.Queries.GetNomenclatureName;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Archive.WebUI.Controllers
@@ -13,6 +15,12 @@ namespace Archive.WebUI.Controllers
         public async Task<IActionResult> GetAllNomenclatures()
         {
             return Ok(await Mediator.Send(new GetAllNomenclaturesQuery()));
+        }
+
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetNomenclatureName(string id)
+        {
+            return Ok(await Mediator.Send(new GetNomenclatureNameQuery {Id = id}));
         }
 
         [HttpPost]
@@ -34,7 +42,7 @@ namespace Archive.WebUI.Controllers
         public async Task<IActionResult> DeleteNomenclature(string id)
         {
             if (string.IsNullOrWhiteSpace(id)) return BadRequest("Не указан идентификатор");
-            
+
             return Ok(await Mediator.Send(new DeleteNomenclatureCommand {Id = id}));
         }
     }

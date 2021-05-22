@@ -11,7 +11,7 @@ using MongoDB.Driver;
 
 namespace Archive.Application.Feature.Document.Draw.Commands.CreateDraw
 {
-    public class CreateDrawingCommand : IRequest
+    public class CreateDrawingCommand : IRequest<string>
     {
         public string Name { get; set; }
         public string Designation { get; set; }
@@ -24,7 +24,7 @@ namespace Archive.Application.Feature.Document.Draw.Commands.CreateDraw
         public DateTime? StorageDate { get; set; }
     }
 
-    public class CreateDrawingCommandHandler : IRequestHandler<CreateDrawingCommand>
+    public class CreateDrawingCommandHandler : IRequestHandler<CreateDrawingCommand,string>
     {
         private readonly MongoDbOptions _mongoDbOptions;
 
@@ -33,7 +33,7 @@ namespace Archive.Application.Feature.Document.Draw.Commands.CreateDraw
             _mongoDbOptions = mongoDbOptions.Value;
         }
 
-        public async Task<Unit> Handle(CreateDrawingCommand request, CancellationToken cancellationToken)
+        public async Task<string> Handle(CreateDrawingCommand request, CancellationToken cancellationToken)
         {
             var client = new MongoClient(_mongoDbOptions.ConnectionString);
             var database = client.GetDatabase(_mongoDbOptions.DatabaseName);
@@ -54,7 +54,7 @@ namespace Archive.Application.Feature.Document.Draw.Commands.CreateDraw
 
             await documentsCollection.InsertOneAsync(entity, cancellationToken: cancellationToken);
 
-            return Unit.Value;
+            return entity.Id;
         }
     }
 }

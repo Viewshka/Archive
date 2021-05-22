@@ -5,50 +5,59 @@ import defaultLayout from '../layouts/SideNavOuterToolbar';
 import NomenclatureGrid from "../views/NomenclatureGrid";
 import DocumentGrid from "../views/DocumentGrid";
 import Requisition from "../views/Requisition";
+import DocumentOfNomenclature from "../views/DocumentOfNomenclature";
 
 Vue.use(VueRouter)
 
 const routes = [
-  {
-    path: '/',
-    name: 'Home',
-    components: {
-      layout: defaultLayout,
-      content: Home
-    }
-  },
-  {
-    path: '/nomenclatures',
-    name: 'nomenclatures',
-    components: {
-      layout: defaultLayout,
-      content: NomenclatureGrid
-    }
-  },
-  {
-    path: '/documents',
-    name: 'documents',
-    components: {
-      layout: defaultLayout,
-      content: DocumentGrid
-    }
-  },  
-  {
-    path: '/history',
-    name: 'history',
-    components: {
-      layout: defaultLayout,
-      content: Requisition
-    }
-  },
-  {
-    path: "*",
-    redirect: "/"
-  },
+    {
+        path: '/',
+        name: 'Home',
+        components: {
+            layout: defaultLayout,
+            content: Home
+        }
+    },
+    {
+        path: '/nomenclatures',
+        name: 'nomenclatures',
+        components: {
+            layout: defaultLayout,
+            content: NomenclatureGrid
+        }
+    },
+    {
+        path: '/documents',
+        name: 'documents',
+        components: {
+            layout: defaultLayout,
+            content: DocumentGrid
+        }
+    },
+    {
+        path: '/history',
+        name: 'history',
+        components: {
+            layout: defaultLayout,
+            content: Requisition
+        }
+    },
+    {
+        path: `/documents-of-nomenclature/:nomenclatureId`,
+        name: 'documents-of-nomenclature',
+        components: {
+            layout: defaultLayout,
+            content: DocumentOfNomenclature
+        }
+    },
+    {
+        path: "*",
+        redirect: "/"
+    },
 ]
 
 const router = new VueRouter({
-  routes
+    routes
 })
 
 export default router
