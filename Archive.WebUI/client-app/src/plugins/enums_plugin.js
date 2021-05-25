@@ -1,7 +1,9 @@
 ﻿const documentTypes = Object.freeze({
     drawing: 1,
     specification: 2,
-    kitCD: 3
+    kitCD: 3,
+    requisition: 4,
+    inventoryOfNomenclature: 5
 });
 
 const roles = Object.freeze({

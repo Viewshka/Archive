@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Archive.Application.Common.Interfaces;
 using Archive.Application.Common.Options.MongoDb;
 using Archive.Application.Feature.User.Queries.GetCurrentUser;
+using Archive.Core.Enums;
 using MediatR;
 using Microsoft.Extensions.Options;
 using MongoDB.Bson;
@@ -34,8 +35,10 @@ namespace Archive.Application.Feature.Document.Queries.GetAllDocuments
             var documentsCollection = database.GetCollection<DocumentDto>(_mongoDbOptions.Collections.Documents);
 
             var currentUser = await _mediator.Send(new GetCurrentUserQuery(), cancellationToken);
-
-            var filter = Builders<DocumentDto>.Filter.Gte("Priority", currentUser.Priority);
+            var builder = Builders<DocumentDto>.Filter;
+            var filter = builder.Gte("Priority", currentUser.Priority) &
+                         builder.Ne("Type", DocumentTypeEnum.Заявка) &
+                         builder.Ne("Type", DocumentTypeEnum.ОписьДела);
 
             return await documentsCollection.Find(filter).ToListAsync(cancellationToken);
         }

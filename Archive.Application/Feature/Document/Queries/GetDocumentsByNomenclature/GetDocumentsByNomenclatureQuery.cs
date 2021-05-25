@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Archive.Application.Common.Options.MongoDb;
 using Archive.Application.Feature.User.Queries.GetCurrentUser;
+using Archive.Core.Enums;
 using MediatR;
 using Microsoft.Extensions.Options;
 using MongoDB.Driver;
@@ -39,7 +40,9 @@ namespace Archive.Application.Feature.Document.Queries.GetDocumentsByNomenclatur
             var builder = Builders<DocumentsByNomenclatureDto>.Filter;
 
             var filter = builder.Eq("NomenclatureId", request.NomenclatureId) &
-                         builder.Gte("Priority", currentUser.Priority);
+                         builder.Gte("Priority", currentUser.Priority) &
+                         builder.Ne("Type",DocumentTypeEnum.Заявка) &
+                         builder.Ne("Type",DocumentTypeEnum.ОписьДела);
 
             var result = await documentsCollection
                 .Find(filter)
