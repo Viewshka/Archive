@@ -6,6 +6,7 @@ import NomenclatureGrid from "../views/NomenclatureGrid";
 import DocumentGrid from "../views/DocumentGrid";
 import Requisition from "../views/Requisition";
 import DocumentOfNomenclature from "../views/DocumentOfNomenclature";
+import Users from "../views/Users.vue";
 
 Vue.use(VueRouter)
 
@@ -40,6 +41,14 @@ const routes = [
         components: {
             layout: defaultLayout,
             content: Requisition
+        }
+    },
+    {
+        path: '/users',
+        name: 'users',
+        components: {
+            layout: defaultLayout,
+            content: Users
         }
     },
     {

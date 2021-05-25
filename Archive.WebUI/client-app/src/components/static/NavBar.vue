@@ -23,20 +23,6 @@
       </DxItem>
 
       <DxItem
-          v-if="currentUser.isUserArchivist"
-          location="after"
-          locate-in-menu="auto"
-      >
-        <DxButton
-            slot-scope="_"
-            text="Управление доступом"
-            hint="Управление доступом"
-            styling-mode="text"
-            @click="openPriorityEditForm"
-        />
-      </DxItem>
-
-      <DxItem
           location="after"
           locate-in-menu="auto"
           menu-item-template="menuUserItem"
@@ -52,10 +38,6 @@
           </DxButton>
         </div>
       </DxItem>
-      <PriorityEditForm
-          v-if="currentUser.isUserArchivist && priorityFormVisible"
-          :visible.sync="priorityFormVisible"
-      />
     </DxToolbar>
   </header>
 </template>
@@ -65,7 +47,6 @@ import DxButton from "devextreme-vue/button";
 import DxToolbar, {DxItem} from "devextreme-vue/toolbar";
 import DxScrollView from "devextreme-vue/scroll-view";
 import UserPanel from "./UserPanel";
-import PriorityEditForm from "../forms/PriorityEditForm";
 import notify from "devextreme/ui/notify";
 import axios from "axios";
 import {mapState} from 'vuex';
@@ -82,7 +63,6 @@ export default {
 
   data() {
     return {
-      priorityFormVisible: false,
       userMenuItems: [
         {
           text: "Удалить настройки",
@@ -98,9 +78,6 @@ export default {
     };
   },
   methods: {
-    openPriorityEditForm(){
-      this.priorityFormVisible = true;
-    },
     toggleMenuFuncS() {
     },
     onLogoutClick() {
@@ -125,7 +102,6 @@ export default {
     ...mapState(["currentUser"]),
   },
   components: {
-    PriorityEditForm,
     UserPanel,
     DxToolbar,
     DxItem,

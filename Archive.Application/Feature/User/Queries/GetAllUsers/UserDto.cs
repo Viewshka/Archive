@@ -13,8 +13,9 @@ namespace Archive.Application.Feature.User.Queries.GetAllUsers
         public string LastName { get; set; }
         public string DepartmentId { get; set; }
         public IList<string> Roles { get; set; }
-        public string BriefName { get; set; }
-        public bool IsUserArchivist { get; set; }
         public Priority Priority { get; set; }
+        
+        public string FullName => $"{FirstName} {MiddleName} {LastName}";
+        public bool IsUserArchivist => Roles.Contains(Core.Enums.Roles.АрхивариусId);
     }
 }

@@ -73,7 +73,7 @@
           />
           <DxSimpleItem
               :col-span="1"
-              :label="{text: 'Гриф'}"
+              :label="{text: 'Приоритет'}"
               template="priorityTemplate"
           />
           <DxSimpleItem

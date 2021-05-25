@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using Archive.Application.Feature.User.Commands.SetUserPriority;
 using Archive.Application.Feature.User.Queries.GetAllUsers;
 using Archive.Application.Feature.User.Queries.GetCurrentUser;
 using Archive.Application.Feature.User.Queries.GetUsersForAutoComplete;
@@ -22,11 +23,17 @@ namespace Archive.WebUI.Controllers
             return Ok(await Mediator.Send(new GetUsersForAutocompleteQuery()));
         }
         
-        [Authorize(Roles = "Архивариус")]
         [HttpGet("all-users")]
         public async Task<IActionResult> GetAllUsers()
         {
             return Ok(await Mediator.Send(new GetAllUsersQuery()));
+        }
+
+        [Authorize(Roles = "Архивариус")]
+        [HttpPut("priority")]
+        public async Task<IActionResult> SetUserPriority(SetUserPriorityCommand command)
+        {
+            return Ok(await Mediator.Send(command));
         }
     }
 }

@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Archive.Application.Common.Options.MongoDb;
-using Archive.Application.Feature.User.Queries.GetCurrentUser;
 using MediatR;
 using Microsoft.Extensions.Options;
 using MongoDB.Bson;

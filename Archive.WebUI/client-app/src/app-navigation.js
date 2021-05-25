@@ -28,6 +28,10 @@ export default [
                 text: "Подразделения",
                 path: "/departments",
             },
+            {
+                text: "Пользователи",
+                path: "/users",
+            },
         ]
     }
 ];
