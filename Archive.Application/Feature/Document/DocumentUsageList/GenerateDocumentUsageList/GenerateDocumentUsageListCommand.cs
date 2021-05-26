@@ -19,16 +19,24 @@ using MongoDB.Driver;
 
 namespace Archive.Application.Feature.Document.DocumentUsageList.GenerateDocumentUsageList
 {
-    public class GenerateDocumentUsageListCommand : IRequest<Stream>
+    public class GenerateDocumentUsageListCommand : IRequest<MemoryStream>
     {
         public string DocumentId { get; set; }
     }
 
-    public class GenerateDocumentUsageListCommandHandler : IRequestHandler<GenerateDocumentUsageListCommand, Stream>
+    public class
+        GenerateDocumentUsageListCommandHandler : IRequestHandler<GenerateDocumentUsageListCommand, MemoryStream>
     {
         private readonly IHostingEnvironment _environment;
         private readonly IMediator _mediator;
         private readonly MongoDbOptions _options;
+
+        private readonly IList<DocumentTypeEnum> _excludedDocumentTypes = new List<DocumentTypeEnum>
+        {
+            DocumentTypeEnum.Заявка,
+            DocumentTypeEnum.ЛистИспользованияДокумента,
+            DocumentTypeEnum.ОписьДела
+        };
 
         public GenerateDocumentUsageListCommandHandler(IOptions<MongoDbOptions> options,
             IHostingEnvironment environment, IMediator mediator)
@@ -38,7 +46,7 @@ namespace Archive.Application.Feature.Document.DocumentUsageList.GenerateDocumen
             _options = options.Value;
         }
 
-        public async Task<Stream> Handle(GenerateDocumentUsageListCommand request,
+        public async Task<MemoryStream> Handle(GenerateDocumentUsageListCommand request,
             CancellationToken cancellationToken)
         {
             var client = new MongoClient(_options.ConnectionString);
@@ -61,27 +69,26 @@ namespace Archive.Application.Feature.Document.DocumentUsageList.GenerateDocumen
             var documentFilter = Builders<Core.Collections.Document.Document>.Filter.Eq("_id", request.DocumentId);
             var document = await documentCollection.Find(documentFilter).SingleOrDefaultAsync(cancellationToken);
 
+            if (_excludedDocumentTypes.Contains(document.Type))
+                throw new Exception("Не верный тип документа");
+
             var inputPathDocx = Path.Combine(_environment.WebRootPath, template.Path);
             var outputPathDocx = Path.Combine(_environment.WebRootPath, "temp/test.docx");
-            var outputPathPdf = Path.Combine(_environment.WebRootPath, "temp/test.pdf");
-
             var tempFolder = Path.Combine(_environment.WebRootPath, "temp");
-            if (Directory.Exists(tempFolder))
-            {
-                Directory.Delete(tempFolder, true);
-                Directory.CreateDirectory(tempFolder);
-            }
-            else
+
+            if (!Directory.Exists(tempFolder))
             {
                 Directory.CreateDirectory(tempFolder);
             }
+            
+            ClearTempDirectory(tempFolder);
 
             var templateFs = new FileStream(inputPathDocx, FileMode.Open);
             var templateStream = new MemoryStream();
             await templateFs.CopyToAsync(templateStream, cancellationToken);
             templateFs.Close();
 
-            using (var server = WordprocessingDocument.Open(templateStream, true))
+            using (var server = WordprocessingDocument.Open(templateStream,true))
             {
                 var table = new Table();
 
@@ -95,36 +102,42 @@ namespace Archive.Application.Feature.Document.DocumentUsageList.GenerateDocumen
                 var tableProperties = GetTableProperties();
                 table.AppendChild(tableProperties);
 
-                var bookmark = bookmarkMap[Bookmark.DocumentName];
-                var bookmarkParent = bookmark.Parent;
+                var documentNameBookmark = bookmarkMap[Bookmark.DocumentName];
+                var documentNameBookmarkParent = documentNameBookmark.Parent;
 
-                var type = document.Type.GetString().ToLower();
-                var text = $"\"{type} - {document.Name}\"";
-
+                var type = document.Type.GetString();
+                var text = $"Лист использования документа \"{type} - {document.Name}\"";
+                
                 var run = new Run(new Text(text));
-                var paragraph = new Paragraph
+                var runProperties = new RunProperties
                 {
-                    ParagraphProperties = new ParagraphProperties
-                    {
-                        Justification = new Justification {Val = JustificationValues.Center}
-                    }
+                    FontSize = new FontSize {Val = new StringValue("28")},
+                    RunFonts = new RunFonts {Ascii = "Arial"},
                 };
+                run.PrependChild(runProperties);
+                
+                var paragraphProperties = new ParagraphProperties
+                {
+                    Justification = new Justification {Val = JustificationValues.Center},
+                    Indentation = new Indentation {FirstLine = "0"},
+                };
+                var paragraph = new Paragraph();
+                paragraph.Append(paragraphProperties);
                 paragraph.Append(run);
-                bookmarkParent.Append(paragraph);
+                documentNameBookmarkParent.Append(paragraph);
 
                 InsertTableHeaderRow(table);
                 InsertTableBody(table, requisitions);
 
-                bookmark = bookmarkMap[Bookmark.UsageTable];
-                bookmarkParent = bookmark.Parent;
+                var usageTableBookmark = bookmarkMap[Bookmark.UsageTable];
+                var usageTableBookmarkParent = usageTableBookmark.Parent;
 
-                bookmarkParent.InsertAfterSelf(table);
+                usageTableBookmarkParent.InsertBeforeSelf(table);
 
                 if (System.IO.File.Exists(outputPathDocx))
                     System.IO.File.Delete(outputPathDocx);
-                var savedDoc = server.SaveAs(outputPathDocx);
-                savedDoc.Close();
-                server.Close();
+
+                server.SaveAs(outputPathDocx).Close();
             }
 
             var docxFileStream = new FileStream(outputPathDocx, FileMode.Open);
@@ -135,7 +148,18 @@ namespace Archive.Application.Feature.Document.DocumentUsageList.GenerateDocumen
 
             var pdfStream = await ConvertToPdf(cancellationToken, docxMemoryStream, template);
 
-            return pdfStream;
+            var result = new MemoryStream();
+            await pdfStream.CopyToAsync(result, cancellationToken);
+            pdfStream.Close();
+            result.Position = 0;
+            return result;
+        }
+
+        private static void ClearTempDirectory(string path)
+        {
+            var dirInfo = new DirectoryInfo(path);
+            foreach (var file in dirInfo.GetFiles())
+                file.Delete();
         }
 
         private static void InsertTableBody(Table table, IList<HistoryDto> histories)
@@ -287,10 +311,6 @@ namespace Archive.Application.Feature.Document.DocumentUsageList.GenerateDocumen
                     }
                 )
             );
-        }
-
-        private static void SetParagraphSettings()
-        {
         }
 
         private static async Task<Stream> ConvertToPdf(CancellationToken cancellationToken, MemoryStream docxStream,

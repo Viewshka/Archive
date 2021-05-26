@@ -83,6 +83,11 @@
              title="История использования документа"
              v-on:click="openDocumentHistory(data.data)"
           ></a>
+          <a href="#"
+             class="dx-link dx-icon-doc dx-link-icon"
+             title="Просмотреть лист использования документа"
+             v-on:click="openDocumentUsageList(data.data)"
+          ></a>
         </div>
       </template>
     </DxTreeList>
@@ -255,6 +260,11 @@ export default {
     )
   },
   methods: {
+    openDocumentUsageList(data) {
+      this.previewFormData.documentSubject = `Лист использования документа: ${data.name}`;
+      this.previewFormData.visible = true;
+      this.previewFormData.url = `api/document/${data.id}/generate`;
+    },
     openDocumentHistory(data) {
       axios.get(`api/document/${data.id}/history`)
           .then(response => {

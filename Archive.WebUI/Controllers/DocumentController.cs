@@ -9,11 +9,11 @@ using Archive.Application.Feature.Document.Queries.GetDocumentHistory;
 using Archive.Application.Feature.Document.Queries.GetDocumentsByNomenclature;
 using Archive.Application.Feature.Document.ReturnDocument;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Archive.WebUI.Controllers
 {
-    
     public class DocumentController : ApiController
     {
         /// <summary>
@@ -31,7 +31,7 @@ namespace Archive.WebUI.Controllers
         {
             return Ok(await Mediator.Send(new GetDocumentsByNomenclatureQuery {NomenclatureId = nomenclatureId}));
         }
-        
+
         /// <summary>
         /// Добавить новый документ (чертеж)
         /// </summary>
@@ -59,7 +59,7 @@ namespace Archive.WebUI.Controllers
 
             return Ok(await Mediator.Send(command));
         }
-        
+
         /// <summary>
         /// Добавить новый документ (Комплект КД)
         /// </summary>
@@ -87,7 +87,7 @@ namespace Archive.WebUI.Controllers
 
             return Ok(await Mediator.Send(command));
         }
-        
+
         /// <summary>
         /// Получить историю использования документа
         /// </summary>
@@ -97,7 +97,7 @@ namespace Archive.WebUI.Controllers
         {
             return Ok(await Mediator.Send(new GetDocumentHistoryQuery {DocumentId = documentId}));
         }
-        
+
         /// <summary>
         /// Вернуть документ
         /// </summary>
@@ -107,12 +107,16 @@ namespace Archive.WebUI.Controllers
         {
             return Ok(await Mediator.Send(new ReturnDocumentCommand {Id = id}));
         }
-        
-[AllowAnonymous]
+
+        [AllowAnonymous]
         [HttpGet("{documentId}/generate")]
         public async Task<IActionResult> GenerateDocument(string documentId)
         {
-            return Ok(await Mediator.Send(new GenerateDocumentUsageListCommand {DocumentId =  documentId}));
+            var stream = await Mediator.Send(new GenerateDocumentUsageListCommand {DocumentId = documentId});
+
+            Response.Headers.Append("content-disposition", "inline; filename=file.pdf");
+            var result = File(stream, "application/pdf");
+            return result;
         }
     }
 }
