@@ -3,7 +3,8 @@
     specification: 2,
     kitCD: 3,
     requisition: 4,
-    inventoryOfNomenclature: 5
+    inventoryOfNomenclature: 5,
+    documentUsageList: 6
 });
 
 const roles = Object.freeze({

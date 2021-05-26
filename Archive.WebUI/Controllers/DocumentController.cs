@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using Archive.Application.Feature.Document.DocumentUsageList.GenerateDocumentUsageList;
 using Archive.Application.Feature.Document.Draw.Commands.CreateDraw;
 using Archive.Application.Feature.Document.Draw.Commands.UpdateDraw;
 using Archive.Application.Feature.Document.KitConstructDoc.Commands.CreateKitConstructDoc;
@@ -105,6 +106,13 @@ namespace Archive.WebUI.Controllers
         public async Task<IActionResult> ReturnDocument(string id)
         {
             return Ok(await Mediator.Send(new ReturnDocumentCommand {Id = id}));
+        }
+        
+[AllowAnonymous]
+        [HttpGet("{documentId}/generate")]
+        public async Task<IActionResult> GenerateDocument(string documentId)
+        {
+            return Ok(await Mediator.Send(new GenerateDocumentUsageListCommand {DocumentId =  documentId}));
         }
     }
 }

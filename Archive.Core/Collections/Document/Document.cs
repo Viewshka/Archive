@@ -60,5 +60,10 @@ namespace Archive.Core.Collections.Document
         public DateTime? StorageDate { get; set; }
 
         public Priority Priority { get; set; }
+
+        /// <summary>
+        /// Id документа - Лист использования
+        /// </summary>
+        public string UsageListId { get; set; }
     }
 }
