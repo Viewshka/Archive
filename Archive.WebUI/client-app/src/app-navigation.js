@@ -13,6 +13,16 @@ export default [
         text: "Документы",
         path: "/documents",
         icon: "file",
+        items: [
+            {
+                text: "Акты",
+                path: "/akt",
+            },
+            {
+                text: "Описи дел",
+                path: "/inventories",
+            },
+        ]
     },
     {
 

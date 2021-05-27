@@ -65,5 +65,10 @@ namespace Archive.Core.Collections.Document
         /// Id документа - Лист использования
         /// </summary>
         public string UsageListId { get; set; }
+
+        /// <summary>
+        /// Тип носителя
+        /// </summary>
+        public MediaType MediaType { get; set; }
     }
 }

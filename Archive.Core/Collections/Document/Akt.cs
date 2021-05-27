@@ -4,18 +4,13 @@ using Archive.Core.Enums;
 
 namespace Archive.Core.Collections.Document
 {
-    public class Inventory : Entity
+    public class Akt : Entity
     {
         /// <summary>
         /// Наименовнаие документа
         /// </summary>
         public string Name { get; set; }
-        
-        /// <summary>
-        /// Обозначение
-        /// </summary>
-        public string Designation { get; set; }
-        
+
         /// <summary>
         /// Дата документа
         /// </summary>
@@ -25,16 +20,23 @@ namespace Archive.Core.Collections.Document
         /// Тип документа
         /// </summary>
         public DocumentTypeEnum Type { get; set; }
-        
+
         /// <summary>
         /// Путь к файлу документа
         /// </summary>
         public string Path { get; set; }
-        
+
         /// <summary>
         /// Id номенклатурного дела
         /// </summary>
         public string NomenclatureId { get; set; }
+
+        public Priority Priority { get; set; }
+
+        /// <summary>
+        /// Тип носителя
+        /// </summary>
+        public MediaType MediaType { get; set; }
 
         public string Number { get; set; }
     }

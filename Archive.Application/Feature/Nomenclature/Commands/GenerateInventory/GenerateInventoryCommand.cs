@@ -137,7 +137,7 @@ namespace Archive.Application.Feature.Nomenclature.Commands.GenerateInventory
                 Type = DocumentTypeEnum.ОписьДела,
                 DocumentDate = DateTime.Now,
                 NomenclatureId = nomenclature.Id,
-                Designation = random.Next(1, 5000).ToString()
+                Number = random.Next(1, 5000).ToString()
             };
             var documentBuilder = Builders<Inventory>.Filter;
             var documentFilter = documentBuilder.Eq("Type", DocumentTypeEnum.ОписьДела) &
@@ -152,8 +152,8 @@ namespace Archive.Application.Feature.Nomenclature.Commands.GenerateInventory
                     System.IO.File.Delete(oldInventory.Path);
             }
 
-            await documentCollection.ReplaceOneAsync(documentFilter, document, new ReplaceOptions {IsUpsert = true},
-                cancellationToken);
+            await documentCollection.DeleteOneAsync(documentFilter, cancellationToken);
+            await documentCollection.InsertOneAsync(document, cancellationToken: cancellationToken);
 
             return Unit.Value;
         }

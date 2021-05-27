@@ -66,8 +66,10 @@
 
       <template #buttonGenerateInventory="{data}">
         <DxButton
+            id="button-generate-inventory"
+            :visible="currentUser.isUserArchivist"
             :text="focusedRow.buttonText"
-            type="normal"
+            type="default"
             :disabled="focusedRow.buttonDisabled"
             @click="generateInventory"
         />
@@ -118,6 +120,7 @@ import PreviewForm from "../components/forms/PreviewForm";
 import * as AspNetData from 'devextreme-aspnet-data-nojquery'
 import axios from "axios";
 import notify from "devextreme/ui/notify";
+import {mapState} from "vuex";
 
 const dataSource = AspNetData.createStore({
   key: 'id',
@@ -169,6 +172,9 @@ export default {
   watch: {},
   async created() {
     await this.initDepartments();
+  },
+  computed:{
+    ...mapState(['currentUser']),
   },
   methods: {
     focusedRowChanged(e) {
@@ -289,5 +295,8 @@ export default {
 <style>
 .nomenclature-grid-height {
   height: calc(100vh - 150px);
+}
+#button-generate-inventory{
+  margin-left: 10px;
 }
 </style>

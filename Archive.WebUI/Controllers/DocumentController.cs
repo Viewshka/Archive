@@ -4,9 +4,11 @@ using Archive.Application.Feature.Document.Draw.Commands.CreateDraw;
 using Archive.Application.Feature.Document.Draw.Commands.UpdateDraw;
 using Archive.Application.Feature.Document.KitConstructDoc.Commands.CreateKitConstructDoc;
 using Archive.Application.Feature.Document.KitConstructDoc.Commands.UpdateKitCreateConstructDoc;
+using Archive.Application.Feature.Document.Queries.GetAkts;
 using Archive.Application.Feature.Document.Queries.GetAllDocuments;
 using Archive.Application.Feature.Document.Queries.GetDocumentHistory;
 using Archive.Application.Feature.Document.Queries.GetDocumentsByNomenclature;
+using Archive.Application.Feature.Document.Queries.GetInventory;
 using Archive.Application.Feature.Document.ReturnDocument;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -108,7 +110,6 @@ namespace Archive.WebUI.Controllers
             return Ok(await Mediator.Send(new ReturnDocumentCommand {Id = id}));
         }
 
-        [AllowAnonymous]
         [HttpGet("{documentId}/generate")]
         public async Task<IActionResult> GenerateDocument(string documentId)
         {
@@ -117,6 +118,18 @@ namespace Archive.WebUI.Controllers
             Response.Headers.Append("content-disposition", "inline; filename=file.pdf");
             var result = File(stream, "application/pdf");
             return result;
+        }
+        
+        [HttpGet("akt")]
+        public async Task<IActionResult> GetAkts()
+        {
+            return Ok(await Mediator.Send(new GetAktsQuery()));
+        }
+        
+        [HttpGet("inventory")]
+        public async Task<IActionResult> GetInventories()
+        {
+            return Ok(await Mediator.Send(new GetInventoryQuery()));
         }
     }
 }

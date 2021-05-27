@@ -7,6 +7,8 @@ import DocumentGrid from "../views/DocumentGrid";
 import Requisition from "../views/Requisition";
 import DocumentOfNomenclature from "../views/DocumentOfNomenclature";
 import Users from "../views/Users.vue";
+import Inventory from "../views/Inventory.vue";
+import Akt from "../views/Akt.vue";
 
 Vue.use(VueRouter)
 
@@ -49,6 +51,22 @@ const routes = [
         components: {
             layout: defaultLayout,
             content: Users
+        }
+    },
+    {
+        path: '/inventories',
+        name: 'inventories',
+        components: {
+            layout: defaultLayout,
+            content: Inventory
+        }
+    },
+    {
+        path: '/akt',
+        name: 'akt',
+        components: {
+            layout: defaultLayout,
+            content: Akt
         }
     },
     {
