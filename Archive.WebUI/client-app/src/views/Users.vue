@@ -64,7 +64,7 @@
     </DxDataGrid>
     <PriorityEditForm
         v-if="priorityForm.visible"
-        :visible="priorityForm.visible"
+        :visible.sync="priorityForm.visible"
         :form-data="priorityForm.formData"
         :title="priorityForm.title"
         @submit="prioritySubmit"

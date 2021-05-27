@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Archive.Application.Common.Interfaces;
 using Archive.Application.Common.Options.MongoDb;
+using Archive.Application.Feature.Requisition.Commands.GenerateAktAboutDocumentGiveOut;
 using Archive.Core.Collections.Identity;
 using Archive.Core.Enums;
 using MediatR;
@@ -25,14 +26,17 @@ namespace Archive.Application.Feature.Requisition.Commands.CreateRequisition
     {
         private readonly ICurrentUserService _currentUserService;
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly IMediator _mediator;
         private readonly MongoDbOptions _mongoDbOptions;
 
         public CreateRequisitionCommandHandler(ICurrentUserService currentUserService,
             IOptions<MongoDbOptions> mongoDbOptions,
-            UserManager<ApplicationUser> userManager)
+            UserManager<ApplicationUser> userManager,
+            IMediator mediator)
         {
             _currentUserService = currentUserService;
             _userManager = userManager;
+            _mediator = mediator;
             _mongoDbOptions = mongoDbOptions.Value;
         }
 
@@ -64,6 +68,13 @@ namespace Archive.Application.Feature.Requisition.Commands.CreateRequisition
 
             await requisitionCollection.InsertOneAsync(entity, cancellationToken: cancellationToken);
 
+            if (isUserArchivist)
+                await _mediator.Send(new GenerateAktAboutDocumentGiveOutCommand
+                    {
+                        RequisitionId = entity.Id
+                    },
+                    cancellationToken);
+            
             return Unit.Value;
         }
     }

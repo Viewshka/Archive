@@ -23,14 +23,15 @@ namespace Archive.WebUI.Controllers
             if (string.IsNullOrWhiteSpace(documentId) && !Request.Form.Files.Any())
                 return NoContent();
 
-            var file = Request.Form.Files[0];
+            var file = Request.Form.Files.FirstOrDefault();
 
-            await Mediator.Send(new FileUploadCommand
-            {
-                DocumentId = documentId,
-                WebRootPath = _environment.WebRootPath,
-                File = file
-            });
+            if (file != null)
+                await Mediator.Send(new FileUploadCommand
+                {
+                    DocumentId = documentId,
+                    WebRootPath = _environment.WebRootPath,
+                    File = file
+                });
 
             return Ok();
         }

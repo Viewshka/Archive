@@ -9,6 +9,7 @@
         :render-async="true"
         @toolbar-preparing="toolbarPreparing($event)"
         @row-dbl-click="dataGridRowDblClick"
+        @focused-row-changed="focusedRowChanged"
     >
       <DxColumn
           caption="Индекс"
@@ -47,6 +48,11 @@
              title="Удалить"
              v-on:click="deleteNomenclature(data.data)"
           ></a>
+          <a href="#"
+             class="dx-link dx-icon-search dx-link-icon"
+             title="Просмотреть опись дела"
+             v-on:click="openInventory(data.data)"
+          ></a>
         </div>
       </template>
 
@@ -58,6 +64,14 @@
       <DxLoadPanel :enabled="true" :show-pane="true" :show-indicator="true"/>
       <DxPaging :enabled="true" :page-size="20"/>
 
+      <template #buttonGenerateInventory="{data}">
+        <DxButton
+            :text="focusedRow.buttonText"
+            type="normal"
+            :disabled="focusedRow.buttonDisabled"
+            @click="generateInventory"
+        />
+      </template>
       <template #buttonAddNomenclatureTemplate>
         <DxButton
             text="Добавить"
@@ -74,6 +88,12 @@
         :form-data="nomenclatureEditForm.formData"
         :data-source-department="dataSourceDepartments"
         @submit="nomenclatureSubmit"
+    />
+    <PreviewForm
+        v-if="previewFormData.visible && previewFormData.url"
+        :visible.sync="previewFormData.visible"
+        :document-subject="previewFormData.title"
+        :url="previewFormData.url"
     />
   </div>
 </template>
@@ -93,6 +113,7 @@ import DxDataGrid, {
 import DxButton from "devextreme-vue/button";
 import {confirm} from 'devextreme/ui/dialog'
 import NomenclatureEditForm from "../components/forms/NomenclatureEditForm";
+import PreviewForm from "../components/forms/PreviewForm";
 
 import * as AspNetData from 'devextreme-aspnet-data-nojquery'
 import axios from "axios";
@@ -117,11 +138,22 @@ export default {
         visible: false,
         formData: {},
         title: null
+      },
+      previewFormData: {
+        title: "",
+        visible: false,
+        url: null
+      },
+      focusedRow: {
+        nomenclatureId: null,
+        buttonText: 'Сформировать опись дела',
+        buttonDisabled: true
       }
     }
   },
   components: {
     NomenclatureEditForm,
+    PreviewForm,
     DxDataGrid,
     DxColumn,
     DxScrolling,
@@ -134,10 +166,32 @@ export default {
     DxPaging,
     DxButton
   },
+  watch: {},
   async created() {
     await this.initDepartments();
   },
   methods: {
+    focusedRowChanged(e) {
+      let data = e.row && e.row.data;
+      this.focusedRow.nomenclatureId = data.id;
+      this.focusedRow.buttonText = `Сформировать опись дела: ${data.index}`;
+      this.focusedRow.buttonDisabled = false;
+    },
+    generateInventory() {
+      axios.post(`api/nomenclature/${this.focusedRow.nomenclatureId}`)
+          .then(response => {
+              notify("Опись дела сформирована","success",3000);
+          })
+          .catch(error => {
+            console.log(error);
+            notify("Ошибка генерации описи дела","error",2000);
+          });
+    },
+    openInventory(data) {
+      this.previewFormData.title = `Внутрення опись документов дела: "${data.index} - ${data.name}"`;
+      this.previewFormData.visible = true;
+      this.previewFormData.url = `api/nomenclature/${data.id}/inventory`;
+    },
     dataGridRowDblClick(data) {
       this.$router.push(`documents-of-nomenclature/${data.data.id}`);
     },
@@ -201,6 +255,10 @@ export default {
     },
     toolbarPreparing(e) {
       e.toolbarOptions.items.unshift(
+          {
+            location: 'before',
+            template: 'buttonGenerateInventory'
+          },
           {
             location: 'after',
             template: 'buttonAddNomenclatureTemplate'

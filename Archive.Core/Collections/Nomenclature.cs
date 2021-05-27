@@ -8,5 +8,6 @@ namespace Archive.Core.Collections
         public string Index { get; set; }
         public string DepartmentId { get; set; }
         public int Year { get; set; }
+        public bool IsEdit { get; set; }
     }
 }

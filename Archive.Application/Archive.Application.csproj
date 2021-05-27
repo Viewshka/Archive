@@ -11,6 +11,7 @@
         <PackageReference Include="FluentValidation" Version="10.0.4" />
         <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="10.0.4" />
         <PackageReference Include="Open-XML-SDK" Version="2.8.1" />
+        <PackageReference Include="PdfSharp.Core" Version="1.0.0" />
     </ItemGroup>
 
     <ItemGroup>

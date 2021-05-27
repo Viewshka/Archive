@@ -4,9 +4,12 @@ using System.IO;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
+using Archive.Application.Common.Interfaces;
 using Archive.Application.Common.Options.MongoDb;
 using Archive.Application.Extensions;
-using Archive.Application.Feature.Document.Queries.GetDocumentHistory;
+using Archive.Application.Feature.Document.Queries.GetDocumentsByNomenclature;
+using Archive.Application.Feature.User.Queries.GetCurrentUser;
+using Archive.Core.Collections.Document;
 using Archive.Core.Enums;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
@@ -16,82 +19,87 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Options;
 using MongoDB.Driver;
 
-
-namespace Archive.Application.Feature.Document.DocumentUsageList.GenerateDocumentUsageList
+namespace Archive.Application.Feature.Nomenclature.Commands.GenerateInventory
 {
-    public class GenerateDocumentUsageListCommand : IRequest<MemoryStream>
+    public class GenerateInventoryCommand : IRequest
     {
-        public string DocumentId { get; set; }
+        public string NomenclatureId { get; set; }
     }
 
-    public class
-        GenerateDocumentUsageListCommandHandler : IRequestHandler<GenerateDocumentUsageListCommand, MemoryStream>
+    public static class Bookmark
+    {
+        public static string NomenclatureNumber => "NomenclatureNumber";
+        public static string DocumentTable => "DocumentTable";
+        public static string DocumentTotal => "DocumentTotal";
+        public static string CountList => "CountList";
+        public static string Creator => "Creator";
+        public static string Date => "Date";
+    }
+
+    public class GenerateInventoryCommandHandler : IRequestHandler<GenerateInventoryCommand>
     {
         private readonly IHostingEnvironment _environment;
         private readonly IMediator _mediator;
         private readonly MongoDbOptions _options;
 
-        private readonly IList<DocumentTypeEnum> _excludedDocumentTypes = new List<DocumentTypeEnum>
-        {
-            DocumentTypeEnum.Заявка,
-            DocumentTypeEnum.ЛистИспользованияДокумента,
-            DocumentTypeEnum.ОписьДела
-        };
-
-        public GenerateDocumentUsageListCommandHandler(IOptions<MongoDbOptions> options,
-            IHostingEnvironment environment, IMediator mediator)
+        public GenerateInventoryCommandHandler(IHostingEnvironment environment,
+            IOptions<MongoDbOptions> options,
+            IMediator mediator)
         {
             _environment = environment;
             _mediator = mediator;
             _options = options.Value;
         }
 
-        public async Task<MemoryStream> Handle(GenerateDocumentUsageListCommand request,
-            CancellationToken cancellationToken)
+        public async Task<Unit> Handle(GenerateInventoryCommand request, CancellationToken cancellationToken)
         {
             var client = new MongoClient(_options.ConnectionString);
             var database = client.GetDatabase(_options.DatabaseName);
-
-            var documentTemplateCollection = database
+            var nomenclatureCollection = database
+                .GetCollection<Core.Collections.Nomenclature>(_options.Collections.Nomenclatures);
+            var templateCollection = database
                 .GetCollection<Core.Collections.DocumentTemplate>(_options.Collections.DocumentTemplates);
 
             var documentCollection = database
-                .GetCollection<Core.Collections.Document.Document>(_options.Collections.Documents);
+                .GetCollection<Inventory>(_options.Collections.Documents);
 
             var templateFilter = Builders<Core.Collections.DocumentTemplate>.Filter
-                .Eq("Type", DocumentTemplateEnum.ЛистИспользованияДокумента);
-            var template = await documentTemplateCollection.Find(templateFilter)
+                .Eq("Type", DocumentTemplateEnum.ОписьДела);
+            var template = await templateCollection.Find(templateFilter)
                 .SingleOrDefaultAsync(cancellationToken);
 
-            var requisitions = await _mediator
-                .Send(new GetDocumentHistoryQuery {DocumentId = request.DocumentId}, cancellationToken);
+            var nomenclatureFilter = Builders<Core.Collections.Nomenclature>.Filter
+                .Eq("_id", request.NomenclatureId);
 
-            var documentFilter = Builders<Core.Collections.Document.Document>.Filter.Eq("_id", request.DocumentId);
-            var document = await documentCollection.Find(documentFilter).SingleOrDefaultAsync(cancellationToken);
+            var nomenclature = await nomenclatureCollection.Find(nomenclatureFilter)
+                .SingleOrDefaultAsync(cancellationToken);
 
-            if (_excludedDocumentTypes.Contains(document.Type))
-                throw new Exception("Не верный тип документа");
+            var documents = await _mediator
+                .Send(new GetDocumentsByNomenclatureQuery
+                {
+                    NomenclatureId = request.NomenclatureId
+                }, cancellationToken);
 
-            var inputPathDocx = Path.Combine(_environment.WebRootPath, template.Path);
-            var outputPathDocx = Path.Combine(_environment.WebRootPath, "temp/test.docx");
+            var newFileGuid = Guid.NewGuid().ToString();
+            var inputPath = Path.Combine(_environment.WebRootPath, template.Path);
+            var outputPath = Path.Combine(_environment.WebRootPath, $"files/{newFileGuid}.pdf");
+            var tempPath = Path.Combine(_environment.WebRootPath, "temp/temp_file.docx");
             var tempFolder = Path.Combine(_environment.WebRootPath, "temp");
 
             if (!Directory.Exists(tempFolder))
             {
                 Directory.CreateDirectory(tempFolder);
             }
-            
+
             ClearTempDirectory(tempFolder);
 
-            var templateFs = new FileStream(inputPathDocx, FileMode.Open);
+            var templateFs = new FileStream(inputPath, FileMode.Open);
             var templateStream = new MemoryStream();
             await templateFs.CopyToAsync(templateStream, cancellationToken);
             templateFs.Close();
 
-            using (var server = WordprocessingDocument.Open(templateStream,true))
+            using (var server = WordprocessingDocument.Open(templateStream, true))
             {
-                var table = new Table();
-
                 var bookmarkMap = new Dictionary<string, BookmarkStart>();
 
                 foreach (var bookmarkStart in server.MainDocumentPart.RootElement.Descendants<BookmarkStart>())
@@ -99,86 +107,116 @@ namespace Archive.Application.Feature.Document.DocumentUsageList.GenerateDocumen
                     bookmarkMap[bookmarkStart.Name] = bookmarkStart;
                 }
 
-                var tableProperties = GetTableProperties();
-                table.AppendChild(tableProperties);
+                InsertNomenclatureNumber(bookmarkMap, nomenclature);
+                InsertDocumentTable(bookmarkMap, documents);
+                InsertDocumentTotal(bookmarkMap, documents.Count);
+                await InsertCreator(bookmarkMap);
 
-                var documentNameBookmark = bookmarkMap[Bookmark.DocumentName];
-                var documentNameBookmarkParent = documentNameBookmark.Parent;
+                if (System.IO.File.Exists(tempPath))
+                    System.IO.File.Delete(tempPath);
 
-                var type = document.Type.GetString();
-                var text = $"Лист использования документа \"{type} - {document.Name}\"";
-
-                var run = new Run(new Text(text));
-                var runProperties = new RunProperties
-                {
-                    FontSize = new FontSize {Val = new StringValue("28")},
-                    RunFonts = new RunFonts {Ascii = "Arial"},
-                };
-                run.PrependChild(runProperties);
-
-                var paragraphProperties = new ParagraphProperties
-                {
-                    Justification = new Justification {Val = JustificationValues.Center},
-                    Indentation = new Indentation {FirstLine = "0"},
-                };
-                var paragraph = new Paragraph();
-                paragraph.Append(paragraphProperties);
-                paragraph.Append(run);
-                documentNameBookmarkParent.Append(paragraph);
-
-                InsertTableHeaderRow(table);
-                InsertTableBody(table, requisitions);
-
-                var usageTableBookmark = bookmarkMap[Bookmark.UsageTable];
-                var usageTableBookmarkParent = usageTableBookmark.Parent;
-
-                usageTableBookmarkParent.InsertBeforeSelf(table);
-
-                if (System.IO.File.Exists(outputPathDocx))
-                    System.IO.File.Delete(outputPathDocx);
-
-                server.SaveAs(outputPathDocx).Close();
+                server.SaveAs(tempPath).Close();
             }
 
-            var docxFileStream = new FileStream(outputPathDocx, FileMode.Open);
+            var docxFileStream = new FileStream(tempPath, FileMode.Open);
             var docxMemoryStream = new MemoryStream();
             await docxFileStream.CopyToAsync(docxMemoryStream, cancellationToken);
             docxFileStream.Close();
             docxMemoryStream.Position = 0;
 
             var pdfStream = await ConvertToPdf(cancellationToken, docxMemoryStream, template);
+            var fs = new FileStream(outputPath, FileMode.Create);
+            await pdfStream.CopyToAsync(fs, cancellationToken);
+            fs.Close();
 
-            var result = new MemoryStream();
-            await pdfStream.CopyToAsync(result, cancellationToken);
-            pdfStream.Close();
-            result.Position = 0;
-            return result;
+            var random = new Random();
+            var document = new Inventory
+            {
+                Name = $"Внутрення опись документов дела \"{nomenclature.Index} - {nomenclature.Name}\"",
+                Path = outputPath,
+                Type = DocumentTypeEnum.ОписьДела,
+                DocumentDate = DateTime.Now,
+                NomenclatureId = nomenclature.Id,
+                Designation = random.Next(1, 5000).ToString()
+            };
+            var documentBuilder = Builders<Inventory>.Filter;
+            var documentFilter = documentBuilder.Eq("Type", DocumentTypeEnum.ОписьДела) &
+                                 documentBuilder.Eq("NomenclatureId", nomenclature.Id);
+
+            var oldInventory = await documentCollection.Find(documentFilter)
+                .SingleOrDefaultAsync(cancellationToken);
+
+            if (oldInventory != null)
+            {
+                if (System.IO.File.Exists(oldInventory.Path))
+                    System.IO.File.Delete(oldInventory.Path);
+            }
+
+            await documentCollection.ReplaceOneAsync(documentFilter, document, new ReplaceOptions {IsUpsert = true},
+                cancellationToken);
+
+            return Unit.Value;
         }
 
-        private static void ClearTempDirectory(string path)
+        private async Task InsertCreator(IReadOnlyDictionary<string, BookmarkStart> bookmarkMap)
         {
-            var dirInfo = new DirectoryInfo(path);
-            foreach (var file in dirInfo.GetFiles())
-                file.Delete();
+            var creator = await _mediator.Send(new GetCurrentUserQuery());
+            
+            var bookmark = bookmarkMap[Bookmark.Creator];
+            var parentBookmark = bookmark.Parent;
+            var text = creator.GetBriefName();
+            var run = new Run(new Text(text));
+            var runProperties = new RunProperties
+            {
+                FontSize = new FontSize {Val = new StringValue("24")},
+                RunFonts = new RunFonts {Ascii = "Arial"},
+            };
+            run.PrependChild(runProperties);
+            var paragraph = new Paragraph();
+            paragraph.Append(run);
+            parentBookmark.Append(paragraph);
         }
 
-        private static void InsertTableBody(Table table, IList<HistoryDto> histories)
+        private static void InsertDocumentTotal(Dictionary<string, BookmarkStart> bookmarkMap, int count)
         {
-            foreach (var history in histories)
+            var bookmark = bookmarkMap[Bookmark.DocumentTotal];
+            var parentBookmark = bookmark.Parent;
+            var text = $"Итого {count} документов";
+            var run = new Run(new Text(text));
+            var runProperties = new RunProperties
+            {
+                FontSize = new FontSize {Val = new StringValue("24")},
+                RunFonts = new RunFonts {Ascii = "Arial"},
+            };
+            run.PrependChild(runProperties);
+            var paragraph = new Paragraph();
+            paragraph.Append(run);
+            parentBookmark.Append(paragraph);
+        }
+
+        private static void InsertDocumentTable(IReadOnlyDictionary<string, BookmarkStart> bookmarkMap,
+            IList<DocumentsByNomenclatureDto> documents)
+        {
+            var table = new Table();
+
+            var tableProperties = GetTableProperties();
+            table.AppendChild(tableProperties);
+
+            InsertTableHeaderRow(table);
+            var index = 1;
+            foreach (var document in documents)
             {
                 var rowData = new[]
                 {
-                    history.Giver,
-                    history.DateOfGiveOut.HasValue ? history.DateOfGiveOut.Value.ToString("d") : "-",
-                    history.Recipient,
-                    history.DateOfReturn.HasValue ? history.DateOfReturn.Value.ToString("d") : "-",
-                    history.UsageType,
-                    history.Status
+                    index++.ToString(),
+                    document.Designation,
+                    document.DocumentDate.ToString("d"),
+                    document.Name,
+                    document.Note
                 };
 
                 var row = new TableRow();
-
-                for (var i = 0; i < 6; i++)
+                for (var i = 0; i < 5; i++)
                 {
                     var tableCell = new TableCell
                     {
@@ -225,6 +263,11 @@ namespace Archive.Application.Feature.Document.DocumentUsageList.GenerateDocumen
 
                 table.Append(row);
             }
+
+            var bookmark = bookmarkMap[Bookmark.DocumentTable];
+            var bookmarkParent = bookmark.Parent;
+
+            bookmarkParent.InsertBeforeSelf(table);
         }
 
         private static void InsertTableHeaderRow(Table table)
@@ -233,9 +276,9 @@ namespace Archive.Application.Feature.Document.DocumentUsageList.GenerateDocumen
 
             var headerRow = new[]
             {
-                "Кем выдано", "Дата выдачи", "Кому выдано", "Дата возврата", "Характер использования", "Статус"
+                "№", "Регистрационный номер документа", "Дата документа", "Заголовок документа", "Примечание"
             };
-            for (var i = 0; i < 6; i++)
+            for (var i = 0; i < 5; i++)
             {
                 var tableCell = new TableCell
                 {
@@ -283,6 +326,31 @@ namespace Archive.Application.Feature.Document.DocumentUsageList.GenerateDocumen
             table.Append(tableRow);
         }
 
+        private static void InsertNomenclatureNumber(IReadOnlyDictionary<string, BookmarkStart> bookmarkMap,
+            Core.Collections.Nomenclature nomenclature)
+        {
+            var bookmark = bookmarkMap[Bookmark.NomenclatureNumber];
+            var parentBookmark = bookmark.Parent;
+
+            var run = new Run(new Text(nomenclature.Index));
+            var runProperties = new RunProperties
+            {
+                FontSize = new FontSize {Val = new StringValue("24")},
+                RunFonts = new RunFonts {Ascii = "Arial"},
+            };
+            run.PrependChild(runProperties);
+
+            var paragraphProperties = new ParagraphProperties
+            {
+                Justification = new Justification {Val = JustificationValues.Center},
+                Indentation = new Indentation {FirstLine = "0"},
+            };
+            var paragraph = new Paragraph();
+            paragraph.Append(paragraphProperties);
+            paragraph.Append(run);
+            parentBookmark.Append(paragraph);
+        }
+
         private static TableProperties GetTableProperties()
         {
             return new TableProperties(
@@ -328,11 +396,11 @@ namespace Archive.Application.Feature.Document.DocumentUsageList.GenerateDocumen
             return await response.Content.ReadAsStreamAsync(cancellationToken);
         }
 
-
-        private static class Bookmark
+        private static void ClearTempDirectory(string path)
         {
-            public static string DocumentName => "НаименованиеДокумента";
-            public static string UsageTable => "ТаблицаИспользования";
+            var dirInfo = new DirectoryInfo(path);
+            foreach (var file in dirInfo.GetFiles())
+                file.Delete();
         }
     }
 }
