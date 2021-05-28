@@ -4,7 +4,6 @@ using System.IO;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
-using Archive.Application.Common.Interfaces;
 using Archive.Application.Common.Options.MongoDb;
 using Archive.Application.Extensions;
 using Archive.Application.Feature.Document.Queries.GetDocumentsByNomenclature;
@@ -111,6 +110,7 @@ namespace Archive.Application.Feature.Nomenclature.Commands.GenerateInventory
                 InsertDocumentTable(bookmarkMap, documents);
                 InsertDocumentTotal(bookmarkMap, documents.Count);
                 await InsertCreator(bookmarkMap);
+                InsertDate(bookmarkMap);
 
                 if (System.IO.File.Exists(tempPath))
                     System.IO.File.Delete(tempPath);
@@ -156,6 +156,23 @@ namespace Archive.Application.Feature.Nomenclature.Commands.GenerateInventory
             await documentCollection.InsertOneAsync(document, cancellationToken: cancellationToken);
 
             return Unit.Value;
+        }
+
+        private static void InsertDate(IReadOnlyDictionary<string, BookmarkStart> bookmarkMap)
+        {
+            var bookmark = bookmarkMap[Bookmark.Date];
+            var parentBookmark = bookmark.Parent;
+            var text = DateTime.Now.ToString("d");
+            var run = new Run(new Text(text));
+            var runProperties = new RunProperties
+            {
+                FontSize = new FontSize {Val = new StringValue("24")},
+                RunFonts = new RunFonts {Ascii = "Arial"},
+            };
+            run.PrependChild(runProperties);
+            var paragraph = new Paragraph();
+            paragraph.Append(run);
+            parentBookmark.Append(paragraph);
         }
 
         private async Task InsertCreator(IReadOnlyDictionary<string, BookmarkStart> bookmarkMap)

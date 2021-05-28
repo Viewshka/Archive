@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using Archive.Application.Feature.Document.DestructionAkt.GenerateDestructionAkt;
 using Archive.Application.Feature.Document.DocumentUsageList.GenerateDocumentUsageList;
 using Archive.Application.Feature.Document.Draw.Commands.CreateDraw;
 using Archive.Application.Feature.Document.Draw.Commands.UpdateDraw;
@@ -119,17 +120,23 @@ namespace Archive.WebUI.Controllers
             var result = File(stream, "application/pdf");
             return result;
         }
-        
+
         [HttpGet("akt")]
         public async Task<IActionResult> GetAkts()
         {
             return Ok(await Mediator.Send(new GetAktsQuery()));
         }
-        
+
         [HttpGet("inventory")]
         public async Task<IActionResult> GetInventories()
         {
             return Ok(await Mediator.Send(new GetInventoryQuery()));
+        }
+
+        [HttpPost("destruction-akt")]
+        public async Task<IActionResult> GenerateInventory(GenerateDestructionAktCommand command)
+        {
+            return Ok(await Mediator.Send(command));
         }
     }
 }

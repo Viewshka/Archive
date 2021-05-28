@@ -10,5 +10,6 @@ namespace Archive.Core.Collections.Identity
         public string LastName { get; set; }
         public string DepartmentId { get; set; }
         public Priority Priority { get; set; }
+        public string JobTitle { get; set; }
     }
 }

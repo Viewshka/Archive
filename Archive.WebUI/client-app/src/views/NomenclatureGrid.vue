@@ -12,7 +12,7 @@
         @focused-row-changed="focusedRowChanged"
     >
       <DxColumn
-          caption="Индекс"
+          caption="Номер"
           data-field="index"
           data-type="string"
       />
@@ -66,12 +66,21 @@
 
       <template #buttonGenerateInventory="{data}">
         <DxButton
-            id="button-generate-inventory"
             :visible="currentUser.isUserArchivist"
-            :text="focusedRow.buttonText"
+            :text="focusedRow.buttonInventoryText"
             type="default"
             :disabled="focusedRow.buttonDisabled"
             @click="generateInventory"
+        />
+      </template>
+      <template #destructionAkt="{data}">
+        <DxButton
+            id="destruction-button"
+            :visible="currentUser.isUserArchivist"
+            :text="focusedRow.buttonDestructionAktText"
+            type="danger"
+            :disabled="focusedRow.buttonDisabled"
+            @click="destructionDocumentButtonClick"
         />
       </template>
       <template #buttonAddNomenclatureTemplate>
@@ -97,6 +106,12 @@
         :document-subject="previewFormData.title"
         :url="previewFormData.url"
     />
+    <DestructionForm
+        v-if="destructionForm.visible"
+        :visible.sync="destructionForm.visible"
+        :form-data="destructionForm.formData"
+        @submit="destructionFormSubmit"
+    />
   </div>
 </template>
 
@@ -121,6 +136,7 @@ import * as AspNetData from 'devextreme-aspnet-data-nojquery'
 import axios from "axios";
 import notify from "devextreme/ui/notify";
 import {mapState} from "vuex";
+import DestructionForm from "../components/forms/DestructionForm";
 
 const dataSource = AspNetData.createStore({
   key: 'id',
@@ -149,14 +165,20 @@ export default {
       },
       focusedRow: {
         nomenclatureId: null,
-        buttonText: 'Сформировать опись дела',
+        buttonInventoryText: 'Сформировать опись дела',
+        buttonDestructionAktText: 'Списание',
         buttonDisabled: true
-      }
+      },
+      destructionForm: {
+        visible: false,
+        formData: {}
+      },
     }
   },
   components: {
     NomenclatureEditForm,
     PreviewForm,
+    DestructionForm,
     DxDataGrid,
     DxColumn,
     DxScrolling,
@@ -173,24 +195,36 @@ export default {
   async created() {
     await this.initDepartments();
   },
-  computed:{
+  computed: {
     ...mapState(['currentUser']),
   },
   methods: {
+    destructionFormSubmit(formData) {
+      axios.post(`api/document/destruction-akt`, formData)
+          .then(response => {
+            console.log(response.data)
+            notify("Акт создан", "success", 2000);
+          })
+          .catch(error => {
+            console.log(error);
+            notify("Не удалось создать акт списания", "error", 2000);
+          });
+    },
     focusedRowChanged(e) {
       let data = e.row && e.row.data;
       this.focusedRow.nomenclatureId = data.id;
-      this.focusedRow.buttonText = `Сформировать опись дела: ${data.index}`;
+      this.focusedRow.buttonInventoryText = `Сформировать опись дела: ${data.index}`;
+      this.focusedRow.buttonDestructionAktText = `Списание ${data.index}`;
       this.focusedRow.buttonDisabled = false;
     },
     generateInventory() {
       axios.post(`api/nomenclature/${this.focusedRow.nomenclatureId}`)
           .then(response => {
-              notify("Опись дела сформирована","success",3000);
+            notify("Опись дела сформирована", "success", 3000);
           })
           .catch(error => {
             console.log(error);
-            notify("Ошибка генерации описи дела","error",2000);
+            notify("Ошибка генерации описи дела", "error", 2000);
           });
     },
     openInventory(data) {
@@ -259,8 +293,16 @@ export default {
             }
           });
     },
+    destructionDocumentButtonClick() {
+      this.destructionForm.visible = true;
+      this.destructionForm.formData = {nomenclatureId: this.focusedRow.nomenclatureId};
+    },
     toolbarPreparing(e) {
       e.toolbarOptions.items.unshift(
+          {
+            location: 'before',
+            template: 'destructionAkt'
+          },
           {
             location: 'before',
             template: 'buttonGenerateInventory'
@@ -296,7 +338,8 @@ export default {
 .nomenclature-grid-height {
   height: calc(100vh - 150px);
 }
-#button-generate-inventory{
+
+#destruction-button {
   margin-left: 10px;
 }
 </style>

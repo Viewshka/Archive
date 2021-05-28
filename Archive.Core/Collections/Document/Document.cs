@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Archive.Core.Collections.Common;
 using Archive.Core.Enums;
+using MongoDB.Bson.Serialization.Attributes;
 
 namespace Archive.Core.Collections.Document
 {

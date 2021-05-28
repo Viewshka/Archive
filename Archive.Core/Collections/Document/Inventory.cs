@@ -37,5 +37,7 @@ namespace Archive.Core.Collections.Document
         public string NomenclatureId { get; set; }
 
         public string Number { get; set; }
+        public DateTime IncomingDate { get; set; }
+        
     }
 }

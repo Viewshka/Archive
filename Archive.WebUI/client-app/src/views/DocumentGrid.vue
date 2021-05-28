@@ -432,13 +432,13 @@ export default {
     toolbarPreparing(e) {
       e.toolbarOptions.items.unshift(
           {
-            location: 'after',
+            location: 'before',
             widget: 'dxButton',
             locateInMenu: 'auto',
             options: {
-              text: 'Выдача',
-              hint: 'Выдача',
-              type: 'normal',
+              text: 'Выдать документы',
+              hint: 'Выдать документы',
+              type: 'default',
               stylingMode: 'contained',
               visible: this.currentUser.isUserArchivist,
               onClick: () => this.giveOutDocumentButtonClick()

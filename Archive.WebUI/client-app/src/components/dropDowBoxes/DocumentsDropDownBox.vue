@@ -3,8 +3,8 @@
       :ref="dropDownBoxRefName"
       :drop-down-options="dropDownOptions"
       :data-source="dataSourceDocuments"
-      :value="[currentValues]"
-      display-expr="name"
+      :value="currentValues"
+      :display-expr="displayValue"
       value-expr="id"
       content-template="contentTemplate"
       placeholder="Выберите документы"
@@ -25,24 +25,24 @@
             :on-selection-changed="onSelectionChanged"
             :column-min-width="50"
             :root-value="null"
-            value-expr="name"
+            value-expr="id"
             key-expr="id"
         >
-          <DxColumn 
-              data-field="name" 
+          <DxColumn
+              data-field="name"
               caption="Документ"
           />
-          <DxColumn 
-              data-field="type" 
+          <DxColumn
+              data-field="type"
               caption="Тип документа"
           >
             <DxLookup :data-source="dataSourceDocumentType" value-expr="id" display-expr="name"/>
           </DxColumn>
 
-          <DxSearchPanel :visible="true" :width="450"/>
+          <DxSearchPanel :visible="true" :width="550"/>
           <DxPaging :enabled="true" :page-size="20"/>
           <DxScrolling mode="virtual" row-rendering-mode="virtual" column-rendering-mode="virtual"/>
-          <DxSelection :recursive="true" mode="multiple" show-check-boxes-mode="always" :allow-select-all="false"/>
+          <DxSelection :recursive="false" mode="multiple" show-check-boxes-mode="always" :allow-select-all="false"/>
         </DxTreeList>
       </div>
     </template>
@@ -75,7 +75,7 @@ export default {
       default: () => function () {
       }
     },
-    dataSourceDocuments:{
+    dataSourceDocuments: {
       type: Array,
       required: true
     }
@@ -99,8 +99,9 @@ export default {
     DxLookup,
   },
   methods: {
-    displayValueFormatter(data){
-      console.log(data)
+    displayValue(data) {
+      let type = this.dataSourceDocumentType.find(t => t.id === data.type).name;
+      return `${data.name}(${type})`;
     },
     onSelectionChanged(selectionChangedArgs) {
       this.currentValues = selectionChangedArgs.selectedRowKeys;
