@@ -17,5 +17,6 @@ namespace Archive.Application.Feature.Requisition.Queries.GetRequisitions
         public DateTime? DateOfReturn { get; set; }
         public DocumentUsageType UsageType { get; set; }
         public RequisitionStatusEnum Status { get; set; }
+        public int Number { get; set; }
     }
 }

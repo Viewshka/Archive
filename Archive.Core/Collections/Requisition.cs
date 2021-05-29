@@ -61,6 +61,5 @@ namespace Archive.Core.Collections
         public string Path { get; set; }
         public string FileName { get; set; }
         public int Number { get; set; }
-        public string Reason { get; set; }
     }
 }

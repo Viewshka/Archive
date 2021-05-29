@@ -25,7 +25,7 @@ namespace Archive.Application.Extensions
             if (!string.IsNullOrWhiteSpace(user.FirstName))
                 result += $" {user.FirstName}";
             if (!string.IsNullOrWhiteSpace(user.MiddleName))
-                result += $" {user.MiddleName.First()}.";
+                result += $"\u00a0{user.MiddleName.First()}.";
             if (!string.IsNullOrWhiteSpace(user.LastName))
                 result += $"{user.LastName.First()}.";
 

@@ -63,6 +63,7 @@ namespace Archive.Application.Feature.Requisition.Queries.GetRequisitions
                     DateOfCreated = requisition.DateOfCreated,
                     DateOfGiveOut = requisition.DateOfGiveOut,
                     DateOfReturn = requisition.DateOfReturn,
+                    Number = requisition.Number,
                     Status = requisition.Canceled
                         ? RequisitionStatusEnum.Отменено
                         : requisition.IsDenied

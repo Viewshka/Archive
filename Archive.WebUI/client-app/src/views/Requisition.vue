@@ -10,7 +10,13 @@
         :render-async="true"
         @toolbar-preparing="toolbarPreparing($event)"
         @selection-changed="selectionChanged"
+        @focused-row-changed="focusedRowChanged"
     >
+      <DxColumn
+          caption="Номер"
+          data-field="number"
+          data-type="string"
+      />
       <DxColumn
           caption="Выдавший"
           data-field="giverId"
@@ -100,6 +106,15 @@
           ></a>
         </div>
       </template>
+      <template #previewButtonTemplate="{data}">
+        <DxButton
+            id="preview-button"
+            :text="focusedRow.buttonText"
+            type="default"
+            :disabled="focusedRow.buttonDisabled"
+            @click="openPreview"
+        />
+      </template>
 
       <DxScrolling mode="virtual"/>
       <DxColumnChooser :enabled="true" mode="select"/>
@@ -122,6 +137,12 @@
         :form-data="requisitionFormForArchivist.formData"
         :data-source-users="dataSourceUsers"
         @submit="requisitionFormSubmit"
+    />
+    <PreviewForm
+        v-if="previewFormData.visible && previewFormData.url"
+        :visible.sync="previewFormData.visible"
+        :document-subject="previewFormData.title"
+        :url="previewFormData.url"
     />
   </div>
 </template>
@@ -151,6 +172,7 @@ import {mapState} from "vuex";
 
 import RequisitionForm from "../components/forms/requisition/RequisitionForm";
 import RequisitionFormForArchivist from "../components/forms/requisition/RequisitionFormForArchivist";
+import PreviewForm from "../components/forms/PreviewForm";
 
 const dataSource = AspNetData.createStore({
   key: 'id',
@@ -177,7 +199,17 @@ export default {
       requisitionFormForArchivist: {
         visible: false,
         formData: {}
-      }
+      },
+      focusedRow: {
+        requisitionId: null,
+        buttonText: 'Предпросмотр',
+        buttonDisabled: true,
+      },
+      previewFormData: {
+        title: "",
+        visible: false,
+        url: null
+      },
     }
   },
   computed: {
@@ -190,6 +222,7 @@ export default {
     RequisitionFormForArchivist,
     DocumentsMasterDetail,
     RequisitionForm,
+    PreviewForm,
     DxDataGrid,
     DxColumn,
     DxScrolling,
@@ -211,6 +244,17 @@ export default {
     ])
   },
   methods: {
+    openPreview() {
+      this.previewFormData.url = `api/file/requisition/${this.focusedRow.requisitionId}`;
+      this.previewFormData.visible = true;
+    },
+    focusedRowChanged(e) {
+      let data = e.row && e.row.data;
+      this.focusedRow.requisitionId = data.id;
+      this.focusedRow.buttonText = `Предпросмотр ${data.number}`;
+      this.focusedRow.buttonDisabled = false;
+      this.previewFormData.title = `Заявка на выдачу документов №${data.number}`;
+    },
     requisitionFormSubmit(formData) {
       axios.post(`api/requisition`, formData)
           .then(response => {
@@ -259,6 +303,10 @@ export default {
     },
     toolbarPreparing(e) {
       e.toolbarOptions.items.unshift(
+          {
+            location: 'before',
+            template: 'previewButtonTemplate'
+          },
           {
             location: 'after',
             widget: 'dxButton',
