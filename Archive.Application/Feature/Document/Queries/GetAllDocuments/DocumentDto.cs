@@ -15,5 +15,9 @@ namespace Archive.Application.Feature.Document.Queries.GetAllDocuments
         public DocumentTypeEnum Type { get; set; }
         public string NomenclatureId { get; set; }
         public string ParentId { get; set; }
+        public MediaType MediaType { get; set; }
+        public Priority Priority { get; set; }
+        public DateTime? StorageDate { get; set; }
+        public DateTime IncomingDate { get; set; }
     }
 }

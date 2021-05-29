@@ -30,7 +30,13 @@
       >
         <DxLookup :data-source="dataSourceNomenclatures" value-expr="id" :display-expr="nomenclatureDisplayExpr"/>
       </DxColumn>
-
+      <DxColumn
+          caption="Управление"
+          type="buttons"
+          :hiding-priority="10"
+          cell-template="buttonControl"
+          alignment="center"
+      />
       <DxScrolling mode="virtual"/>
       <DxColumnChooser :enabled="true" mode="select"/>
       <DxSearchPanel :visible="true"/>
@@ -39,6 +45,15 @@
       <DxLoadPanel :enabled="true" :show-pane="true" :show-indicator="true"/>
       <DxPaging :enabled="true" :page-size="20"/>
 
+      <template #buttonControl="{data}">
+        <div class="dx-command-edit dx-command-edit-with-icons">
+          <a href="#"
+             class="dx-link dx-icon-search dx-link-icon"
+             title="Просмотреть акт"
+             v-on:click="openPreview(data.data)"
+          ></a>
+        </div>
+      </template>
     </DxDataGrid>
     <PreviewForm
         v-if="previewFormData.visible && previewFormData.url"
@@ -107,6 +122,11 @@ export default {
     await this.initNomenclatures()
   },
   methods: {
+    openPreview(data) {
+      this.previewFormData.documentSubject = data.name;
+      this.previewFormData.visible = true;
+      this.previewFormData.url = `api/file/${data.id}`;
+    },
     async initNomenclatures() {
       await axios.get(`api/nomenclature`)
           .then(response => {

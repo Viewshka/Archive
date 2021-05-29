@@ -69,6 +69,17 @@ const priority = [
     },
 ];
 
+const mediaType = [
+    {
+        id: 1,
+        name: 'Бумажный'
+    },
+    {
+        id: 2,
+        name: 'Электронный'
+    },
+];
+
 export default {
-    documentTypes, documentUsageTypes,requisitionStatus,priority
+    documentTypes, documentUsageTypes, requisitionStatus, priority, mediaType
 }

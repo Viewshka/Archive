@@ -21,6 +21,7 @@ namespace Archive.Application.Feature.Document.Draw.Commands.UpdateDraw
         public string ParentId { get; set; }
         public DateTime? StorageDate { get; set; }
         public Priority Priority { get; set; }
+        public MediaType MediaType { get; set; }
     }
 
     public class UpdateDrawCommandHandler : IRequestHandler<UpdateDrawCommand>
@@ -49,6 +50,7 @@ namespace Archive.Application.Feature.Document.Draw.Commands.UpdateDraw
                 .Set("Name", request.Name)
                 .Set("StorageDate", request.StorageDate)
                 .Set("Note", request.Note)
+                .Set("MediaType", request.MediaType)
                 .Set("Priority", request.Priority);
 
             var result = await documentsCollection.UpdateOneAsync(filter, update, cancellationToken: cancellationToken);

@@ -38,6 +38,7 @@ namespace Archive.Application.Feature.Document.Queries.GetAllDocuments
             var builder = Builders<DocumentDto>.Filter;
             var filter = builder.Gte("Priority", currentUser.Priority) &
                          builder.Ne("Type", DocumentTypeEnum.Заявка) &
+                         builder.Ne("Type", DocumentTypeEnum.Акт) &
                          builder.Ne("Type", DocumentTypeEnum.ОписьДела);
 
             return await documentsCollection.Find(filter).ToListAsync(cancellationToken);

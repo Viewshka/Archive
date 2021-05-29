@@ -42,5 +42,21 @@ namespace Archive.Application.Extensions
             
             return result;
         }
+        
+        public static string GetBriefNameWithJobTitle(this CurrentUserDto user)
+        {
+            var result = string.Empty;
+
+            if (!string.IsNullOrWhiteSpace(user.JobTitle))
+                result += user.JobTitle;
+            if (!string.IsNullOrWhiteSpace(user.FirstName))
+                result += $" {user.FirstName}";
+            if (!string.IsNullOrWhiteSpace(user.MiddleName))
+                result += $" {user.MiddleName.First()}.";
+            if (!string.IsNullOrWhiteSpace(user.LastName))
+                result += $"{user.LastName.First()}.";
+
+            return result;
+        }
     }
 }

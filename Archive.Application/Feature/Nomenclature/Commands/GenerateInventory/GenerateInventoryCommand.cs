@@ -133,7 +133,7 @@ namespace Archive.Application.Feature.Nomenclature.Commands.GenerateInventory
             var document = new Inventory
             {
                 Name = $"Внутрення опись документов дела \"{nomenclature.Index} - {nomenclature.Name}\"",
-                Path = outputPath,
+                Path = $"files/{newFileGuid}.pdf",
                 Type = DocumentTypeEnum.ОписьДела,
                 DocumentDate = DateTime.Now,
                 NomenclatureId = nomenclature.Id,
@@ -181,7 +181,7 @@ namespace Archive.Application.Feature.Nomenclature.Commands.GenerateInventory
             
             var bookmark = bookmarkMap[Bookmark.Creator];
             var parentBookmark = bookmark.Parent;
-            var text = creator.GetBriefName();
+            var text = creator.GetBriefNameWithJobTitle();
             var run = new Run(new Text(text));
             var runProperties = new RunProperties
             {

@@ -441,6 +441,7 @@ export default {
               type: 'default',
               stylingMode: 'contained',
               visible: this.currentUser.isUserArchivist,
+              elementAttr: {id: 'give-out-button'},
               onClick: () => this.giveOutDocumentButtonClick()
             }
           },
@@ -485,5 +486,8 @@ export default {
 <style lang="scss">
 .document-tree-list {
   height: calc(100vh - 150px);
+}
+#give-out-button{
+ margin-left: 10px; 
 }
 </style>

@@ -18,5 +18,6 @@ namespace Archive.Application.Feature.User.Queries.GetCurrentUser
         public bool IsUserArchivist { get; set; }
 
         public Priority Priority { get; set; }
+        public string JobTitle { get; set; }
     }
 }

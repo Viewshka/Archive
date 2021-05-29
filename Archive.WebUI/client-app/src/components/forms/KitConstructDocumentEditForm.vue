@@ -77,11 +77,22 @@
               template="priorityTemplate"
           />
           <DxSimpleItem
+              :col-span="1"
+              :label="{text: 'Тип носителя'}"
+              data-field="mediaType"
+              editor-type="dxSelectBox"
+              :editor-options="{items:dataSourceMediaTypes,valueExpr:'id',displayExpr:'name'}"
+          />
+        </DxGroupItem>
+        <DxGroupItem
+            :col-count="2"
+            :col-span="2"
+        >
+          <DxSimpleItem
               :col-span="2"
               template="fileUploaderTemplate"
           />
         </DxGroupItem>
-
 
         <DxGroupItem
             :col-count="2"
@@ -201,6 +212,7 @@ export default {
       dataSourceDocuments: [],
       files: [],
       dataSourcePriority: data.priority,
+      dataSourceMediaTypes: data.mediaType,
     }
   },
   components: {

@@ -21,6 +21,7 @@ namespace Archive.Application.Feature.Document.KitConstructDoc.Commands.UpdateKi
         public string ParentId { get; set; }
         public DateTime? StorageDate { get; set; }
         public Priority Priority { get; set; }
+        public MediaType MediaType { get; set; }
     }
 
     public class UpdateKitConstructDocCommandHandler : IRequestHandler<UpdateKitConstructDocCommand>
@@ -49,6 +50,7 @@ namespace Archive.Application.Feature.Document.KitConstructDoc.Commands.UpdateKi
                 .Set("Name", request.Name)
                 .Set("StorageDate", request.StorageDate)
                 .Set("Note", request.Note)
+                .Set("MediaType", request.MediaType)
                 .Set("Priority",request.Priority);
 
             var result = await documentsCollection.UpdateOneAsync(filter, update, cancellationToken: cancellationToken);

@@ -23,6 +23,7 @@ namespace Archive.Application.Feature.Document.KitConstructDoc.Commands.CreateKi
         public string ParentId { get; set; }
         public DateTime? StorageDate { get; set; }
         public Priority Priority { get; set; }
+        public MediaType MediaType { get; set; }
     }
 
     public class CreateKitConstructDocCommandHandler : IRequestHandler<CreateKitConstructDocCommand>
@@ -51,7 +52,8 @@ namespace Archive.Application.Feature.Document.KitConstructDoc.Commands.CreateKi
                 NomenclatureId = request.NomenclatureId,
                 ParentId = request.ParentId,
                 StorageDate = request.StorageDate,
-                Priority = request.Priority
+                Priority = request.Priority,
+                MediaType = request.MediaType
             };
 
             await documentsCollection.InsertOneAsync(entity, cancellationToken: cancellationToken);

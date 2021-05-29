@@ -24,6 +24,7 @@ namespace Archive.Application.Feature.Document.Draw.Commands.CreateDraw
         public DateTime? StorageDate { get; set; }
 
         public Priority Priority { get; set; }
+        public MediaType MediaType { get; set; }
     }
 
     public class CreateDrawingCommandHandler : IRequestHandler<CreateDrawingCommand,string>
@@ -52,7 +53,8 @@ namespace Archive.Application.Feature.Document.Draw.Commands.CreateDraw
                 NomenclatureId = request.NomenclatureId,
                 ParentId = request.ParentId,
                 StorageDate = request.StorageDate,
-                Priority = request.Priority
+                Priority = request.Priority,
+                MediaType = request.MediaType
             };
 
             await documentsCollection.InsertOneAsync(entity, cancellationToken: cancellationToken);

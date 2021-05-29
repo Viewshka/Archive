@@ -92,8 +92,7 @@ namespace Archive.Application.Feature.Document.DestructionAkt.GenerateDestructio
 
             var newFileGuid = Guid.NewGuid().ToString();
             var inputPath = Path.Combine(_environment.WebRootPath, template.Path);
-            // var outputPath = Path.Combine(_environment.WebRootPath, $"files/{newFileGuid}.pdf");
-            var outputPath = Path.Combine(_environment.WebRootPath, $"files/test.pdf");
+            var outputPath = Path.Combine(_environment.WebRootPath, $"files/{newFileGuid}.pdf");
             var tempPath = Path.Combine(_environment.WebRootPath, "temp/temp_file.docx");
             var tempFolder = Path.Combine(_environment.WebRootPath, "temp");
 
