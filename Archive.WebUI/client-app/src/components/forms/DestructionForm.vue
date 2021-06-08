@@ -3,7 +3,7 @@
       height="auto"
       :width="900"
       position="center"
-      title="Списание документов"
+      :title="title"
       :visible="visible"
 
       :show-title="true"
@@ -38,13 +38,6 @@
           />
           <DxSimpleItem
               :col-span="2"
-              :label="{text: 'Основание'}"
-              :editor-options="{autoResizeEnabled:false, height:80}"
-              data-field="reason"
-              editor-type="dxTextArea"
-          />
-          <DxSimpleItem
-              :col-span="2"
               :label="{text:'Документы'}"
               data-field="documentIds"
               template="documentsTemplate"
@@ -65,7 +58,7 @@
               :col-span="1"
               :label="{text:'Вес документов'}"
               data-field="weigh"
-              editor-type="dxNumberBox"
+              editor-type="dxTextBox"
           />
         </DxGroupItem>
 
@@ -117,6 +110,10 @@ export default {
       type: Object,
       required: true
     },
+    title:{
+      type: String,
+      required: true
+    }
   },
   data() {
     return {

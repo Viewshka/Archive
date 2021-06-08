@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using Archive.Core.Enums;
 using MongoDB.Bson.Serialization.Attributes;
 
@@ -17,5 +18,21 @@ namespace Archive.Application.Feature.User.Queries.GetAllUsers
         
         public string FullName => $"{FirstName} {MiddleName} {LastName}";
         public bool IsUserArchivist => Roles.Contains(Core.Enums.Roles.АрхивариусId);
+
+        public string BriefName
+        {
+            get
+            {
+                var result = string.Empty;
+                if (!string.IsNullOrWhiteSpace(FirstName))
+                    result += FirstName;
+                if (!string.IsNullOrWhiteSpace(MiddleName))
+                    result += $" {MiddleName.First()}.";
+                if (!string.IsNullOrWhiteSpace(LastName))
+                    result += $"{LastName.First()}.";
+
+                return result;
+            }
+        }
     }
 }

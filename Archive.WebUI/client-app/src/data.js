@@ -1,8 +1,13 @@
 ﻿const documentTypes = [
     {
         id: 1,
-        name: 'Чертеж',
-        shortName: 'Чертеж'
+        name: 'Чертеж детали',
+        shortName: 'Чертеж детали'
+    },
+    {
+        id: 8,
+        name: 'Сборочный чертеж',
+        shortName: 'Сборочный чертеж'
     },
     {
         id: 2,
@@ -24,10 +29,6 @@ const documentUsageTypes = [
     {
         id: 2,
         name: 'Просмотр'
-    },
-    {
-        id: 3,
-        name: 'Выписки'
     }
 ];
 
@@ -65,7 +66,19 @@ const priority = [
     },
     {
         id: 2,
-        name: 'Открытый доступ'
+        name: 'Конфиденциально'
+    },
+    {
+        id: 3,
+        name: 'Коммерческая'
+    },
+    {
+        id: 3,
+        name: 'Служебная'
+    },
+    {
+        id: 4,
+        name: 'Общедоступная'
     },
 ];
 

@@ -46,7 +46,7 @@ namespace Archive.Application.Feature.Document.DestructionAkt.GenerateDestructio
         private readonly MongoDbOptions _options;
 
         public GenerateDestructionAktCommandHandler(IOptions<MongoDbOptions> options,
-            IHostingEnvironment environment, IMediator mediator,ICurrentUserService currentUserService,
+            IHostingEnvironment environment, IMediator mediator, ICurrentUserService currentUserService,
             UserManager<ApplicationUser> userManager)
         {
             _environment = environment;
@@ -120,12 +120,12 @@ namespace Archive.Application.Feature.Document.DestructionAkt.GenerateDestructio
                 InsertDocumentDateNumber(bookmarkMap, request.DocumentDate ?? DateTime.Now, request.Number);
                 InsertReason(bookmarkMap, request.Reason, nomenclature.Index);
                 InsertDocumentTable(bookmarkMap, documents, inventoryNumber);
-                InsertInventoryApprove (bookmarkMap,documents);
-                InsertArchivist (bookmarkMap,currentUser);
-                InsertProtocol (bookmarkMap,request.ProtocolDate,request.ProtocolNumber);
+                InsertInventoryApprove(bookmarkMap, documents);
+                InsertArchivist(bookmarkMap, currentUser);
+                InsertProtocol(bookmarkMap, request.ProtocolDate, request.ProtocolNumber);
                 InsertDocumentCount(bookmarkMap, documents.Count, request.Weigh, request.DestructionType);
-                InsertDocumentAndDatePassed(bookmarkMap,currentUser);
-                InsertChangesAndDateApplied(bookmarkMap,currentUser);
+                InsertDocumentAndDatePassed(bookmarkMap, currentUser);
+                InsertChangesAndDateApplied(bookmarkMap, currentUser);
 
                 if (System.IO.File.Exists(tempPath))
                     System.IO.File.Delete(tempPath);
@@ -147,7 +147,7 @@ namespace Archive.Application.Feature.Document.DestructionAkt.GenerateDestructio
             var document = new Akt
             {
                 Name = $"Акт о выделении к уничтожению документов №{request.Number}",
-                Path = outputPath,
+                Path = $"files/{newFileGuid}.pdf",
                 Type = DocumentTypeEnum.Акт,
                 DocumentDate = request.DocumentDate ?? DateTime.Now,
                 NomenclatureId = NomenclatureId,
@@ -155,18 +155,18 @@ namespace Archive.Application.Feature.Document.DestructionAkt.GenerateDestructio
                 MediaType = MediaType.Бумажный,
                 Priority = Priority.Секретно
             };
-            
+
             await aktCollection.InsertOneAsync(document, cancellationToken: cancellationToken);
 
             return Unit.Value;
         }
 
-        private static void InsertDocumentAndDatePassed(Dictionary<string, BookmarkStart> bookmarkMap, 
+        private static void InsertDocumentAndDatePassed(Dictionary<string, BookmarkStart> bookmarkMap,
             ApplicationUser currentUser)
         {
             var bookmark = bookmarkMap[Bookmark.DocumentPassed];
             var parentBookmark = bookmark.Parent;
-            
+
             var text = new Text(currentUser.GetBriefNameWithJobTitle());
             var run = new Run(text);
             var runProperties = new RunProperties
@@ -184,14 +184,14 @@ namespace Archive.Application.Feature.Document.DestructionAkt.GenerateDestructio
 
             text = new Text(DateTime.Now.ToString("d"));
             parentBookmark.GetFirstChild<Run>().Append(text);
-        } 
-        
-        private static void InsertChangesAndDateApplied(Dictionary<string, BookmarkStart> bookmarkMap, 
+        }
+
+        private static void InsertChangesAndDateApplied(Dictionary<string, BookmarkStart> bookmarkMap,
             ApplicationUser currentUser)
         {
             var bookmark = bookmarkMap[Bookmark.ChangesApplied];
             var parentBookmark = bookmark.Parent;
-            
+
             var text = new Text(currentUser.GetBriefNameWithJobTitle());
             var run = new Run(text);
             var runProperties = new RunProperties
@@ -211,44 +211,43 @@ namespace Archive.Application.Feature.Document.DestructionAkt.GenerateDestructio
             parentBookmark.GetFirstChild<Run>().Append(text);
         }
 
-        private static void InsertDocumentCount(Dictionary<string, BookmarkStart> bookmarkMap, 
+        private static void InsertDocumentCount(Dictionary<string, BookmarkStart> bookmarkMap,
             int documentsCount, int weigh, DestructionTypeEnum destructionType)
         {
             var bookmark = bookmarkMap[Bookmark.DocumentCount];
             var parentBookmark = bookmark.Parent;
-            
+
             var text = new Text(documentsCount.ToString());
-            parentBookmark.GetFirstChild<Run>().Append(text);
-            
-            
+            parentBookmark.ChildElements[3].Append(text);
+
             bookmark = bookmarkMap[Bookmark.PaperWeigh];
 
             var bookmarkText = bookmark.NextSibling<Run>();
             bookmarkText.GetFirstChild<Text>().Text = $"{weigh.ToString()} кг";
-            
+
             bookmark = bookmarkMap[Bookmark.ElectronicDestructionType];
             parentBookmark = bookmark.Parent;
-            
+
             text = new Text(" -");
             parentBookmark.GetFirstChild<Run>().Append(text);
         }
 
-        private static void InsertProtocol(Dictionary<string, BookmarkStart> bookmarkMap, 
+        private static void InsertProtocol(Dictionary<string, BookmarkStart> bookmarkMap,
             DateTime protocolDate, string protocolNumber)
         {
             var bookmark = bookmarkMap[Bookmark.Protocol];
             var parentBookmark = bookmark.Parent;
-            
+
             var text = new Text($"Протокол ЭК от {protocolDate:d} № {protocolNumber}");
             parentBookmark.GetFirstChild<Run>().Append(text);
         }
 
-        private static void InsertArchivist(IReadOnlyDictionary<string, BookmarkStart> bookmarkMap, 
+        private static void InsertArchivist(IReadOnlyDictionary<string, BookmarkStart> bookmarkMap,
             ApplicationUser user)
         {
             var bookmark = bookmarkMap[Bookmark.Archivist];
             var parentBookmark = bookmark.Parent;
-            
+
             var text = new Text(user.GetBriefNameWithJobTitle());
             var run = new Run(text);
             var runProperties = new RunProperties
@@ -262,7 +261,7 @@ namespace Archive.Application.Feature.Document.DestructionAkt.GenerateDestructio
             parentBookmark.Append(paragraph);
         }
 
-        private static void InsertInventoryApprove(Dictionary<string,BookmarkStart> bookmarkMap, 
+        private static void InsertInventoryApprove(Dictionary<string, BookmarkStart> bookmarkMap,
             IList<Core.Collections.Document.Document> documents)
         {
             var minDate = documents
@@ -277,11 +276,11 @@ namespace Archive.Application.Feature.Document.DestructionAkt.GenerateDestructio
 
             var years = minDate == maxDate ? $"{minDate}" : $"{minDate}-{maxDate}";
             var yearWord = minDate == maxDate ? "год." : "годы.";
-            
+
             var bookmark = bookmarkMap[Bookmark.InventoryApprove];
             var parentBookmark = bookmark.Parent;
 
-            var text = $"Описи дел постоянного хранения за {years} {yearWord} утверждены ЭПК.";
+            var text = $"Описи дел постоянного хранения за {years} {yearWord} утверждены ЭК.";
 
             var runText = new Text(text);
             parentBookmark.GetFirstChild<Run>().Append(runText);
@@ -489,8 +488,8 @@ namespace Archive.Application.Feature.Document.DestructionAkt.GenerateDestructio
             var bookmark = bookmarkMap[Bookmark.Reason];
             var parentBookmark = bookmark.Parent;
 
-            var text = $"На основании {reason} отобраны к уничтожению утратившие " +
-                       $"практическое значение докуметы дела {nomenclature}";
+            var text = $"Комиссия отобрала к уничтожению, как не имеющие исторической ценности и " +
+                       $"утратившие практическое значение следующие документы дела {nomenclature}:";
 
             var run = new Run(new Text(text));
             var runProperties = new RunProperties

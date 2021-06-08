@@ -10,7 +10,6 @@ namespace Archive.Application.Extensions
             {
                 DocumentUsageType.Копирование => "Копирование",
                 DocumentUsageType.Просмотр => "Просмотр",
-                DocumentUsageType.Выписки => "Выписки",
                 _ => string.Empty
             };
         }

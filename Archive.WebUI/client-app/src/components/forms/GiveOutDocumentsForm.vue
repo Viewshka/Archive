@@ -3,7 +3,7 @@
       height="auto"
       :width="600"
       position="center"
-      title="Выдача документов"
+      :title="title"
       :visible="visible"
 
       :show-title="true"
@@ -127,7 +127,8 @@ export default {
   data() {
     return {
       formRefName: 'form',
-      dataSourceUsageType: data.documentUsageTypes
+      dataSourceUsageType: data.documentUsageTypes,
+      title: `Выдача документов (${this.formData.documents.length})`
     }
   },
   computed: {

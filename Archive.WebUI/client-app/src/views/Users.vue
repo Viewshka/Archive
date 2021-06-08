@@ -161,7 +161,7 @@ export default {
           })
     },
     editPriority(data) {
-      this.priorityForm.title = `Приоритет пользователя: ${data.fullName}`;
+      this.priorityForm.title = `Приоритет пользователя: ${data.briefName}`;
       this.priorityForm.formData = {id: data.id,priority: data.priority};
       this.priorityForm.visible = true;
     },

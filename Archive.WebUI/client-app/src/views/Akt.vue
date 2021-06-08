@@ -123,7 +123,7 @@ export default {
   },
   methods: {
     openPreview(data) {
-      this.previewFormData.documentSubject = data.name;
+      this.previewFormData.title = data.name;
       this.previewFormData.visible = true;
       this.previewFormData.url = `api/file/${data.id}`;
     },

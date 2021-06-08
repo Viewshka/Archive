@@ -29,6 +29,11 @@
         <DxLookup :data-source="dataSourceDepartments" value-expr="id" display-expr="shortName"/>
       </DxColumn>
       <DxColumn
+          caption="Год"
+          data-field="year"
+          data-type="string"
+      />
+      <DxColumn
           caption="Управление"
           type="buttons"
           :hiding-priority="10"
@@ -83,14 +88,6 @@
             @click="destructionDocumentButtonClick"
         />
       </template>
-      <template #buttonAddNomenclatureTemplate>
-        <DxButton
-            text="Добавить"
-            type="normal"
-            icon="plus"
-            @click="addNomenclature"
-        />
-      </template>
     </DxDataGrid>
     <NomenclatureEditForm
         v-if="nomenclatureEditForm.visible"
@@ -110,6 +107,7 @@
         v-if="destructionForm.visible"
         :visible.sync="destructionForm.visible"
         :form-data="destructionForm.formData"
+        :title="destructionForm.title"
         @submit="destructionFormSubmit"
     />
   </div>
@@ -165,13 +163,15 @@ export default {
       },
       focusedRow: {
         nomenclatureId: null,
+        index: null,
         buttonInventoryText: 'Сформировать опись дела',
         buttonDestructionAktText: 'Списание',
         buttonDisabled: true
       },
       destructionForm: {
         visible: false,
-        formData: {}
+        formData: {},
+        title: ''
       },
     }
   },
@@ -216,6 +216,7 @@ export default {
       this.focusedRow.buttonInventoryText = `Сформировать опись дела: ${data.index}`;
       this.focusedRow.buttonDestructionAktText = `Списание ${data.index}`;
       this.focusedRow.buttonDisabled = false;
+      this.focusedRow.index = data.index;
     },
     generateInventory() {
       axios.post(`api/nomenclature/${this.focusedRow.nomenclatureId}`)
@@ -296,6 +297,7 @@ export default {
     destructionDocumentButtonClick() {
       this.destructionForm.visible = true;
       this.destructionForm.formData = {nomenclatureId: this.focusedRow.nomenclatureId};
+      this.destructionForm.title = `Списание документов дела ${this.focusedRow.index}`
     },
     toolbarPreparing(e) {
       e.toolbarOptions.items.unshift(
@@ -309,7 +311,17 @@ export default {
           },
           {
             location: 'after',
-            template: 'buttonAddNomenclatureTemplate'
+            widget: 'dxButton',
+            locateInMenu: 'auto',
+            showText: 'inMenu',
+            options: {
+              text: "Добавить",
+              hint: 'Добавить',
+              type: "normal",
+              icon: "plus",
+              stylingMode: 'contained',
+              onClick: () => this.addNomenclature()
+            }
           },
           {
             location: 'after',

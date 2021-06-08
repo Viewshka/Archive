@@ -19,5 +19,7 @@ namespace Archive.Application.Feature.User.Queries.GetCurrentUser
 
         public Priority Priority { get; set; }
         public string JobTitle { get; set; }
+
+        public string DisplayName { get; set; }
     }
 }

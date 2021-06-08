@@ -68,7 +68,7 @@
       <DxHeaderFilter :visible="true"/>
       <DxLoadPanel :enabled="true" :show-pane="true" :show-indicator="true"/>
       <DxPaging :enabled="true" :page-size="20"/>
-      <DxSelection :recursive="true" :allow-select-all="false" mode="multiple"/>
+      <DxSelection :recursive="false" :allow-select-all="false" mode="multiple"/>
 
       <template #buttonControl="{data}">
         <div class="dx-command-edit dx-command-edit-with-icons">
@@ -268,7 +268,7 @@ export default {
     openDocumentHistory(data) {
       axios.get(`api/document/${data.id}/history`)
           .then(response => {
-            this.historyFormData.title = data.name;
+            this.historyFormData.title = `История использования документа ${data.designation} ${data.name}`;
             this.historyFormData.visible = true;
             this.historyFormData.loading = true;
             this.historyFormData.dataSource = response.data;
@@ -330,7 +330,7 @@ export default {
       this.openNeededForm(data.type);
     },
     dataGridRowDblClick(row) {
-      this.previewFormData.documentSubject = `${row.data.name} - ${data.documentTypes.find(t => t.id === row.data.type).name}`;
+      this.previewFormData.documentSubject = `${row.data.designation} ${row.data.name} - ${data.documentTypes.find(t => t.id === row.data.type).name}`;
       this.previewFormData.visible = true;
       this.previewFormData.url = `api/file/${row.data.id}`
     },

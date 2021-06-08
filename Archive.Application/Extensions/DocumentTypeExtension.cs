@@ -10,7 +10,8 @@ namespace Archive.Application.Extensions
         {
             return type switch
             {
-                DocumentTypeEnum.Чертеж => "Чертеж",
+                DocumentTypeEnum.СборочныйЧертеж => "Сборочный чертеж",
+                DocumentTypeEnum.ЧертежДетали => "Чертеж детали",
                 DocumentTypeEnum.Спецификация => "Спецификация",
                 DocumentTypeEnum.КомплектКД => "Комплект конструкторской документации",
                 DocumentTypeEnum.Заявка => "Заявка",

@@ -1,7 +1,7 @@
 <template>
   <div class="user-panel">
     <div class="user-info">
-      <div class="user-name">{{ currentUser.briefName }}</div>
+      <div class="user-name">{{ currentUser.displayName }}</div>
     </div>
 
     <DxContextMenu

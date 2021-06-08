@@ -6,7 +6,7 @@
       position="center"
       :title="title"
       :show-title="true"
-      :resize-enabled="true"
+      :resize-enabled="false"
       :visible="visible"
       :close-on-outside-click="true"
       :hover-state-enabled="true"
@@ -14,9 +14,13 @@
       @hidden="cancel"
   >
     <div>
-<!--      TODO: Добавить скроллинг-->
       <DxList
           :data-source="dataSource"
+          :scrolling-enabled="true"
+          :scroll-by-content="true"
+          :scroll-by-thumb="true"
+          show-scrollbar="always"
+          :height="700"
       >
         <template #item="{ data: item }">
           <div>

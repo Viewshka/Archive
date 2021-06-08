@@ -132,7 +132,7 @@ namespace Archive.Application.Feature.Nomenclature.Commands.GenerateInventory
             var random = new Random();
             var document = new Inventory
             {
-                Name = $"Внутрення опись документов дела \"{nomenclature.Index} - {nomenclature.Name}\"",
+                Name = $"Внутренняя опись документов дела \"{nomenclature.Index} - {nomenclature.Name}\"",
                 Path = $"files/{newFileGuid}.pdf",
                 Type = DocumentTypeEnum.ОписьДела,
                 DocumentDate = DateTime.Now,
@@ -178,7 +178,7 @@ namespace Archive.Application.Feature.Nomenclature.Commands.GenerateInventory
         private async Task InsertCreator(IReadOnlyDictionary<string, BookmarkStart> bookmarkMap)
         {
             var creator = await _mediator.Send(new GetCurrentUserQuery());
-            
+
             var bookmark = bookmarkMap[Bookmark.Creator];
             var parentBookmark = bookmark.Parent;
             var text = creator.GetBriefNameWithJobTitle();
@@ -209,6 +209,12 @@ namespace Archive.Application.Feature.Nomenclature.Commands.GenerateInventory
             var paragraph = new Paragraph();
             paragraph.Append(run);
             parentBookmark.Append(paragraph);
+
+            bookmark = bookmarkMap[Bookmark.CountList];
+            parentBookmark = bookmark.Parent;
+            text = $" 1 (один).";
+
+            parentBookmark.ChildElements[1].Append(new Text(text));
         }
 
         private static void InsertDocumentTable(IReadOnlyDictionary<string, BookmarkStart> bookmarkMap,

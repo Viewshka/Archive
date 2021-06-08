@@ -30,7 +30,23 @@
       >
         <DxLookup :data-source="dataSourceNomenclatures" value-expr="id" :display-expr="nomenclatureDisplayExpr"/>
       </DxColumn>
-
+      <DxColumn
+          caption="Управление"
+          type="buttons"
+          :hiding-priority="10"
+          cell-template="buttonControl"
+          alignment="center"
+      />
+      <template #buttonControl="{data}">
+        <div class="dx-command-edit dx-command-edit-with-icons">
+          <a href="#"
+             class="dx-link dx-icon-search dx-link-icon"
+             title="Просмотреть опись дела"
+             v-on:click="openInventory(data.data)"
+          ></a>
+        </div>
+      </template>
+      
       <DxScrolling mode="virtual"/>
       <DxColumnChooser :enabled="true" mode="select"/>
       <DxSearchPanel :visible="true"/>
@@ -107,6 +123,11 @@ export default {
     await this.initNomenclatures()
   },
   methods: {
+    openInventory(data) {
+      this.previewFormData.title = data.name;
+      this.previewFormData.visible = true;
+      this.previewFormData.url = `api/nomenclature/${data.nomenclatureId}/inventory`;
+    },
     async initNomenclatures() {
       await axios.get(`api/nomenclature`)
           .then(response => {
