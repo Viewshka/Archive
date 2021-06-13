@@ -70,9 +70,7 @@ namespace Archive.Application.Feature.Requisition.Queries.GetRequisitions
                             ? RequisitionStatusEnum.Отказано
                             : requisition.DateOfReturn.HasValue
                                 ? RequisitionStatusEnum.Возвращено
-                                : requisition.ReadyToGiveOut && !requisition.DateOfGiveOut.HasValue
-                                    ? RequisitionStatusEnum.ГотовоКВыдаче
-                                    : requisition.DateOfGiveOut.HasValue && !requisition.DateOfReturn.HasValue
+                                : requisition.DateOfGiveOut.HasValue && !requisition.DateOfReturn.HasValue
                                         ? RequisitionStatusEnum.Выдано
                                         : RequisitionStatusEnum.Новая
                 })

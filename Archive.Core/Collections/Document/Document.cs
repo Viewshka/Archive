@@ -63,11 +63,6 @@ namespace Archive.Core.Collections.Document
         public Priority Priority { get; set; }
 
         /// <summary>
-        /// Id документа - Лист использования
-        /// </summary>
-        public string UsageListId { get; set; }
-
-        /// <summary>
         /// Тип носителя
         /// </summary>
         public MediaType MediaType { get; set; }

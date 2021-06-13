@@ -2,8 +2,8 @@
 using Archive.Application.Feature.Requisition.Commands.CanceledRequisition;
 using Archive.Application.Feature.Requisition.Commands.CreateRequisition;
 using Archive.Application.Feature.Requisition.Commands.DeleteRequisition;
+using Archive.Application.Feature.Requisition.Commands.DeniedRequisition;
 using Archive.Application.Feature.Requisition.Commands.GiveOutDocument;
-using Archive.Application.Feature.Requisition.Commands.ReadyRequisition;
 using Archive.Application.Feature.Requisition.Commands.UpdateRequisition;
 using Archive.Application.Feature.Requisition.Queries.GetRequisitions;
 using Microsoft.AspNetCore.Mvc;
@@ -50,15 +50,9 @@ namespace Archive.WebUI.Controllers
         [HttpPut("{id}/denied")]
         public async Task<IActionResult> DeniedRequisition(string id)
         {
-            return Ok(await Mediator.Send(new CanceledRequisitionCommand {Id = id}));
+            return Ok(await Mediator.Send(new DeniedRequisitionCommand {Id = id}));
         }
-        
-        [HttpPut("{id}/ready")]
-        public async Task<IActionResult> ReadyRequisition(string id)
-        {
-            return Ok(await Mediator.Send(new ReadyRequisitionCommand {Id = id}));
-        }       
-        
+
         [HttpPut("{id}/give-out")]
         public async Task<IActionResult> GiveOutDocuments(string id)
         {

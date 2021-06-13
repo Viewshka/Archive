@@ -74,7 +74,7 @@
              v-if="data.data.status !== $enums.requisitionStatus.canceled ||
                   data.data.static !== $enums.requisitionStatus.isDenied"
         >
-          <a v-if="!data.data.isDenied && data.data.dateOfGiveOut && data.data.dateOfReturn === null"
+          <a v-if="!currentUser.isUserArchivist && !data.data.isDenied && data.data.dateOfGiveOut && data.data.dateOfReturn === null"
              href="#"
              class="dx-link dx-icon-check dx-link-icon"
              title="Вернуть"
@@ -86,19 +86,13 @@
              title="Отказать"
              v-on:click="deniedRequisition(data.data.id)"
           ></a>
-          <a v-if="currentUser.isUserArchivist && data.data.status === $enums.requisitionStatus.new"
-             href="#"
-             class="dx-link dx-icon-box dx-link-icon"
-             title="Готово к выдаче"
-             v-on:click="readyToGiveOut(data.data.id)"
-          ></a>
           <a v-if="!currentUser.isUserArchivist && data.data.status === $enums.requisitionStatus.new"
              href="#"
              class="dx-link dx-icon-close dx-link-icon"
              title="Отозвать заявку"
              v-on:click="canceledRequisition(data.data.id)"
           ></a>
-          <a v-if="currentUser.isUserArchivist && data.data.status === $enums.requisitionStatus.readyToGiveOut && !data.data.dateOfGiveOut"
+          <a v-if="currentUser.isUserArchivist && data.data.status !== $enums.requisitionStatus.isDenied && data.data.status !== $enums.requisitionStatus.canceled  &&  !data.data.dateOfGiveOut"
              href="#"
              class="dx-link dx-icon-chevronright dx-link-icon"
              title="Выдать документы"
@@ -373,21 +367,6 @@ export default {
           .then((dialogResult) => {
             if (dialogResult) {
               axios.put(`/api/requisition/${id}/denied`)
-                  .then(() => {
-                    this.refreshDataGrid();
-                  })
-                  .catch(reason => {
-                    console.log(reason)
-                    notify('Во время обработки запроса произошла ошибка', 'error', 3000)
-                  });
-            }
-          });
-    },
-    readyToGiveOut(id) {
-      confirm(`Сообщить о готовности выдать документы?`, "Готовность к выдаче")
-          .then((dialogResult) => {
-            if (dialogResult) {
-              axios.put(`/api/requisition/${id}/ready`)
                   .then(() => {
                     this.refreshDataGrid();
                   })

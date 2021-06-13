@@ -18,7 +18,8 @@ namespace Archive.Application.Feature.Document.Queries.GetInventoryByNomenclatur
         public string NomenclatureId { get; set; }
     }
 
-    public class GetInventoryByNomenclatureCommandHandler : IRequestHandler<GetInventoryByNomenclatureCommand, MemoryStream>
+    public class
+        GetInventoryByNomenclatureCommandHandler : IRequestHandler<GetInventoryByNomenclatureCommand, MemoryStream>
     {
         private readonly IMediator _mediator;
         private readonly IHostingEnvironment _environment;
@@ -32,7 +33,8 @@ namespace Archive.Application.Feature.Document.Queries.GetInventoryByNomenclatur
             _mongoDbOptions = mongoDbOptions.Value;
         }
 
-        public async Task<MemoryStream> Handle(GetInventoryByNomenclatureCommand request, CancellationToken cancellationToken)
+        public async Task<MemoryStream> Handle(GetInventoryByNomenclatureCommand request,
+            CancellationToken cancellationToken)
         {
             var client = new MongoClient(_mongoDbOptions.ConnectionString);
             var database = client.GetDatabase(_mongoDbOptions.DatabaseName);
@@ -50,10 +52,10 @@ namespace Archive.Application.Feature.Document.Queries.GetInventoryByNomenclatur
 
             if (inventory is null)
             {
-                var response =await GenerateNullResponse();
+                var response = GenerateNullResponse();
                 return response;
             }
-            
+
             var resultStream = new MemoryStream();
             var path = Path.Combine(_environment.WebRootPath, inventory.Path);
             var fileStream = new FileStream(path, FileMode.Open);
@@ -64,7 +66,7 @@ namespace Archive.Application.Feature.Document.Queries.GetInventoryByNomenclatur
             return resultStream;
         }
 
-        private async Task<MemoryStream> GenerateNullResponse()
+        private static MemoryStream GenerateNullResponse()
         {
             var document = new PdfDocument();
             var page = document.AddPage();
