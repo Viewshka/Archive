@@ -451,8 +451,8 @@ export default {
             locateInMenu: 'auto',
             showText: 'inMenu',
             options: {
-              text: 'Добавить',
-              hint: 'Добавить',
+              text: 'Регистрация',
+              hint: 'Регистрация',
               icon: 'plus',
               type: 'normal',
               stylingMode: 'contained',
