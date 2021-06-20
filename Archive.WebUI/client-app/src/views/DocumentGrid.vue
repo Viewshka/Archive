@@ -1,6 +1,7 @@
 <template>
   <div class="document-tree-list">
-    <h2 style="margin-left: 5px">Все документы</h2>
+    <h2 v-if="currentUser.isUserArchivist" style="margin-left: 5px">Все документы</h2>
+    <h2 v-else style="margin-left: 5px">Документы</h2>
     <DxTreeList
         :ref="gridRefName"
         :data-source="dataSource"
@@ -83,7 +84,8 @@
              title="История использования документа"
              v-on:click="openDocumentHistory(data.data)"
           ></a>
-          <a href="#"
+          <a v-if="currentUser.isUserArchivist"
+             href="#"
              class="dx-link dx-icon-doc dx-link-icon"
              title="Просмотреть лист использования документа"
              v-on:click="openDocumentUsageList(data.data)"
@@ -167,20 +169,13 @@ import * as AspNetData from "devextreme-aspnet-data-nojquery";
 import data from '../data';
 import {mapState} from 'vuex';
 
-const dataSource = AspNetData.createStore({
-  key: 'id',
-  loadUrl: `/api/document`,
-  onBeforeSend: (method, ajaxOptions) => {
-    ajaxOptions.xhrFields = {withCredentials: true};
-  },
-});
 
 export default {
   name: "DocumentGrid",
   data() {
     return {
       gridRefName: 'dataGrid',
-      dataSource,
+      dataSource: {},
       dataSourceDocumentTypes: data.documentTypes,
       dataSourceNomenclatures: [],
       dataSourceDepartments: [],
@@ -251,6 +246,14 @@ export default {
     },
   },
   async created() {
+    let url = this.currentUser.isUserArchivist ? "api/document" : "api/document/employee";
+    this.dataSource = AspNetData.createStore({
+      key: 'id',
+      loadUrl: url,
+      onBeforeSend: (method, ajaxOptions) => {
+        ajaxOptions.xhrFields = {withCredentials: true};
+      },
+    });
     await Promise.all(
         [
           this.initNomenclatures(),
@@ -487,7 +490,8 @@ export default {
 .document-tree-list {
   height: calc(100vh - 150px);
 }
-#give-out-button{
- margin-left: 10px; 
+
+#give-out-button {
+  margin-left: 10px;
 }
 </style>

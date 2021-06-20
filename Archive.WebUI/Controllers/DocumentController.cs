@@ -9,6 +9,7 @@ using Archive.Application.Feature.Document.Queries.GetAkts;
 using Archive.Application.Feature.Document.Queries.GetAllDocuments;
 using Archive.Application.Feature.Document.Queries.GetDocumentHistory;
 using Archive.Application.Feature.Document.Queries.GetDocumentsByNomenclature;
+using Archive.Application.Feature.Document.Queries.GetEmployeeDocuments;
 using Archive.Application.Feature.Document.Queries.GetInventory;
 using Archive.Application.Feature.Document.ReturnDocument;
 using Microsoft.AspNetCore.Authorization;
@@ -29,6 +30,12 @@ namespace Archive.WebUI.Controllers
             return Ok(await Mediator.Send(new GetAllDocumentsQuery()));
         }
 
+        [HttpGet("employee")]
+        public async Task<IActionResult> GetDocuments()
+        {
+            return Ok(await Mediator.Send(new GetEmployeeDocumentsQuery()));
+        }
+        
         [HttpGet("by-nomenclature-{nomenclatureId}")]
         public async Task<IActionResult> GetDocumentsByNomenclature(string nomenclatureId)
         {
